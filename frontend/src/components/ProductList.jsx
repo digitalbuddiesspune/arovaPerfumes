@@ -225,7 +225,9 @@ const ProductList = ({ defaultCategory } = {}) => {
                 setError(null);
                 // Send raw category to backend (backend will handle normalization and mapping)
                 const data = await fetchSarees(rawCategory || '');
-                setProducts(data || []);
+                const list = Array.isArray(data) ? data : (data?.products || []);
+                const isWatches = (rawCategory || '').toLowerCase() === 'watches';
+                setProducts(isWatches ? list.slice(0, 100) : list);
             } catch (err) {
                 console.error('Failed to load products:', err);
                 setError('Failed to load products. Please try again later.');
