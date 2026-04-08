@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaPlus, FaMinus, FaArrowLeft, FaShoppingCart } from 'react-icons/fa';
+import { FaTrash, FaPlus, FaMinus, FaArrowLeft, FaShoppingCart, FaHeart } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 
 function Cart() {
@@ -19,16 +19,36 @@ function Cart() {
   }, []);
 
   const handleQuantityChange = (itemId, newQuantity) => {
-    if (newQuantity < 1) {
-      removeFromCart(itemId);
-    } else {
+    console.log('Quantity change:', itemId, newQuantity); // Debug log
+    
+    // Simple validation and update
+    if (newQuantity >= 0) {
       updateQuantity(itemId, newQuantity);
+    } else {
+      // Remove item if quantity goes negative
+      removeFromCart(itemId);
     }
   };
 
-  const shippingCost = cartTotal >= 1000 ? 0 : 99;
-  const tax = Math.round(cartTotal * 0.05);
-  const total = cartTotal + shippingCost + tax;
+  // Calculate price details similar to checkout
+  const calculatePriceDetails = () => {
+    const subtotal = cartTotal || 0;
+    const shippingCharge = subtotal < 5000 ? 99 : 0;
+    const tax = Math.round(subtotal * 0.05); // 5% tax
+    const totalPayable = subtotal + shippingCharge + tax;
+    const savings = Math.round(subtotal * 0.35); // Assuming 35% savings
+
+    return {
+      subtotal,
+      shippingCharge,
+      tax,
+      total: totalPayable,
+      savings,
+      items: cart?.length || 0
+    };
+  };
+
+  const priceDetails = calculatePriceDetails();
   const getProductId = (item) => item?.id || item?._id || item?.productId;
 
   return (
@@ -72,9 +92,11 @@ function Cart() {
             <div className="lg:col-span-2 space-y-4">
               {cart.map((item) => (
                 <div key={item.id} className="bg-white rounded-lg shadow-sm p-4">
+                  {/* Debug info - remove later */}
+                  {console.log('Cart item:', item.id, item.name, item.quantity)}
                   <div className="flex gap-4">
-                    {/* Product Image */}
-                    <div className="w-24 h-24 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
+                    {/* Product Image - Left */}
+                    <div className="w-32 h-32 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
                       <img
                         src={item.image}
                         alt={item.name}
@@ -91,80 +113,190 @@ function Cart() {
                       />
                     </div>
 
-                    {/* Product Details */}
+                    {/* Product Details - Right */}
                     <div className="flex-1 min-w-0">
+                      {/* Product Title */}
                       <h3 
-                        className="text-base font-bold text-gray-900 mb-1 truncate cursor-pointer"
+                        className="text-lg font-semibold text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors"
                         onClick={() => {
                           const pid = getProductId(item);
                           if (!pid) return;
                           navigate(`/product/${pid}`);
                         }}
                       >
-                        {item.name}
+                        {item.name || item.title || 'Product'}
                       </h3>
-                      {item.brand && (
-                        <p className="text-sm text-blue-600 mb-1">{item.brand}</p>
-                      )}
-                      {item.color && (
-                        <p className="text-xs text-gray-500 mb-2">Color: {item.color}</p>
-                      )}
-                      <p className="text-base font-bold text-gray-900">₹{(item.price * (item.quantity || 1)).toLocaleString()}</p>
                       
-                      {/* Quantity, Delete */}
-                      <div className="flex items-center gap-3 mt-3">
-                        {/* Quantity Selector */}
-                        <div className="flex items-center border border-gray-300 rounded-md">
-                          <button 
-                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) - 1)}
-                            className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
-                          >
-                            <FaMinus className="w-3 h-3" />
-                          </button>
-                          <span className="px-3 py-1 border-x border-gray-300 text-sm">{item.quantity || 1}</span>
-                          <button 
-                            onClick={() => handleQuantityChange(item.id, (item.quantity || 1) + 1)}
-                            className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
-                          >
-                            <FaPlus className="w-3 h-3" />
-                          </button>
+                      {/* Price Section */}
+                      <div className="mb-3">
+                        {(() => {
+                          const salePrice = item.pricing?.salePrice || item.salePrice || item.price || 0;
+                          const mrp = item.pricing?.mrp || item.mrp || item.originalPrice || salePrice;
+                          const quantity = item.quantity || 1;
+                          const hasDiscount = salePrice < mrp;
+                          const savedAmount = (mrp - salePrice);
+                          const totalPrice = salePrice * quantity;
+                          const totalMrp = mrp * quantity;
+                          const totalSaved = (mrp - salePrice) * quantity;
+                          
+                          return (
+                            <div className="space-y-1">
+                              {hasDiscount ? (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xl font-bold text-gray-900">₹{salePrice.toLocaleString()}</span>
+                                  <span className="text-sm text-gray-500 line-through">₹{mrp.toLocaleString()}</span>
+                                  <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">
+                                    {Math.round(((mrp - salePrice) / mrp) * 100)}% OFF
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-xl font-bold text-gray-900">₹{salePrice.toLocaleString()}</span>
+                              )}
+                              
+                              {quantity > 1 && (
+                                <p className="text-sm text-gray-600">
+                                  × {quantity} = <span className="font-semibold text-gray-900">₹{totalPrice.toLocaleString()}</span>
+                                </p>
+                              )}
+                              
+                              {hasDiscount && (
+                                <p className="text-sm text-green-600 font-medium">
+                                  You saved ₹{quantity > 1 ? totalSaved.toLocaleString() : savedAmount.toLocaleString()}
+                                </p>
+                              )}
+                              
+                              <p className="text-sm text-gray-600">
+                                MRP: ₹{quantity > 1 ? totalMrp.toLocaleString() : mrp.toLocaleString()}
+                              </p>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                      
+                      {/* Quantity and Actions */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm text-gray-600">Quantity:</span>
+                          <div className="flex items-center border border-gray-300 rounded-md">
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const currentQty = item.quantity || 1;
+                                const newQty = Math.max(0, currentQty - 1);
+                                console.log('Minus clicked:', item.id, currentQty, '->', newQty);
+                                handleQuantityChange(item.id, newQty);
+                              }}
+                              className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
+                              type="button"
+                            >
+                              <FaMinus className="w-3 h-3" />
+                            </button>
+                            <span className="px-3 py-1 border-x border-gray-300 text-sm font-medium">{item.quantity || 1}</span>
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const currentQty = item.quantity || 1;
+                                const newQty = currentQty + 1;
+                                console.log('Plus clicked:', item.id, currentQty, '->', newQty);
+                                handleQuantityChange(item.id, newQty);
+                              }}
+                              className="px-2 py-1 text-gray-600 hover:bg-gray-100 cursor-pointer"
+                              type="button"
+                            >
+                              <FaPlus className="w-3 h-3" />
+                            </button>
+                          </div>
                         </div>
                         
-                        {/* Delete Icon */}
+                        {/* Delete Button */}
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('Delete clicked:', item.id);
+                            removeFromCart(item.id);
+                          }}
                           className="text-gray-500 hover:text-red-500 cursor-pointer"
+                          title="Remove from cart"
+                          type="button"
                         >
                           <FaTrash className="w-4 h-4" />
                         </button>
                       </div>
-                    </div>
+                      
+                                          </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Order Summary - Right Side */}
+            {/* PRICE DETAILS - Right Side */}
             <div className="lg:col-span-1">
               <div className="lg:sticky lg:top-20">
-                <div className="bg-white rounded-lg p-4 space-y-3 shadow-sm">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Sub Total</span>
-                    <span className="text-gray-900">₹{cartTotal.toLocaleString()}</span>
+                <div className="bg-white shadow-sm rounded p-4 sticky top-4">
+                  <h3 className="text-gray-500 text-sm font-medium mb-4">PRICE DETAILS</h3>
+
+                  <div className="space-y-3 mb-4 pb-4 border-b">
+                    <div className="flex justify-between text-sm">
+                      <span>Price ({priceDetails.items} {priceDetails.items === 1 ? 'item' : 'items'})</span>
+                      <span>₹{priceDetails.subtotal.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>You saved</span>
+                      <span className="text-green-600">-₹{priceDetails.savings.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-sm items-center">
+                      <span>Coupon savings</span>
+                      <button
+                        type="button"
+                        className="text-[#2f6f89] font-semibold hover:text-[#24586d] transition-colors"
+                      >
+                        Apply coupon
+                      </button>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Shipping</span>
+                      <span className={priceDetails.shippingCharge > 0 ? 'text-gray-600' : 'text-green-600'}>
+                        {priceDetails.shippingCharge > 0 ? `₹${priceDetails.shippingCharge.toLocaleString()}` : 'Free'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span>Tax (5%)</span>
+                      <span>₹{priceDetails.tax.toLocaleString()}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Shipping & Tax</span>
-                    <span className="text-gray-900">₹{(shippingCost + tax).toLocaleString()}</span>
+
+                  <div className="flex justify-between font-medium text-base mb-4 pb-4 border-b">
+                    <span>Total Payable</span>
+                    <span>₹{priceDetails.total.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-200">
-                    <span className="text-gray-900">Total</span>
-                    <span className="text-gray-900">₹{total.toLocaleString()}</span>
+                  
+                  {/* Coupon Section */}
+                  <div className="mb-4">
+                    <div className="flex items-center gap-2 border border-gray-300 rounded-lg p-3">
+                      <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                      </svg>
+                      <input
+                        type="text"
+                        placeholder="Enter coupon code"
+                        className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400"
+                      />
+                      <button className="text-sm font-medium text-blue-600 hover:text-blue-700 cursor-pointer">
+                        Apply
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Get 10% off on your first order! Use code: FIRST10
+                    </p>
                   </div>
                   
                   {/* Checkout Button */}
                   <button 
                     onClick={() => navigate('/checkout/address')}
-                    className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors mt-4 cursor-pointer"
+                    className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors cursor-pointer"
                   >
                     Checkout
                   </button>

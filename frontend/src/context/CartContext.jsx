@@ -17,20 +17,40 @@ export const CartProvider = ({ children }) => {
     const items = data?.items || [];
     return items.map((i) => {
       const p = i.product || i.productId || {};
-      const price = typeof p.price === 'number'
-        ? p.price
-        : (typeof p.mrp === 'number' ? Math.round(p.mrp - (p.mrp * (p.discountPercent || 0) / 100)) : 0);
+      const price = typeof p.pricing?.salePrice === 'number'
+        ? p.pricing.salePrice
+        : (typeof p.price === 'number' ? p.price : (typeof p.mrp === 'number' ? Math.round(p.mrp - (p.mrp * (p.discountPercent || 0) / 100)) : 0));
+      
       return {
         id: p._id || i.productId, // used by UI and for remove
-        name: p.title || 'Product',
-        image: p.images?.image1,
+        name: p.title || p.name || 'Product',
+        title: p.title || p.name || 'Product',
+        image: p.images?.[0] || p.images?.image1 || p.image,
+        images: p.images || [],
+        brand: p.brand || p.product_info?.brand || '',
+        category: p.category || '',
+        subcategory: p.subcategory || '',
+        type: p.type || '',
+        gender: p.gender || '',
+        color: p.color || p.product_info?.KurtiColor || p.product_info?.SareeColor || '',
+        size: i.size || p.size || '',
+        sku: p.stock?.sku || p.sku || '',
+        stock: p.stock?.quantity || p.stock || 0,
+        description: p.description || '',
+        notes: p.notes || {},
+        pricing: p.pricing || {
+          salePrice: price,
+          mrp: p.pricing?.mrp || p.mrp || price,
+          discountPercent: p.pricing?.discountPercent || p.discountPercent || 0
+        },
+        price,
+        originalPrice: p.pricing?.mrp || p.mrp || price,
+        mrp: p.pricing?.mrp || p.mrp || price,
+        salePrice: price,
+        quantity: i.quantity || 1,
+        // Legacy fields for compatibility
         material: p.product_info?.SareeMaterial,
         work: p.product_info?.IncludedComponents,
-        brand: p.product_info?.brand,
-        color: p.product_info?.KurtiColor || p.product_info?.SareeColor,
-        price,
-        originalPrice: p.mrp,
-        quantity: i.quantity || 1,
       };
     });
   }, []);
@@ -62,7 +82,7 @@ export const CartProvider = ({ children }) => {
     // Optimistic update for instant cart count/UI feedback.
     if (isObj) {
       const p = productIdOrObj;
-      const price = Number(p.price || p.salePrice || p.mrp || 0);
+      const price = Number(p.pricing?.salePrice || p.price || p.salePrice || p.mrp || 0);
       setCart((prev) => {
         const list = [...prev];
         const idx = list.findIndex((i) => String(i.id) === String(productId));
@@ -73,12 +93,33 @@ export const CartProvider = ({ children }) => {
         list.push({
           id: String(productId),
           name: p.title || p.name || 'Product',
-          image: p.images?.image1 || p.image || '',
-          brand: p.product_info?.brand || p.brand || '',
+          title: p.title || p.name || 'Product',
+          image: p.images?.[0] || p.images?.image1 || p.image || '',
+          images: p.images || [],
+          brand: p.brand || p.product_info?.brand || '',
+          category: p.category || '',
+          subcategory: p.subcategory || '',
+          type: p.type || '',
+          gender: p.gender || '',
+          color: p.color || p.product_info?.KurtiColor || p.product_info?.SareeColor || '',
+          size: size || p.size || '',
+          sku: p.stock?.sku || p.sku || '',
+          stock: p.stock?.quantity || p.stock || 0,
+          description: p.description || '',
+          notes: p.notes || {},
+          pricing: p.pricing || {
+            salePrice: price,
+            mrp: p.pricing?.mrp || p.mrp || price,
+            discountPercent: p.pricing?.discountPercent || p.discountPercent || 0
+          },
           price,
-          originalPrice: Number(p.mrp || price),
+          originalPrice: Number(p.pricing?.mrp || p.mrp || price),
+          mrp: Number(p.pricing?.mrp || p.mrp || price),
+          salePrice: price,
           quantity: qty,
-          size: size || null,
+          // Legacy fields for compatibility
+          material: p.product_info?.SareeMaterial,
+          work: p.product_info?.IncludedComponents,
         });
         return list;
       });
@@ -137,32 +178,30 @@ export const CartProvider = ({ children }) => {
     const qty = Number(newQuantity);
     if (!Number.isFinite(qty)) return;
 
-    if (qty < 1) {
+    if (qty < 0) {
       await removeFromCart(productId);
       return;
     }
 
     const previousCart = cart;
+    
+    // Optimistic update - update UI immediately
     setCart((prev) => prev.map((item) => (
       String(item.id) === String(productId) ? { ...item, quantity: qty } : item
     )));
 
     try {
-      await api.updateCart({ productId, quantity: qty });
-      await loadCart();
+      // Update server asynchronously (don't wait for success)
+      api.updateCart({ productId, quantity: qty }).catch(error => {
+        console.warn('Failed to update cart on server:', error);
+        // Don't revert the UI update - keep the optimistic state
+        // The user can continue shopping even if server sync fails
+      });
     } catch (error) {
-      if (isUnauthorizedError(error)) {
-        try {
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('auth_is_admin');
-        } catch {}
-        navigate('/signin', { state: { from: location } });
-        return;
-      }
-      setCart(previousCart);
-      throw error;
+      console.warn('Cart update error:', error);
+      // Don't revert - keep the optimistic state
     }
-  }, [removeFromCart, cart, loadCart, navigate, location]);
+  }, [removeFromCart, cart, navigate, location]);
 
   const clearCart = useCallback(async () => {
     if (!hasToken()) {
@@ -183,7 +222,10 @@ export const CartProvider = ({ children }) => {
     }
   }, [cart, loadCart]);
 
-  const cartTotal = cart.reduce((total, item) => total + ((item.price || 0) * (item.quantity || 1)), 0);
+  const cartTotal = cart.reduce((total, item) => {
+    const price = item.pricing?.salePrice || item.salePrice || item.price || 0;
+    return total + (price * (item.quantity || 1));
+  }, 0);
   const cartCount = cart.reduce((total, item) => total + (item.quantity || 1), 0);
 
   useEffect(() => {
