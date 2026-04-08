@@ -67,13 +67,13 @@ export const verifyPayment = async (req, res) => {
 
     const items = cart.items.map(i => {
       const p = i.product;
-      let base = 0;
-      if (p && typeof p.price === 'number') {
-        base = Number(p.price) || 0;
-      } else {
-        const mrp = Number(p?.mrp) || 0;
-        const discountPercent = Number(p?.discountPercent) || 0;
-        base = Math.round(mrp - (mrp * discountPercent) / 100) || 0;
+      // Get price from product.pricing.salePrice (correct field from Product model)
+      let base = Number(p?.pricing?.salePrice) || 0;
+      if (!base && p?.pricing?.mrp) {
+        // Fallback: calculate from MRP if salePrice not set
+        const mrp = Number(p.pricing.mrp) || 0;
+        const discountPercent = Number(p.pricing.discountPercent) || 0;
+        base = Math.round(mrp - (mrp * discountPercent) / 100) || mrp;
       }
       return { product: p._id, quantity: i.quantity, price: base, size: i.size || undefined };
     });
@@ -128,13 +128,13 @@ export const createCODOrder = async (req, res) => {
 
     const items = cart.items.map(i => {
       const p = i.product;
-      let base = 0;
-      if (p && typeof p.price === 'number') {
-        base = Number(p.price) || 0;
-      } else {
-        const mrp = Number(p?.mrp) || 0;
-        const discountPercent = Number(p?.discountPercent) || 0;
-        base = Math.round(mrp - (mrp * discountPercent) / 100) || 0;
+      // Get price from product.pricing.salePrice (correct field from Product model)
+      let base = Number(p?.pricing?.salePrice) || 0;
+      if (!base && p?.pricing?.mrp) {
+        // Fallback: calculate from MRP if salePrice not set
+        const mrp = Number(p.pricing.mrp) || 0;
+        const discountPercent = Number(p.pricing.discountPercent) || 0;
+        base = Math.round(mrp - (mrp * discountPercent) / 100) || mrp;
       }
       return { product: p._id, quantity: i.quantity, price: base, size: i.size || undefined };
     });

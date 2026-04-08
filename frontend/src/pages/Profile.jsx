@@ -126,12 +126,19 @@ export default function Profile() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tab = params.get('tab');
-    if (tab && ['profile'].includes(tab)) {
+    if (tab && ['profile', 'orders', 'addresses'].includes(tab)) {
       setActiveSection(tab);
     } else {
       setActiveSection('profile');
     }
   }, [location.search]);
+
+  // Load orders when orders section is active
+  useEffect(() => {
+    if (activeSection === 'orders' && orders.length === 0 && !loadingOrders) {
+      refreshOrders();
+    }
+  }, [activeSection]);
 
 
   const refreshOrders = async () => {
@@ -284,6 +291,52 @@ export default function Profile() {
                   )}
                 </button>
 
+                <button
+                  onClick={() => handleSectionChange('orders')}
+                  className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 mt-2 relative ${
+                    activeSection === 'orders'
+                      ? 'bg-gray-900 text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className={`p-2 rounded-lg ${activeSection === 'orders' ? 'bg-white/20' : 'bg-gray-100'}`}>
+                    <FiPackage className={`w-5 h-5 ${activeSection === 'orders' ? 'text-white' : 'text-gray-700'}`} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold">My Orders</div>
+                    <div className={`text-xs ${activeSection === 'orders' ? 'text-white/80' : 'text-gray-500'}`}>
+                      View order history
+                    </div>
+                  </div>
+                  {activeSection === 'orders' && (
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full"></div>
+                  )}
+                  <span className={`${activeSection === 'orders' ? 'text-white/60' : 'text-gray-400'}`}>›</span>
+                </button>
+
+                <button
+                  onClick={() => handleSectionChange('addresses')}
+                  className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 mt-2 relative ${
+                    activeSection === 'addresses'
+                      ? 'bg-gray-900 text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className={`p-2 rounded-lg ${activeSection === 'addresses' ? 'bg-white/20' : 'bg-gray-100'}`}>
+                    <FiMapPin className={`w-5 h-5 ${activeSection === 'addresses' ? 'text-white' : 'text-gray-700'}`} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold">My Addresses</div>
+                    <div className={`text-xs ${activeSection === 'addresses' ? 'text-white/80' : 'text-gray-500'}`}>
+                      Manage delivery addresses
+                    </div>
+                  </div>
+                  {activeSection === 'addresses' && (
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full"></div>
+                  )}
+                  <span className={`${activeSection === 'addresses' ? 'text-white/60' : 'text-gray-400'}`}>›</span>
+                </button>
+
                 <Link to="/wishlist" className="block mt-2">
                   <div className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300 relative">
                     <div className="p-2 rounded-lg bg-gray-100">
@@ -349,16 +402,36 @@ export default function Profile() {
           <div className="max-w-6xl mx-auto">
             {/* Mobile Tab Navigation */}
             <div className="lg:hidden mb-6">
-              <div className="flex gap-2 bg-white p-1.5 rounded-xl shadow-sm border border-gray-200">
+              <div className="flex gap-2 bg-white p-1.5 rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
                 <button
                   onClick={() => handleSectionChange('profile')}
-                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                     activeSection === 'profile'
                       ? 'bg-gray-900 text-white shadow-sm'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
                   }`}
                 >
                   Profile
+                </button>
+                <button
+                  onClick={() => handleSectionChange('orders')}
+                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                    activeSection === 'orders'
+                      ? 'bg-gray-900 text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
+                  }`}
+                >
+                  My Orders
+                </button>
+                <button
+                  onClick={() => handleSectionChange('addresses')}
+                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                    activeSection === 'addresses'
+                      ? 'bg-gray-900 text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
+                  }`}
+                >
+                  Addresses
                 </button>
               </div>
             </div>
@@ -441,81 +514,128 @@ export default function Profile() {
 
             {/* Orders Section */}
             {activeSection === 'orders' && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <div className="space-y-4">
+                {/* Header */}
+                <div className="flex items-center justify-between px-1">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                     <FiPackage className="w-5 h-5" />
-                    My Orders
+                    My Orders ({orders.length})
                   </h2>
                   <button
                     onClick={refreshOrders}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     <FiRefreshCw className={`w-4 h-4 ${loadingOrders ? 'animate-spin' : ''}`} />
                     Refresh
                   </button>
                 </div>
-                <div className="p-6">
-                  {loadingOrders ? (
-                    <div className="flex justify-center py-12">
-                      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-black"></div>
-                    </div>
-                  ) : orders.length > 0 ? (
-                    <div className="space-y-4">
-                      {orders.map((order) => {
-                        const dateTime = formatDate(order.createdAt);
-                        return (
-                          <div key={order._id} className="border-2 border-gray-200 rounded-xl p-5 hover:border-black hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-                              <div>
-                                <div className="text-xs text-gray-500 mb-1">Order ID</div>
-                                <div className="font-mono font-semibold text-gray-900">#{String(order._id).slice(-8).toUpperCase()}</div>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <StatusBadge status={order.status || order.orderStatus} />
-                                <div className="text-lg font-bold text-gray-900">₹{Number(order.amount || 0).toLocaleString('en-IN')}</div>
-                              </div>
+
+                {loadingOrders ? (
+                  <div className="flex justify-center py-12">
+                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-gray-200 border-t-black"></div>
+                  </div>
+                ) : orders.length > 0 ? (
+                  <div className="space-y-4">
+                    {orders.map((order) => {
+                      const dateTime = formatDate(order.createdAt);
+                      const totalItems = order.items?.reduce((sum, it) => sum + (it.quantity || 1), 0) || 0;
+                      // Calculate total from items if order.amount is missing or 0
+                      const calculatedTotal = order.items?.reduce((sum, it) => sum + ((it.price || 0) * (it.quantity || 1)), 0) || 0;
+                      const orderTotal = order.amount > 0 ? order.amount : calculatedTotal;
+                      
+                      return (
+                        <div key={order._id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                          {/* Order Header */}
+                          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm font-medium text-gray-900">#{String(order._id).slice(-8).toUpperCase()}</span>
+                              <span className="text-xs text-gray-500">•</span>
+                              <span className="text-xs text-gray-500">{dateTime.date}</span>
                             </div>
-                            <div className="text-xs text-gray-500 mb-4">
-                              <div>{dateTime.date}</div>
-                              <div>{dateTime.time}</div>
-                            </div>
-                            <div className="space-y-3 pt-4 border-t border-gray-200">
-                              {order.items?.map((it, idx) => (
-                                <div key={idx} className="flex items-center gap-4">
+                            <StatusBadge status={order.status || order.orderStatus} />
+                          </div>
+
+                          {/* Products */}
+                          <div className="p-4">
+                            {order.items?.map((it, idx) => {
+                              const product = it.product;
+                              // Use product data if available, otherwise fall back to item data
+                              const productTitle = product?.title || product?.name || it.title || it.name || 'Product';
+                              const productBrand = product?.brand || it.brand || '';
+                              const productImage = product?.images?.[0] || product?.image || it.image || '/no-image.png';
+                              // The price stored in order is the sale price user paid
+                              const salePrice = it.price || 0;
+                              const quantity = it.quantity || 1;
+                              const itemTotal = salePrice * quantity;
+                              
+                              // Only show discount if product data has pricing info
+                              const productMrp = product?.pricing?.mrp;
+                              const hasDiscount = productMrp && productMrp > salePrice;
+                              
+                              return (
+                                <div key={idx} className={`flex gap-3 ${idx > 0 ? 'mt-3 pt-3 border-t border-gray-100' : ''}`}>
                                   <ProductImage
-                                    src={it.product?.images?.image1}
-                                    alt={it.product?.title || ''}
-                                    className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                                    src={productImage}
+                                    alt={productTitle}
+                                    className="w-16 h-16 object-cover rounded-lg border border-gray-200 flex-shrink-0"
                                   />
                                   <div className="flex-1 min-w-0">
-                                    <div className="font-medium text-gray-900 truncate">{it.product?.title || 'Product'}</div>
-                                    <div className="text-sm text-gray-600">Quantity: {it.quantity} × ₹{Number(it.price || 0).toLocaleString('en-IN')}</div>
+                                    <h4 className="text-sm font-medium text-gray-900 truncate">
+                                      {productTitle}
+                                    </h4>
+                                    {productBrand && (
+                                      <p className="text-xs text-gray-500">{productBrand}</p>
+                                    )}
+                                    <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                      <span className="text-sm font-semibold text-gray-900">₹{salePrice.toLocaleString('en-IN')}</span>
+                                      {hasDiscount && (
+                                        <>
+                                          <span className="text-xs text-gray-400 line-through">₹{productMrp.toLocaleString('en-IN')}</span>
+                                          <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium">
+                                            {Math.round(((productMrp - salePrice) / productMrp) * 100)}% off
+                                          </span>
+                                        </>
+                                      )}
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-0.5">
+                                      Qty: {quantity}{it.size && ` • Size: ${it.size}`}
+                                    </p>
                                   </div>
-                                  <div className="font-semibold text-gray-900">₹{Number((it.price || 0) * (it.quantity || 1)).toLocaleString('en-IN')}</div>
+                                  <div className="text-right flex-shrink-0">
+                                    <p className="text-sm font-semibold text-gray-900">₹{itemTotal.toLocaleString('en-IN')}</p>
+                                  </div>
                                 </div>
-                              ))}
+                              );
+                            })}
+                          </div>
+
+                          {/* Order Footer */}
+                          <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
+                            <span className="text-xs text-gray-500">{totalItems} item{totalItems > 1 ? 's' : ''}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-gray-600">Order Total:</span>
+                              <span className="text-base font-bold text-gray-900">₹{orderTotal.toLocaleString('en-IN')}</span>
                             </div>
                           </div>
-                        );
-                      })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-3">
+                      <FiShoppingBag className="w-8 h-8 text-gray-400" />
                     </div>
-                  ) : (
-                    <div className="text-center py-16">
-                      <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
-                        <FiShoppingBag className="w-10 h-10 text-gray-400" />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">No Orders Yet</h3>
-                      <p className="text-gray-600 mb-6">You haven't placed any orders yet. Start shopping now!</p>
-                      <button 
-                        onClick={() => navigate('/')} 
-                        className="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors shadow-sm"
-                      >
-                        Start Shopping
-                      </button>
-                    </div>
-                  )}
-                </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">No Orders Yet</h3>
+                    <p className="text-sm text-gray-500 mb-4">Start shopping to see your orders here</p>
+                    <button 
+                      onClick={() => navigate('/')} 
+                      className="px-5 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+                    >
+                      Shop Now
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

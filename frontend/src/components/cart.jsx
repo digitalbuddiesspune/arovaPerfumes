@@ -134,9 +134,7 @@ function Cart() {
                           const mrp = item.pricing?.mrp || item.mrp || item.originalPrice || salePrice;
                           const quantity = item.quantity || 1;
                           const hasDiscount = salePrice < mrp;
-                          const savedAmount = (mrp - salePrice);
                           const totalPrice = salePrice * quantity;
-                          const totalMrp = mrp * quantity;
                           const totalSaved = (mrp - salePrice) * quantity;
                           
                           return (
@@ -161,13 +159,9 @@ function Cart() {
                               
                               {hasDiscount && (
                                 <p className="text-sm text-green-600 font-medium">
-                                  You saved ₹{quantity > 1 ? totalSaved.toLocaleString() : savedAmount.toLocaleString()}
+                                  You saved ₹{totalSaved.toLocaleString()}
                                 </p>
                               )}
-                              
-                              <p className="text-sm text-gray-600">
-                                MRP: ₹{quantity > 1 ? totalMrp.toLocaleString() : mrp.toLocaleString()}
-                              </p>
                             </div>
                           );
                         })()}
