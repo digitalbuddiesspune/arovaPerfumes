@@ -1,5 +1,4 @@
 import React from 'react';
-import MobileBottomNav from '../components/MobileBottomNav';
 import HeroSlider from '../components/HeroSlider';
 
 // Import new components you'd need to create for a full landing page
@@ -31,9 +30,6 @@ const Home = () => {
       <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         <hr className="my-8 border-gray-200" />
       </main>
-
-      {/* 5. Mobile Bottom Navigation - Kept at the bottom for mobile UX */}
-      <MobileBottomNav />
 
       {/* Cache Consent Banner - Shows only once */}
       <CacheConsent />
