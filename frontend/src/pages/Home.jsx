@@ -11,6 +11,10 @@ const Home = () => {
   const heroBanner =
     'https://res.cloudinary.com/duc9svg7w/image/upload/v1765299330/Bone_Pink_Luxury_Premium_Isolated_Parfum_Banner_Landscape_2048_x_594_px_jqytrt.png';
 
+  // Mobile-only banner
+  const mobileHeroBanner =
+    'https://res.cloudinary.com/dnyp5jknp/image/upload/v1775631628/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_eysrkk.png';
+
 
   return (
     // Added a container with padding for visual balance
@@ -19,7 +23,9 @@ const Home = () => {
       {/* 1. Hero Slider/Banner - Primary Visual & CTA */}
       <HeroSlider
         slides={[{ desktop: heroBanner, alt: 'Arova Perfume Banner' }]}
-        mobileSrc={heroBanner}
+        mobileSrc={mobileHeroBanner}
+        mobileCtaTo="/category/perfumes"
+        mobileCtaLabel="Shop Now"
       />
 
       <BestSellers />

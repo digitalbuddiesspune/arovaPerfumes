@@ -181,7 +181,7 @@ const Navbar = () => {
       </div>
       <nav className="bg-white border-b border-gray-200 border-t-0">
         <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
-          <div className="flex items-center justify-between h-12 sm:h-14 md:h-16 gap-2 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:h-20">
+          <div className="flex items-center justify-between h-12 sm:h-14 md:h-16 gap-2 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:h-16">
           {/* Left: Search + Category Links */}
           <div className="hidden lg:flex items-center justify-start gap-4 xl:gap-6 2xl:gap-8">
             {/* Search Icon - Desktop (left of categories) */}

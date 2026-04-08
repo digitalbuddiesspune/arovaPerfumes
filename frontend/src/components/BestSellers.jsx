@@ -4,7 +4,8 @@ import { fetchSarees } from '../services/api';
 
 const BestSellers = () => {
   const FALLBACK_IMAGE = 'https://res.cloudinary.com/dnyp5jknp/image/upload/v1775567474/d3b4e9cd-feaf-4362-9a38-20c30bbb5db9.png';
-  const [products, setProducts] = useState([]);
+  const [menProducts, setMenProducts] = useState([]);
+  const [womenProducts, setWomenProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,14 +14,23 @@ const BestSellers = () => {
     const loadProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetchSarees('perfumes', { limit: 20 });
-        const list = Array.isArray(response) ? response : response?.products || [];
+
+        const [menRes, womenRes] = await Promise.all([
+          fetchSarees('men', { limit: 2 }),
+          fetchSarees('women', { limit: 2 }),
+        ]);
+
+        const menList = Array.isArray(menRes) ? menRes : menRes?.products || [];
+        const womenList = Array.isArray(womenRes) ? womenRes : womenRes?.products || [];
+
         if (!ignore) {
-          setProducts(list);
+          setMenProducts(menList);
+          setWomenProducts(womenList);
         }
       } catch {
         if (!ignore) {
-          setProducts([]);
+          setMenProducts([]);
+          setWomenProducts([]);
         }
       } finally {
         if (!ignore) {
@@ -36,32 +46,28 @@ const BestSellers = () => {
   }, []);
 
   const bestSellers = useMemo(() => {
-    return [...products]
-      .filter((p) => Boolean(p?._id || p?.id))
-      .sort((a, b) => {
-        const ar = Number(a.rating || 0);
-        const br = Number(b.rating || 0);
-        if (br !== ar) return br - ar;
-        const ac = Number(a.totalReviews || 0);
-        const bc = Number(b.totalReviews || 0);
-        return bc - ac;
-      })
-      .slice(0, 8);
-  }, [products]);
+    const sortByRatingAndReviews = (list) =>
+      [...list]
+        .filter((p) => Boolean(p?._id || p?.id))
+        .sort((a, b) => {
+          const ar = Number(a.rating || 0);
+          const br = Number(b.rating || 0);
+          if (br !== ar) return br - ar;
+          const ac = Number(a.totalReviews || 0);
+          const bc = Number(b.totalReviews || 0);
+          return bc - ac;
+        });
 
-  if (!loading && bestSellers.length === 0) return null;
+    const menTop = sortByRatingAndReviews(menProducts).slice(0, 2);
+    const womenTop = sortByRatingAndReviews(womenProducts).slice(0, 2);
+
+    // Men 2 + Women 2 (available ones only)
+    return [...menTop, ...womenTop];
+  }, [menProducts, womenProducts]);
 
   return (
     <section className="py-12 sm:py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-center mb-5 sm:mb-6">
-          <Link
-            to="/category/men"
-            className="inline-flex items-center bg-black text-white px-6 py-2.5 text-sm font-medium tracking-wide rounded hover:bg-gray-800 transition-colors"
-          >
-            Shop Now
-          </Link>
-        </div>
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl font-semibold tracking-wide text-[#1f1a17] mb-3">
             BEST SELLERS
@@ -71,10 +77,14 @@ const BestSellers = () => {
           </p>
         </div>
 
-        {loading && (
+        {loading ? (
           <p className="text-center text-sm text-[#7a6a5d] mb-6">Loading best sellers...</p>
-        )}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        ) : bestSellers.length === 0 ? (
+          <p className="text-center text-sm text-[#7a6a5d] mb-6">No best sellers found.</p>
+        ) : null}
+
+        {bestSellers.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {bestSellers.map((product) => {
             const id = product._id || product.id;
             const price = Number(product.price || product.salePrice || product.mrp || 0);
@@ -115,7 +125,8 @@ const BestSellers = () => {
               </Link>
             );
           })}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

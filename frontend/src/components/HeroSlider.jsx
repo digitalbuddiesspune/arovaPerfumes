@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-const HeroSlider = ({ slides = [], mobileSrc }) => {
+const HeroSlider = ({
+  slides = [],
+  mobileSrc,
+  mobileCtaTo,
+  mobileCtaLabel = 'Shop Now',
+}) => {
   const [index, setIndex] = useState(0);
   const timerRef = useRef(null);
   const len = slides.length;
@@ -88,7 +94,27 @@ const HeroSlider = ({ slides = [], mobileSrc }) => {
 
       {/* Mobile single image */}
       <div className="md:hidden block">
-        <img src={mobileSrc || slides[0]?.desktop} alt="Banner" className="w-full h-auto object-cover block" loading="lazy" />
+        <div className="relative w-full">
+          <img
+            src={mobileSrc || slides[0]?.desktop}
+            alt="Banner"
+            className="w-full h-auto object-cover block"
+            loading="lazy"
+          />
+
+          {mobileCtaTo && (
+            <>
+              {/* Bottom gradient for better button visibility */}
+              <div className="absolute left-0 right-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
+              <Link
+                to={mobileCtaTo}
+                className="absolute left-1/2 -translate-x-1/2 bottom-3 bg-white text-black px-6 py-2.5 rounded-lg text-sm font-semibold shadow-lg hover:bg-gray-100 transition-colors"
+              >
+                {mobileCtaLabel}
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </section>
   );
