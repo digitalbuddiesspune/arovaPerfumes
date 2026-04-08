@@ -1,6 +1,6 @@
-// Default to backend port 7000 to match server config; allow override via VITE_BACKEND_URL
-const API_BASE = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:7000').replace(/\/$/, '');
-const API_URL = `${API_BASE}/api`;
+// Base API URL comes from VITE_API_URL (e.g. http://localhost:7000/api)
+// Fallback keeps working with the current backend default on port 7000
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:7000/api').replace(/\/$/, '');
 
 export const fetchSarees = async (category, options = {}) => {
   try {
