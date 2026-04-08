@@ -56,12 +56,9 @@ const SignUp = () => {
           <div className="text-center">
             <Link to="/" className="inline-block mb-8">
               <h1 className="text-6xl font-serif font-bold text-black">
-                SANSKRUTEE
+                ArovaPerfume
               </h1>
             </Link>
-            <p className="text-xl text-gray-600 max-w-md mx-auto leading-relaxed">
-              Create your account and explore premium Fashions with exclusive offers.
-            </p>
           </div>
         </div>
 
@@ -72,7 +69,7 @@ const SignUp = () => {
             <div className="lg:hidden text-center mb-8">
               <Link to="/" className="inline-block mb-6">
                 <h1 className="text-3xl font-serif font-bold text-black">
-                  SANSKRUTEE
+                  ArovaPerfume
                 </h1>
               </Link>
             </div>
@@ -82,9 +79,6 @@ const SignUp = () => {
               <h2 className="text-2xl font-serif font-semibold text-neutral-800 mb-2">
                 Create Account
               </h2>
-              <p className="text-gray-600">
-                Join us to discover stylish kurtas and kurtis with exclusive offers
-              </p>
             </div>
 
             {/* Sign Up Form */}

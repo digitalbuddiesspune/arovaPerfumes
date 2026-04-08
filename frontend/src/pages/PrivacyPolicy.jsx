@@ -49,7 +49,7 @@ const PrivacyPolicy = () => {
         <section>
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
           <p className="text-gray-700 leading-relaxed mb-4">
-            Welcome to SANSKRUTEE ("we," "our," or "us"). We are committed to protecting your privacy and ensuring you have a positive experience on our website and in using our products and services. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.
+            Welcome to ArovaPerfume ("we," "our," or "us"). We are committed to protecting your privacy and ensuring you have a positive experience on our website and in using our products and services. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.
           </p>
         </section>
 
@@ -170,7 +170,7 @@ const PrivacyPolicy = () => {
           <div className="bg-gray-50 p-4 rounded-lg">
             <p className="text-gray-700"><strong>Email:</strong> privacy@sanskrutee.com</p>
             <p className="text-gray-700"><strong>Phone:</strong> +91-XXXXX-XXXXX</p>
-            <p className="text-gray-700"><strong>Address:</strong> SANSKRUTEE, India</p>
+            <p className="text-gray-700"><strong>Address:</strong> ArovaPerfume, India</p>
           </div>
         </section>
       </>

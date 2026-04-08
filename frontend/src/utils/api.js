@@ -1,6 +1,7 @@
-// Default backend port matches server (7000); env override still supported
-const API_BASE = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:7000').replace(/\/$/, '');
-const API_BASE_URL = `${API_BASE}/api`;
+// Backend base URL – prefer VITE_API_URL, fallback to local 5001
+// VITE_API_URL can be with or without `/api` suffix; we normalize below.
+const RAW_API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
+const API_BASE_URL = RAW_API_BASE.endsWith('/api') ? RAW_API_BASE : `${RAW_API_BASE}/api`;
 
 async function request(path, options = {}) {
   const url = `${API_BASE_URL}${path}`;

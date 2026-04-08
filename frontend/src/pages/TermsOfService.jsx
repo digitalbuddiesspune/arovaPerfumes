@@ -23,14 +23,14 @@ const TermsOfService = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Agreement to Terms</h2>
             <p className="text-gray-700 leading-relaxed">
-              By accessing or using SANSKRUTEE's website and services, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.
+              By accessing or using ArovaPerfume's website and services, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this site.
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Use License</h2>
             <p className="text-gray-700 leading-relaxed mb-2">
-              Permission is granted to temporarily access the materials on SANSKRUTEE's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
+              Permission is granted to temporarily access the materials on ArovaPerfume's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
             </p>
             <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
               <li>Modify or copy the materials</li>
@@ -114,7 +114,7 @@ const TermsOfService = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. Intellectual Property</h2>
             <p className="text-gray-700 leading-relaxed">
-              All content on this website, including text, graphics, logos, images, audio clips, digital downloads, and software, is the property of SANSKRUTEE or its content suppliers and is protected by Indian and international copyright laws. You may not use, reproduce, or distribute any content from this website without our prior written permission.
+              All content on this website, including text, graphics, logos, images, audio clips, digital downloads, and software, is the property of ArovaPerfume or its content suppliers and is protected by Indian and international copyright laws. You may not use, reproduce, or distribute any content from this website without our prior written permission.
             </p>
           </section>
 
