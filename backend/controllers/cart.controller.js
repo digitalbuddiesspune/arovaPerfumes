@@ -33,7 +33,15 @@ const formatCartResponse = (cart, userId) => ({
 
 export const getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.userId }).populate('items.product');
+    let cart = await Cart.findOne({ user: req.userId }).populate('items.product');
+    // Auto-clean: remove items where product is deleted (null product after populate)
+    if (cart && cart.items) {
+      const originalLength = cart.items.length;
+      cart.items = cart.items.filter(item => item.product !== null);
+      if (cart.items.length !== originalLength) {
+        await cart.save(); // Save cleaned cart
+      }
+    }
     return res.status(200).json(formatCartResponse(cart, req.userId));
   } catch (error) {
     return res.status(500).json({ message: 'Failed to fetch cart' });
@@ -167,5 +175,20 @@ export const removeCouponFromCart = async (req, res) => {
     return res.status(200).json(formatCartResponse(cart, req.userId));
   } catch (error) {
     return res.status(500).json({ message: 'Failed to remove coupon from cart' });
+  }
+};
+
+export const clearCart = async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ user: req.userId });
+    if (!cart) return res.status(200).json({ success: true, message: 'Cart is already empty' });
+    
+    cart.items = [];
+    cart.appliedCoupon = undefined;
+    
+    await cart.save();
+    return res.status(200).json({ success: true, message: 'Cart cleared successfully', cart: formatCartResponse(cart, req.userId) });
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to clear cart' });
   }
 };

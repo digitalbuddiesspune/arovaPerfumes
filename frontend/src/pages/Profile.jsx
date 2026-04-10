@@ -665,12 +665,13 @@ export default function Profile() {
                       const totalItems = order.items?.reduce((sum, it) => sum + (it.quantity || 1), 0) || 0;
                       
                       // Use priceDetails from backend if available, otherwise calculate
-                      const priceDetails = order.priceDetails || {};
-                      const itemsPrice = priceDetails.itemsPrice || order.items?.reduce((sum, it) => sum + ((it.price || 0) * (it.quantity || 1)), 0) || 0;
-                      const taxPrice = priceDetails.taxPrice || Math.round(itemsPrice * 0.05) || 0;
-                      const shippingPrice = priceDetails.shippingPrice || (itemsPrice >= 5000 ? 0 : 99) || 0;
-                      const discount = priceDetails.discount || 0;
-                      const totalPrice = priceDetails.totalPrice || (itemsPrice + taxPrice + shippingPrice - discount) || order.amount || 0;
+                      // Use ?? (nullish coalescing) to preserve 0 as valid value
+                      const priceDetails = order.priceDetails ?? {};
+                      const itemsPrice = priceDetails.itemsPrice ?? order.items?.reduce((sum, it) => sum + ((it.price || 0) * (it.quantity || 1)), 0) ?? 0;
+                      const taxPrice = priceDetails.taxPrice ?? Math.round(itemsPrice * 0.05) ?? 0;
+                      const shippingPrice = priceDetails.shippingPrice ?? (itemsPrice >= 5000 ? 0 : 99) ?? 0;
+                      const discount = priceDetails.discount ?? 0;
+                      const totalPrice = priceDetails.totalPrice ?? (itemsPrice + taxPrice + shippingPrice - discount) ?? order.amount ?? 0;
                       const couponCode = priceDetails.couponCode;
                       
                       return (

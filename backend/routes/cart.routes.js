@@ -7,6 +7,7 @@ import {
   updateCartItemQuantity,
   applyCouponToCart,
   removeCouponFromCart,
+  clearCart,
 } from '../controllers/cart.controller.js';
 
 const router = Router();
@@ -28,5 +29,8 @@ router.post('/coupon', auth, applyCouponToCart);
 
 // DELETE /api/cart/coupon -> remove coupon
 router.delete('/coupon', auth, removeCouponFromCart);
+
+// DELETE /api/cart/clear -> clear all items
+router.delete('/clear', auth, clearCart);
 
 export default router;

@@ -73,22 +73,36 @@ function Cart() {
     setCouponMessage({ type: 'success', text: 'Coupon removed' });
   };
 
-  // Calculate price details similar to checkout
+  // Calculate price details properly
   const calculatePriceDetails = () => {
-    const subtotal = cartTotal || 0;
-    const discount = couponDiscount || 0;
-    const shippingCharge = (subtotal - discount) < 5000 ? 99 : 0;
-    const tax = Math.round((subtotal - discount) * 0.05); // 5% tax on discounted amount
-    const totalPayable = subtotal - discount + shippingCharge + tax;
-    const savings = Math.round(subtotal * 0.35) + discount; // Product savings + coupon savings
+    // Calculate from cart items directly
+    const totalMRP = cart.reduce((sum, item) => {
+      const mrp = item.mrp || item.pricing?.mrp || item.originalPrice || 0;
+      return sum + (mrp * (item.quantity || 1));
+    }, 0);
+    
+    const totalSalePrice = cart.reduce((sum, item) => {
+      const price = item.price || item.pricing?.salePrice || item.salePrice || 0;
+      return sum + (price * (item.quantity || 1));
+    }, 0);
+    
+    const youSaved = Math.max(0, totalMRP - totalSalePrice);
+    const couponDiscountAmount = couponDiscount || 0;
+    const subtotalAfterCoupon = Math.max(0, totalSalePrice - couponDiscountAmount);
+    const shippingCharge = subtotalAfterCoupon < 5000 ? 99 : 0;
+    const taxableAmount = subtotalAfterCoupon + shippingCharge;
+    const tax = Math.round(taxableAmount * 0.05); // 5% tax
+    const totalPayable = taxableAmount + tax;
 
     return {
-      subtotal,
-      discount,
+      totalMRP,
+      totalSalePrice,
+      youSaved,
+      couponDiscount: couponDiscountAmount,
+      subtotalAfterCoupon,
       shippingCharge,
       tax,
       total: totalPayable,
-      savings,
       items: cart?.length || 0
     };
   };
@@ -110,10 +124,12 @@ function Cart() {
           <h1 className="text-lg font-bold text-gray-900">Cart</h1>
           <button 
             onClick={clearCart}
-            className="text-gray-700 hover:text-gray-900 cursor-pointer disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={cart.length === 0}
+            title="Clear Cart"
           >
-            <FaTrash className="w-5 h-5" />
+            <FaTrash className="w-4 h-4" />
+            <span className="hidden sm:inline font-medium">Clear Cart</span>
           </button>
         </div>
       </div>
@@ -308,33 +324,43 @@ function Cart() {
                   <h3 className="text-gray-500 text-sm font-medium mb-4">PRICE DETAILS</h3>
 
                   <div className="space-y-3 mb-4 pb-4 border-b">
+                    {/* Total MRP */}
                     <div className="flex justify-between text-sm">
-                      <span>Price ({priceDetails.items} {priceDetails.items === 1 ? 'item' : 'items'})</span>
-                      <span>₹{priceDetails.subtotal.toLocaleString()}</span>
+                      <span>Total MRP ({priceDetails.items} {priceDetails.items === 1 ? 'item' : 'items'})</span>
+                      <span className="line-through text-gray-500">₹{priceDetails.totalMRP.toLocaleString()}</span>
                     </div>
                     
-                    {/* Product Savings */}
-                    {priceDetails.savings - priceDetails.discount > 0 && (
+                    {/* Sale Price */}
+                    <div className="flex justify-between text-sm">
+                      <span>Sale Price</span>
+                      <span>₹{priceDetails.totalSalePrice.toLocaleString()}</span>
+                    </div>
+                    
+                    {/* You Saved (Product Discount) */}
+                    {priceDetails.youSaved > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span>You saved</span>
-                        <span className="text-green-600">-₹{(priceDetails.savings - priceDetails.discount).toLocaleString()}</span>
+                        <span>You Saved</span>
+                        <span className="text-green-600">-₹{priceDetails.youSaved.toLocaleString()}</span>
                       </div>
                     )}
                     
                     {/* Coupon Discount */}
-                    {priceDetails.discount > 0 && (
+                    {priceDetails.couponDiscount > 0 && (
                       <div className="flex justify-between text-sm">
                         <span className="text-green-700 font-medium">Coupon Discount ({appliedCoupon?.code})</span>
-                        <span className="text-green-600 font-medium">-₹{priceDetails.discount.toLocaleString()}</span>
+                        <span className="text-green-600 font-medium">-₹{priceDetails.couponDiscount.toLocaleString()}</span>
                       </div>
                     )}
                     
+                    {/* Shipping */}
                     <div className="flex justify-between text-sm">
                       <span>Shipping</span>
                       <span className={priceDetails.shippingCharge > 0 ? 'text-gray-600' : 'text-green-600'}>
                         {priceDetails.shippingCharge > 0 ? `₹${priceDetails.shippingCharge.toLocaleString()}` : 'Free'}
                       </span>
                     </div>
+                    
+                    {/* Tax 5% */}
                     <div className="flex justify-between text-sm">
                       <span>Tax (5%)</span>
                       <span>₹{priceDetails.tax.toLocaleString()}</span>

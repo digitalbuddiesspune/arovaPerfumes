@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 
 // Helper function to format order for frontend
 const formatOrderForFrontend = (order) => {
-  // Get price details with fallbacks
-  const itemsPrice = order.itemsPrice || order.items?.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0) || 0;
-  const taxPrice = order.taxPrice || Math.round(itemsPrice * 0.05) || 0;
-  const shippingPrice = order.shippingPrice || (itemsPrice >= 5000 ? 0 : 99) || 0;
-  const discount = order.discount || order.couponDiscount || 0;
-  const totalPrice = order.totalPrice || (itemsPrice + taxPrice + shippingPrice - discount) || order.amount || 0;
+  // Get price details with fallbacks (use nullish coalescing ?? to preserve 0 as valid value)
+  const itemsPrice = order.itemsPrice ?? order.items?.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0) ?? 0;
+  const taxPrice = order.taxPrice ?? Math.round(itemsPrice * 0.05) ?? 0;
+  const shippingPrice = order.shippingPrice ?? (itemsPrice >= 5000 ? 0 : 99) ?? 0;
+  const discount = order.discount ?? order.couponDiscount ?? 0;
+  const totalPrice = order.totalPrice ?? (itemsPrice + taxPrice + shippingPrice - discount) ?? order.amount ?? 0;
   
   return {
     _id: order._id,

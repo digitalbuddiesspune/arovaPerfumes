@@ -48,7 +48,13 @@ export const CartProvider = ({ children }) => {
 
   const mapServerCartToUI = useCallback((data) => {
     const items = data?.items || [];
-    return items.map((i) => {
+    // Filter out invalid products (deleted products or placeholder items)
+    const validItems = items.filter((i) => {
+      const product = i.product || i.productId;
+      // Keep only if product exists and has valid data
+      return product && (product._id || product.id) && (product.title || product.name);
+    });
+    return validItems.map((i) => {
       const p = i.product || i.productId || {};
       const price = typeof p.pricing?.salePrice === 'number'
         ? p.pricing.salePrice
