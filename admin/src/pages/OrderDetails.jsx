@@ -321,30 +321,30 @@ const OrderDetails = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-slate-600">Items Price ({items.length} item{items.length > 1 ? 's' : ''})</span>
-                  <span className="text-slate-900">{formatPrice(order.itemsPrice || items.reduce((sum, it) => sum + ((it.price || 0) * (it.quantity || 1)), 0))}</span>
+                  <span className="text-slate-900">{formatPrice(order.itemsPrice ?? items.reduce((sum, it) => sum + ((it.price || 0) * (it.quantity || 1)), 0))}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-600">Tax (5%)</span>
-                  <span className="text-slate-900">{formatPrice(order.taxPrice || Math.round((order.itemsPrice || items.reduce((sum, it) => sum + ((it.price || 0) * (it.quantity || 1)), 0)) * 0.05))}</span>
+                  <span className="text-slate-900">{formatPrice(order.taxPrice ?? Math.round((order.itemsPrice ?? items.reduce((sum, it) => sum + ((it.price || 0) * (it.quantity || 1)), 0)) * 0.05))}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-600">Shipping</span>
                   <span className={order.shippingPrice === 0 ? 'text-green-600' : 'text-slate-900'}>
-                    {order.shippingPrice === 0 ? 'FREE' : formatPrice(order.shippingPrice || 99)}
+                    {order.shippingPrice === 0 ? 'FREE' : formatPrice(order.shippingPrice ?? 99)}
                   </span>
                 </div>
-                {(order.discount || order.couponDiscount) > 0 && (
+                {(order.discount ?? order.couponDiscount) > 0 && (
                   <div className="flex justify-between">
                     <span className="text-green-700 font-medium">
                       Discount {order.couponCode && `(${order.couponCode})`}
                     </span>
-                    <span className="text-green-600 font-medium">-{formatPrice(order.discount || order.couponDiscount)}</span>
+                    <span className="text-green-600 font-medium">-{formatPrice(order.discount ?? order.couponDiscount)}</span>
                   </div>
                 )}
                 <div className="border-t border-slate-300 my-2 pt-2">
                   <div className="flex justify-between font-semibold text-base">
                     <span className="text-slate-900">Total Price</span>
-                    <span className="text-slate-900">{formatPrice(order.totalPrice || order.amount)}</span>
+                    <span className="text-slate-900">{formatPrice(order.totalPrice ?? order.amount)}</span>
                   </div>
                 </div>
               </div>
@@ -463,7 +463,7 @@ const OrderDetails = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Total Amount</span>
-                <span className="font-bold text-slate-900">{formatPrice(order.amount)}</span>
+                <span className="font-bold text-slate-900">{formatPrice(order.totalPrice ?? order.amount)}</span>
               </div>
             </div>
           </div>
