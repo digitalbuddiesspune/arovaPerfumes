@@ -36,6 +36,22 @@ const Products = () => {
     }
   }
 
+  const toggleBestSeller = async (product) => {
+    const id = product._id || product.id
+    const newValue = !product.isBestSeller
+    try {
+      // Optimistic update
+      setProducts((prev) => prev.map((p) => (p._id || p.id) === id ? { ...p, isBestSeller: newValue } : p))
+      // API call
+      await productsAPI.update(id, { isBestSeller: newValue })
+      setMessage(`Best Seller ${newValue ? 'enabled' : 'disabled'} successfully.`)
+    } catch (error) {
+      // Revert on error
+      setProducts((prev) => prev.map((p) => (p._id || p.id) === id ? { ...p, isBestSeller: !newValue } : p))
+      setMessage(error.response?.data?.message || 'Failed to update Best Seller status')
+    }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -66,6 +82,7 @@ const Products = () => {
                 <th className="text-left px-4 py-3">Category</th>
                 <th className="text-left px-4 py-3">Price</th>
                 <th className="text-left px-4 py-3">Stock</th>
+                <th className="text-left px-4 py-3">Best Seller</th>
                 <th className="text-left px-4 py-3">Actions</th>
               </tr>
             </thead>
@@ -116,6 +133,19 @@ const Products = () => {
                       }`}>
                         {stock} units
                       </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={p.isBestSeller || false}
+                          onChange={() => toggleBestSeller(p)}
+                          className="w-4 h-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                        />
+                        {p.isBestSeller && (
+                          <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">🔥</span>
+                        )}
+                      </label>
                     </td>
                     <td className="px-4 py-3 space-x-2">
                       <Link

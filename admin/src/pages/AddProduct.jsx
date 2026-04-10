@@ -26,6 +26,7 @@ const AddProduct = () => {
     freeDelivery: false,
     isReturnable: true,
     tags: [],
+    isBestSeller: false,
   })
 
   const onChange = (e) => {
@@ -71,6 +72,7 @@ const AddProduct = () => {
           },
         },
         tags: form.tags,
+        isBestSeller: form.isBestSeller,
       }
       await productsAPI.add(payload)
       setMessage('Product added successfully.')
@@ -190,6 +192,20 @@ const AddProduct = () => {
               <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium">Highly Recommended</span>
             </label>
           </div>
+        </div>
+
+        {/* Best Seller */}
+        <div>
+          <h4 className="font-medium text-slate-900 mb-3">Best Seller</h4>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              name="isBestSeller"
+              checked={form.isBestSeller}
+              onChange={(e) => setForm(prev => ({...prev, isBestSeller: e.target.checked}))}
+            />
+            <span className="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-medium">🔥 Mark as Best Seller</span>
+          </label>
         </div>
 
         {/* Services */}

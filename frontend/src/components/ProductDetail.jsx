@@ -182,6 +182,14 @@ const ProductDetail = () => {
           {/* Right details panel */}
           <div className="bg-white p-4 sm:p-5">
             <div>
+              {/* Best Seller Badge */}
+              {product.isBestSeller && (
+                <div className="mb-2">
+                  <span className="inline-flex items-center gap-1 bg-amber-500 text-white text-xs px-3 py-1.5 rounded-full font-semibold tracking-wide shadow-md">
+                    🔥 BEST SELLER
+                  </span>
+                </div>
+              )}
               <h1 className="text-3xl sm:text-4xl font-semibold uppercase tracking-wide text-gray-900 leading-tight">
                 {product.title}
               </h1>

@@ -107,6 +107,7 @@ const productSchema = new mongoose.Schema(
     },
 
     pincodeServiceable: { type: Boolean, default: true },
+    isBestSeller: { type: Boolean, default: false, index: true },
   },
   { timestamps: true }
 );

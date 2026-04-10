@@ -558,16 +558,18 @@ const ProductList = ({ defaultCategory } = {}) => {
                                             }}
                                         >
                                             {(() => {
-                                                const badgeLabel = idx === 0 ? 'NEW LAUNCH' : idx === 1 ? 'BESTSELLER' : idx === 2 ? 'TRENDING' : null;
+                                                // Show Best Seller badge from database, or fallback to index-based badges
+                                                const isBestSeller = p.isBestSeller === true;
                                                 const notes = p.type || p.subcategory || p.category || '';
                                                 const mrpValue = Number(p.mrp || 0);
 
                                                 return (
                                                     <div className="rounded-none border-0 bg-transparent overflow-hidden transition-all duration-300 hover:shadow-none">
                                                         <div className="relative bg-transparent overflow-hidden">
-                                                            {badgeLabel && (
-                                                                <span className="absolute top-2 left-2 bg-[#f16b80] text-white text-[9px] px-2 py-1 rounded-full font-semibold tracking-wide">
-                                                                    {badgeLabel}
+                                                            {/* Best Seller Badge from Database */}
+                                                            {isBestSeller && (
+                                                                <span className="absolute top-2 left-2 bg-amber-500 text-white text-[9px] px-2 py-1 rounded-full font-semibold tracking-wide shadow-md">
+                                                                    🔥 BEST SELLER
                                                                 </span>
                                                             )}
                                                             <ProductImage

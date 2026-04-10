@@ -81,6 +81,7 @@ export async function createProduct(req, res) {
       services = {},
       shippingAndReturns = {},
       tags = [],
+      isBestSeller,
     } = req.body || {};
 
     // Support both old and new format
@@ -135,6 +136,7 @@ export async function createProduct(req, res) {
       },
       tags: Array.isArray(tags) ? tags.filter(t => ['Best Seller', 'Only Few Left Hurry', 'Highly Recommended'].includes(t)) : [],
       pincodeServiceable: true,
+      isBestSeller: Boolean(isBestSeller),
     };
 
     const product = await Product.create(payload);
@@ -390,6 +392,7 @@ export async function updateProduct(req, res) {
       services = {},
       shippingAndReturns = {},
       tags,
+      isBestSeller,
     } = req.body;
 
     const updates = {};
@@ -451,6 +454,11 @@ export async function updateProduct(req, res) {
     // Tags
     if (tags !== undefined && Array.isArray(tags)) {
       updates.tags = tags.filter(t => ['Best Seller', 'Only Few Left Hurry', 'Highly Recommended'].includes(t));
+    }
+
+    // Best Seller
+    if (isBestSeller !== undefined) {
+      updates.isBestSeller = Boolean(isBestSeller);
     }
 
     if (Object.keys(updates).length === 0) {

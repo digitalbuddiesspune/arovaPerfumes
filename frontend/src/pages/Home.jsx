@@ -24,7 +24,7 @@ const Home = () => {
       <HeroSlider
         slides={[{ desktop: heroBanner, alt: 'Arova Perfume Banner' }]}
         mobileSrc={mobileHeroBanner}
-        mobileCtaTo="/category/perfumes"
+        mobileCtaTo="/products"
         mobileCtaLabel="Shop Now"
       />
 

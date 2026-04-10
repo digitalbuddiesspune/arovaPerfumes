@@ -1,11 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchSarees } from '../services/api';
 
 const BestSellers = () => {
   const FALLBACK_IMAGE = 'https://res.cloudinary.com/dnyp5jknp/image/upload/v1775567474/d3b4e9cd-feaf-4362-9a38-20c30bbb5db9.png';
-  const [menProducts, setMenProducts] = useState([]);
-  const [womenProducts, setWomenProducts] = useState([]);
+  const [bestSellers, setBestSellers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,22 +14,19 @@ const BestSellers = () => {
       try {
         setLoading(true);
 
-        const [menRes, womenRes] = await Promise.all([
-          fetchSarees('men', { limit: 2 }),
-          fetchSarees('women', { limit: 2 }),
-        ]);
+        // Fetch all products without category filter
+        const res = await fetchSarees(null, { limit: 50 });
+        const products = Array.isArray(res) ? res : res?.products || [];
 
-        const menList = Array.isArray(menRes) ? menRes : menRes?.products || [];
-        const womenList = Array.isArray(womenRes) ? womenRes : womenRes?.products || [];
+        // Filter products marked as isBestSeller
+        const bestSellersList = products.filter((p) => p.isBestSeller === true).slice(0, 4);
 
         if (!ignore) {
-          setMenProducts(menList);
-          setWomenProducts(womenList);
+          setBestSellers(bestSellersList);
         }
       } catch {
         if (!ignore) {
-          setMenProducts([]);
-          setWomenProducts([]);
+          setBestSellers([]);
         }
       } finally {
         if (!ignore) {
@@ -44,26 +40,6 @@ const BestSellers = () => {
       ignore = true;
     };
   }, []);
-
-  const bestSellers = useMemo(() => {
-    const sortByRatingAndReviews = (list) =>
-      [...list]
-        .filter((p) => Boolean(p?._id || p?.id))
-        .sort((a, b) => {
-          const ar = Number(a.rating || 0);
-          const br = Number(b.rating || 0);
-          if (br !== ar) return br - ar;
-          const ac = Number(a.totalReviews || 0);
-          const bc = Number(b.totalReviews || 0);
-          return bc - ac;
-        });
-
-    const menTop = sortByRatingAndReviews(menProducts).slice(0, 2);
-    const womenTop = sortByRatingAndReviews(womenProducts).slice(0, 2);
-
-    // Men 2 + Women 2 (available ones only)
-    return [...menTop, ...womenTop];
-  }, [menProducts, womenProducts]);
 
   return (
     <section className="py-12 sm:py-16 bg-white">

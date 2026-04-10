@@ -99,6 +99,9 @@ const Router = () => {
           <Route path="category/banarasi" element={<CategoryList />} />
           <Route path="silk/banarasi" element={<CategoryList />} />
 
+          {/* All Products Route */}
+          <Route path="products" element={<ProductList />} />
+          
           {/* Dynamic category/subcategory routes - single UI (ProductList) */}
           <Route path="category/:categoryName" element={<ProductList />} />
           <Route path="category/:categoryName/:subCategoryName" element={<ProductList />} />
