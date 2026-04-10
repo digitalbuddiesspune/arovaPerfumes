@@ -690,7 +690,7 @@ export default function Profile() {
                       
                       // Try priceDetails first, then fall back to order fields
                       const discount = priceDetails.discount ?? order.discount ?? order.couponDiscount ?? 0;
-                      const totalPrice = priceDetails.totalPrice ?? (itemsPrice + taxPrice + shippingPrice - discount) ?? order.amount ?? 0;
+                      const totalPrice = priceDetails.totalPrice ?? (itemsPrice + taxPrice + shippingPrice - discount) ?? order.totalPrice ?? order.amount ?? 0;
                       const couponCode = priceDetails.couponCode ?? order.couponCode;
                       
                       return (
@@ -927,7 +927,7 @@ export default function Profile() {
                         
                         // Try priceDetails first, then fall back to order fields
                         const disc = pd.discount ?? selectedOrder.discount ?? selectedOrder.couponDiscount ?? 0;
-                        const total = pd.totalPrice ?? (itemsTotal + tax + shipping - disc) ?? selectedOrder.amount ?? 0;
+                        const total = pd.totalPrice ?? (itemsTotal + tax + shipping - disc) ?? selectedOrder.totalPrice ?? selectedOrder.amount ?? 0;
                         
                         return (
                           <div className="space-y-2 text-sm">
@@ -953,7 +953,7 @@ export default function Profile() {
                             {disc > 0 && (
                               <div className="flex justify-between">
                                 <span className="text-green-700 font-medium">
-                                  Discount {(pd.couponCode ?? selectedOrder.couponCode) && `(${pd.couponCode ?? selectedOrder.couponCode})`}
+                                  Discount {(pd.couponCode ?? selectedOrder.couponCode) ? `(${pd.couponCode ?? selectedOrder.couponCode})` : ''}
                                 </span>
                                 <span className="text-green-600 font-medium">-₹{disc.toLocaleString('en-IN')}</span>
                               </div>
