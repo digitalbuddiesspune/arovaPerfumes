@@ -290,3 +290,30 @@ export const getMyOrders = async () => {
   if (!res.ok) throw new Error('Failed to fetch orders');
   return res.json();
 };
+
+// Fetch pricing settings for dynamic tax and shipping calculation
+export const fetchPricingSettings = async () => {
+  try {
+    const res = await fetch(`${API_URL}/settings/pricing`, {
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    });
+    if (!res.ok) throw new Error('Failed to fetch pricing settings');
+    const data = await res.json();
+    return data.settings || {
+      taxPercentage: 5,
+      shippingCharge: 50,
+      freeShippingMinAmount: 500,
+      isFreeShippingEnabled: true
+    };
+  } catch (error) {
+    console.error('Error fetching pricing settings:', error);
+    // Return default values if API fails
+    return {
+      taxPercentage: 5,
+      shippingCharge: 50,
+      freeShippingMinAmount: 500,
+      isFreeShippingEnabled: true
+    };
+  }
+};

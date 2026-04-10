@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import Cart from '../models/Cart.js';
 import Order from '../models/Order.js';
 import { Address } from '../models/Address.js';
+import { getPricingSettingsForCalculation } from './pricingSettings.controller.js';
 
 const getClient = () => {
   const key_id = process.env.RAZORPAY_KEY_ID || '';
@@ -87,12 +88,20 @@ export const verifyPayment = async (req, res) => {
       };
     });
     
+    // Get dynamic pricing settings
+    const pricingSettings = await getPricingSettingsForCalculation();
+    
     // Calculate price breakdown
     const itemsPrice = orderItems.reduce((sum, it) => sum + (it.price * it.quantity), 0);
-    const taxPrice = Math.round(itemsPrice * 0.05); // 5% tax
     
-    // Shipping price logic: Free if order > 5000, else ₹99
-    const shippingPrice = itemsPrice >= 5000 ? 0 : 99;
+    // Dynamic tax calculation
+    const taxPrice = Math.round(itemsPrice * (pricingSettings.taxPercentage / 100));
+    
+    // Dynamic shipping calculation
+    let shippingPrice = pricingSettings.shippingCharge;
+    if (pricingSettings.isFreeShippingEnabled && itemsPrice >= pricingSettings.freeShippingMinAmount) {
+      shippingPrice = 0;
+    }
     
     // Apply coupon discount if available
     let discount = 0;
@@ -190,12 +199,20 @@ export const createCODOrder = async (req, res) => {
       };
     });
     
+    // Get dynamic pricing settings
+    const pricingSettings = await getPricingSettingsForCalculation();
+    
     // Calculate price breakdown
     const itemsPrice = orderItems.reduce((sum, it) => sum + (it.price * it.quantity), 0);
-    const taxPrice = Math.round(itemsPrice * 0.05); // 5% tax
     
-    // Shipping price logic: Free if order > 5000, else ₹99
-    const shippingPrice = itemsPrice >= 5000 ? 0 : 99;
+    // Dynamic tax calculation
+    const taxPrice = Math.round(itemsPrice * (pricingSettings.taxPercentage / 100));
+    
+    // Dynamic shipping calculation
+    let shippingPrice = pricingSettings.shippingCharge;
+    if (pricingSettings.isFreeShippingEnabled && itemsPrice >= pricingSettings.freeShippingMinAmount) {
+      shippingPrice = 0;
+    }
     
     // Apply coupon discount if available
     let discount = 0;

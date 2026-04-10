@@ -7,6 +7,7 @@ const navItems = [
   { label: 'Orders', to: '/orders' },
   { label: 'Users', to: '/users' },
   { label: 'Coupons', to: '/coupons' },
+  { label: 'Price Settings', to: '/price-settings' },
 ]
 
 const Sidebar = () => {

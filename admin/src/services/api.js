@@ -66,5 +66,11 @@ export const couponAPI = {
   toggleStatus: (id) => api.patch(`/coupons/${id}/toggle`),
 }
 
+// Settings APIs
+export const settingsAPI = {
+  getPricing: () => api.get('/settings/pricing'),
+  updatePricing: (payload) => api.put('/settings/pricing', payload),
+}
+
 export default api
 

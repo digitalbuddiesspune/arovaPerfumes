@@ -2,12 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaPlus, FaMinus, FaArrowLeft, FaShoppingCart, FaHeart, FaTimes, FaCheck, FaTicketAlt } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
+import { fetchPricingSettings } from '../services/api';
 
 function Cart() {
   const navigate = useNavigate();
   const [couponCode, setCouponCode] = useState('');
   const [couponMessage, setCouponMessage] = useState(null);
   const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [pricingSettings, setPricingSettings] = useState({
+    taxPercentage: 5,
+    shippingCharge: 50,
+    freeShippingMinAmount: 500,
+    isFreeShippingEnabled: true
+  });
   
   const {
     cart = [],
@@ -26,6 +33,12 @@ function Cart() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Fetch pricing settings
+    const loadPricingSettings = async () => {
+      const settings = await fetchPricingSettings();
+      setPricingSettings(settings);
+    };
+    loadPricingSettings();
   }, []);
 
   // Clear coupon message after 3 seconds
@@ -89,9 +102,16 @@ function Cart() {
     const youSaved = Math.max(0, totalMRP - totalSalePrice);
     const couponDiscountAmount = couponDiscount || 0;
     const subtotalAfterCoupon = Math.max(0, totalSalePrice - couponDiscountAmount);
-    const shippingCharge = subtotalAfterCoupon < 5000 ? 99 : 0;
+    
+    // Dynamic shipping calculation
+    let shippingCharge = pricingSettings.shippingCharge;
+    if (pricingSettings.isFreeShippingEnabled && subtotalAfterCoupon >= pricingSettings.freeShippingMinAmount) {
+      shippingCharge = 0;
+    }
+    
     const taxableAmount = subtotalAfterCoupon + shippingCharge;
-    const tax = Math.round(taxableAmount * 0.05); // 5% tax
+    // Dynamic tax calculation
+    const tax = Math.round(taxableAmount * (pricingSettings.taxPercentage / 100));
     const totalPayable = taxableAmount + tax;
 
     return {
@@ -360,9 +380,16 @@ function Cart() {
                       </span>
                     </div>
                     
-                    {/* Tax 5% */}
+                    {/* Free Shipping Message */}
+                    {pricingSettings.isFreeShippingEnabled && priceDetails.shippingCharge > 0 && (
+                      <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                        💡 Free shipping on orders above ₹{pricingSettings.freeShippingMinAmount}
+                      </div>
+                    )}
+                    
+                    {/* Tax */}
                     <div className="flex justify-between text-sm">
-                      <span>Tax (5%)</span>
+                      <span>Tax ({pricingSettings.taxPercentage}%)</span>
                       <span>₹{priceDetails.tax.toLocaleString()}</span>
                     </div>
                   </div>

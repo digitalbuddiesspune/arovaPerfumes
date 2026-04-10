@@ -12,6 +12,7 @@ import Orders from './pages/Orders'
 import OrderDetails from './pages/OrderDetails'
 import Users from './pages/Users'
 import Coupons from './pages/Coupons'
+import PriceSettings from './pages/PriceSettings'
 
 function AdminLayout() {
   return (
@@ -32,6 +33,7 @@ function AdminLayout() {
               <Route path="/orders/:id" element={<OrderDetails />} />
               <Route path="/users" element={<Users />} />
               <Route path="/coupons" element={<Coupons />} />
+              <Route path="/price-settings" element={<PriceSettings />} />
             </Routes>
           </main>
         </div>

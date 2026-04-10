@@ -15,6 +15,7 @@ import adminRoutes from './routes/admin.routes.js';
 import policyRoutes from './routes/policy.routes.js';
 import settingsRoutes from './routes/settings.routes.js';
 import couponRoutes from './routes/coupon.routes.js';
+import pricingSettingsRoutes from './routes/pricingSettings.routes.js';
 
 import connectDB from './config/DataBaseConnection.js';
 import cookieJwtAuth from './middleware/authMiddleware.js';
@@ -68,6 +69,7 @@ server.use('/api/orders', ordersRoutes);
 server.use('/api/admin', adminRoutes);
 server.use('/api/policy', policyRoutes);
 server.use('/api/settings', settingsRoutes);
+server.use('/api/settings/pricing', pricingSettingsRoutes);
 server.use('/api/coupons', couponRoutes);
 
 const PORT = process.env.PORT || 5000;

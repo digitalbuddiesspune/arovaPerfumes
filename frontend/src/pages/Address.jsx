@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { getMyAddress, saveMyAddress, deleteAddressById, createPaymentOrder, verifyPayment, createCODOrder } from '../services/api';
+import { getMyAddress, saveMyAddress, deleteAddressById, createPaymentOrder, verifyPayment, createCODOrder, fetchPricingSettings } from '../services/api';
 
 const indianStates = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -67,6 +67,12 @@ export default function AddressForm() {
   const [showForm, setShowForm] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('online'); // 'online' or 'cod'
   const [processingOrder, setProcessingOrder] = useState(false);
+  const [pricingSettings, setPricingSettings] = useState({
+    taxPercentage: 5,
+    shippingCharge: 50,
+    freeShippingMinAmount: 500,
+    isFreeShippingEnabled: true
+  });
   const { cart, cartTotal: total, couponDiscount, appliedCoupon, loadCart } = useCart();
 
   // Calculate price details - same logic as cart.jsx
@@ -85,9 +91,16 @@ export default function AddressForm() {
     const youSaved = Math.max(0, totalMRP - totalSalePrice);
     const couponDiscountAmount = couponDiscount || 0;
     const subtotalAfterCoupon = Math.max(0, totalSalePrice - couponDiscountAmount);
-    const shippingCharge = subtotalAfterCoupon < 5000 ? 99 : 0;
+    
+    // Dynamic shipping calculation
+    let shippingCharge = pricingSettings.shippingCharge;
+    if (pricingSettings.isFreeShippingEnabled && subtotalAfterCoupon >= pricingSettings.freeShippingMinAmount) {
+      shippingCharge = 0;
+    }
+    
     const taxableAmount = subtotalAfterCoupon + shippingCharge;
-    const tax = Math.round(taxableAmount * 0.05); // 5% tax
+    // Dynamic tax calculation
+    const tax = Math.round(taxableAmount * (pricingSettings.taxPercentage / 100));
     const totalPayable = taxableAmount + tax;
 
     return {
@@ -319,11 +332,14 @@ export default function AddressForm() {
     console.log('Cancel clicked');
   };
 
-  // Load existing address on mount
+  // Load existing address and pricing settings on mount
   useEffect(() => {
     const load = async () => {
       try {
         setLoadingAddress(true);
+        // Fetch pricing settings
+        const settings = await fetchPricingSettings();
+        setPricingSettings(settings);
         const doc = await getMyAddress();
         if (doc && doc._id) {
           setAddressId(doc._id);
@@ -787,9 +803,16 @@ export default function AddressForm() {
                 </span>
               </div>
               
-              {/* Tax 5% */}
+              {/* Free Shipping Message */}
+              {pricingSettings.isFreeShippingEnabled && priceDetails.shippingCharge > 0 && (
+                <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                  💡 Free shipping on orders above ₹{pricingSettings.freeShippingMinAmount}
+                </div>
+              )}
+              
+              {/* Tax */}
               <div className="flex justify-between text-sm">
-                <span>Tax (5%)</span>
+                <span>Tax ({pricingSettings.taxPercentage}%)</span>
                 <span>₹{priceDetails.tax.toLocaleString()}</span>
               </div>
             </div>
