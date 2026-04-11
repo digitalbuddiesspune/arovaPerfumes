@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ordersAPI } from '../services/api'
+import { formatDisplayOrderId } from '../utils/orderId'
 
 const Orders = () => {
   const navigate = useNavigate()
@@ -49,9 +50,15 @@ const Orders = () => {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(order => {
         const orderId = (order._id || '').toLowerCase()
+        const displayId = formatDisplayOrderId(order).toLowerCase()
         const userName = (order.user?.name || '').toLowerCase()
         const userEmail = (order.user?.email || '').toLowerCase()
-        return orderId.includes(query) || userName.includes(query) || userEmail.includes(query)
+        return (
+          orderId.includes(query) ||
+          displayId.includes(query) ||
+          userName.includes(query) ||
+          userEmail.includes(query)
+        )
       })
     }
 
@@ -301,7 +308,7 @@ const Orders = () => {
                     <tr key={id} className="hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="font-mono text-sm font-medium text-slate-900">
-                          #{String(id).slice(-8).toUpperCase()}
+                          #{formatDisplayOrderId(order)}
                         </span>
                       </td>
                       <td className="px-6 py-4">

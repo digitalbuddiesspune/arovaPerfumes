@@ -1,4 +1,4 @@
-import { configDotenv } from 'dotenv';
+import './config/loadEnv.js';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -19,8 +19,6 @@ import pricingSettingsRoutes from './routes/pricingSettings.routes.js';
 
 import connectDB from './config/DataBaseConnection.js';
 import cookieJwtAuth from './middleware/authMiddleware.js';
-
-configDotenv();
 
 console.log(
   'Razorpay env loaded:',

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import { fetchSarees } from '../services/api';
+import { fetchSarees, fetchPricingSettings } from '../services/api';
+import { getProductPromoBadges } from '../utils/productBadges';
 import ProductImage from './ProductImage';
 
 const readWishlist = () => {
@@ -23,7 +24,23 @@ const ProductSuggestions = ({ currentProductId, category, maxProducts = 8 }) => 
   const [suggestedProducts, setSuggestedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [wishlistItems, setWishlistItems] = useState([]);
+  const [lowStockThreshold, setLowStockThreshold] = useState(8);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let ignore = false;
+    (async () => {
+      try {
+        const s = await fetchPricingSettings();
+        if (!ignore && typeof s.lowStockThreshold === 'number') setLowStockThreshold(s.lowStockThreshold);
+      } catch {
+        /* default */
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   useEffect(() => {
     const loadSuggestions = async () => {
@@ -140,7 +157,8 @@ const ProductSuggestions = ({ currentProductId, category, maxProducts = 8 }) => 
             const productId = product._id || product.id;
             const sellingPrice = product.price || Math.round(product.mrp - (product.mrp * (product.discountPercent || 0) / 100));
             const imageUrl = product.images?.image1 || product.image;
-            
+            const { showBestSeller, showFewLeft } = getProductPromoBadges(product, lowStockThreshold);
+
             return (
               <div
                 key={productId}
@@ -168,9 +186,21 @@ const ProductSuggestions = ({ currentProductId, category, maxProducts = 8 }) => 
                     )}
                   </button>
                   
+                  <div className="absolute bottom-2 left-2 z-10 flex flex-col gap-1 items-start max-w-[80%] pointer-events-none">
+                    {showBestSeller && (
+                      <span className="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">
+                        BEST SELLER
+                      </span>
+                    )}
+                    {showFewLeft && (
+                      <span className="bg-rose-600 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm leading-tight">
+                        FEW LEFT — HURRY
+                      </span>
+                    )}
+                  </div>
                   {/* Discount Badge */}
                   {product.discountPercent > 0 && (
-                    <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                    <div className="absolute top-2 right-10 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-10">
                       {product.discountPercent}% OFF
                     </div>
                   )}

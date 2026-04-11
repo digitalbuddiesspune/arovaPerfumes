@@ -4,7 +4,8 @@ import { FaRupeeSign, FaSpinner, FaFilter, FaTimes } from 'react-icons/fa';
 // import { IoEyeOutline } from 'react-icons/io5'; // IoEyeOutline is imported but not used, can be removed if not needed later
 
 // --- IMPORTANT: This line is now the intended data source. Ensure 'fetchSarees' is available. ---
-import { fetchSarees } from '../services/api';
+import { fetchSarees, fetchPricingSettings } from '../services/api';
+import { getProductPromoBadges } from '../utils/productBadges';
 import ProductFilters from './ProductFilters'; 
 import { useCart } from '../context/CartContext';
 import ProductImage from './ProductImage';
@@ -54,6 +55,7 @@ const ProductList = ({ defaultCategory } = {}) => {
     const { addToCart } = useCart();
     const [addingToCartId, setAddingToCartId] = useState(null);
     const [toast, setToast] = useState({ show: false, text: '', type: 'success' });
+    const [lowStockThreshold, setLowStockThreshold] = useState(8);
     
     // Filter states
     const [selectedPriceRange, setSelectedPriceRange] = useState(null);
@@ -194,6 +196,23 @@ const ProductList = ({ defaultCategory } = {}) => {
     const effectiveCategory = normalize(rawCategory);
     const displayCategoryName = getCategoryDisplayName(rawCategory);
         
+    useEffect(() => {
+        let ignore = false;
+        (async () => {
+            try {
+                const s = await fetchPricingSettings();
+                if (!ignore && typeof s.lowStockThreshold === 'number') {
+                    setLowStockThreshold(s.lowStockThreshold);
+                }
+            } catch {
+                /* default 8 */
+            }
+        })();
+        return () => {
+            ignore = true;
+        };
+    }, []);
+
     // --- Load Wishlist ---
     useEffect(() => {
         const loadWishlist = () => {
@@ -558,20 +577,25 @@ const ProductList = ({ defaultCategory } = {}) => {
                                             }}
                                         >
                                             {(() => {
-                                                // Show Best Seller badge from database, or fallback to index-based badges
-                                                const isBestSeller = p.isBestSeller === true;
+                                                const { showBestSeller, showFewLeft } = getProductPromoBadges(p, lowStockThreshold);
                                                 const notes = p.type || p.subcategory || p.category || '';
                                                 const mrpValue = Number(p.mrp || 0);
 
                                                 return (
                                                     <div className="rounded-none border-0 bg-transparent overflow-hidden transition-all duration-300 hover:shadow-none">
                                                         <div className="relative bg-transparent overflow-hidden">
-                                                            {/* Best Seller Badge from Database */}
-                                                            {isBestSeller && (
-                                                                <span className="absolute top-2 left-2 bg-amber-500 text-white text-[9px] px-2 py-1 rounded-full font-semibold tracking-wide shadow-md">
-                                                                    🔥 BEST SELLER
-                                                                </span>
-                                                            )}
+                                                            <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start max-w-[88%] pointer-events-none">
+                                                                {showBestSeller && (
+                                                                    <span className="bg-amber-500 text-white text-[9px] px-2 py-1 rounded-full font-semibold tracking-wide shadow-md">
+                                                                        BEST SELLER
+                                                                    </span>
+                                                                )}
+                                                                {showFewLeft && (
+                                                                    <span className="bg-rose-600 text-white text-[9px] px-2 py-1 rounded-full font-semibold tracking-wide shadow-md leading-tight">
+                                                                        ONLY FEW LEFT — HURRY
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                             <ProductImage
                                                                 src={p.images?.image1 || p.image}
                                                                 alt={p.title}

@@ -40,6 +40,14 @@ const SignIn = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const postAuthRedirect = () => {
+    const from = location.state?.from;
+    if (from?.pathname) {
+      return `${from.pathname}${from.search ?? ''}${from.hash ?? ''}`;
+    }
+    return '/';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -56,8 +64,7 @@ const SignIn = () => {
       } else {
         try { localStorage.removeItem('auth_is_admin'); } catch {}
       }
-      const redirectTo = location.state?.from?.pathname || '/';
-      navigate(redirectTo, { replace: true });
+      navigate(postAuthRedirect(), { replace: true });
     } catch (err) {
       setError(err.message || 'Failed to sign in');
     } finally {
@@ -121,8 +128,7 @@ const SignIn = () => {
       } else {
         try { localStorage.removeItem('auth_is_admin'); } catch {}
       }
-      const redirectTo = location.state?.from?.pathname || '/';
-      navigate(redirectTo, { replace: true });
+      navigate(postAuthRedirect(), { replace: true });
     } catch (err) {
       setError(err.message || 'Invalid OTP. Please try again.');
     } finally {
@@ -269,7 +275,7 @@ const SignIn = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate(location.state?.from?.pathname || '/')}
+                  onClick={() => navigate('/')}
                   className="w-full mt-2 border border-neutral-200 text-neutral-700 py-2 rounded-lg font-semibold hover:bg-neutral-50 transition-all duration-300"
                 >
                   Continue as Guest

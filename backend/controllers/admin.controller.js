@@ -39,8 +39,11 @@ const normalizeOrder = (orderDoc) => {
   const discount = o.discount ?? o.couponDiscount ?? 0;
   const totalPrice = o.totalPrice ?? (itemsPrice + taxPrice + shippingPrice - discount) ?? o.amount ?? 0;
 
+  const displayOrderId = o._id ? String(o._id).slice(-8).toUpperCase() : '';
+
   return {
     ...o,
+    orderId: displayOrderId,
     orderStatus,
     paymentStatus,
     paymentMethod,
@@ -445,10 +448,9 @@ export async function updateProduct(req, res) {
       if (services.freeDelivery !== undefined) updates.services.freeDelivery = services.freeDelivery;
     }
 
-    // Returns
-    if (shippingAndReturns.returns?.isReturnable !== undefined) {
-      updates.shippingAndReturns = updates.shippingAndReturns || {};
-      updates.shippingAndReturns.returns = { isReturnable: shippingAndReturns.returns.isReturnable };
+    // Returns (dot path preserves existing returns.policy and other nested fields)
+    if (shippingAndReturns?.returns?.isReturnable !== undefined) {
+      updates['shippingAndReturns.returns.isReturnable'] = Boolean(shippingAndReturns.returns.isReturnable);
     }
 
     // Tags

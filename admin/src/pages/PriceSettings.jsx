@@ -6,7 +6,10 @@ const PriceSettings = () => {
     taxPercentage: 5,
     shippingCharge: 50,
     freeShippingMinAmount: 500,
-    isFreeShippingEnabled: true
+    isFreeShippingEnabled: true,
+    announcementMarquee:
+      '• 1st Order - 50% Off • USE CODE SMELLGOOD5 TO GET EXTRA 5% OFF ON PREPAID ORDERS • GET A FREE SAMPLE ON EVERY ORDER •',
+    lowStockThreshold: 8,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -19,7 +22,13 @@ const PriceSettings = () => {
         setLoading(true);
         const res = await settingsAPI.getPricing();
         if (res.data?.success && res.data?.settings) {
-          setSettings(res.data.settings);
+          const s = res.data.settings;
+          setSettings((prev) => ({
+            ...prev,
+            ...s,
+            announcementMarquee: s.announcementMarquee ?? prev.announcementMarquee,
+            lowStockThreshold: typeof s.lowStockThreshold === 'number' ? s.lowStockThreshold : prev.lowStockThreshold,
+          }));
         }
       } catch (error) {
         console.error('Error fetching settings:', error);
@@ -34,9 +43,13 @@ const PriceSettings = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setSettings(prev => ({
+    if (name === 'announcementMarquee') {
+      setSettings((prev) => ({ ...prev, announcementMarquee: value }));
+      return;
+    }
+    setSettings((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : Number(value)
+      [name]: type === 'checkbox' ? checked : Number(value),
     }));
   };
 
@@ -77,7 +90,7 @@ const PriceSettings = () => {
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-slate-900">Price Settings</h2>
           <p className="text-slate-600 mt-1">
-            Configure tax, shipping charges, and free shipping threshold for all orders.
+            Configure tax, shipping, free-shipping rules, top announcement text, and low-stock badges for the storefront.
           </p>
         </div>
 
@@ -177,6 +190,43 @@ const PriceSettings = () => {
                 </p>
               </div>
             )}
+          </div>
+
+          <div className="bg-slate-50 rounded-lg p-4 space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Top announcement (scrolling marquee)
+              </label>
+              <textarea
+                name="announcementMarquee"
+                value={settings.announcementMarquee || ''}
+                onChange={handleChange}
+                rows={3}
+                maxLength={2000}
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+                placeholder="Offers, codes, and promos — shown on the site header"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                Shown in the black bar above the main nav. Clear and save to reset to default copy (server).
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-900 mb-2">
+                Low-stock threshold (auto &quot;Few left&quot; badge)
+              </label>
+              <input
+                type="number"
+                name="lowStockThreshold"
+                value={settings.lowStockThreshold}
+                onChange={handleChange}
+                min={0}
+                max={9999}
+                className="w-32 border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-slate-900 focus:border-slate-900"
+              />
+              <p className="text-xs text-slate-500 mt-2">
+                If quantity is between 1 and this number (and the product does not already use the manual tag), the storefront shows &quot;Only few left&quot;. Use 0 to turn off auto badges (manual tag still works).
+              </p>
+            </div>
           </div>
 
           {/* Preview */}

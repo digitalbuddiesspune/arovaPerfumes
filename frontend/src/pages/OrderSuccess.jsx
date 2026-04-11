@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaCheckCircle, FaShoppingBag, FaArrowRight } from 'react-icons/fa';
+import { FaCheckCircle, FaShoppingBag, FaArrowRight, FaCreditCard } from 'react-icons/fa';
+import { formatDisplayOrderId } from '../utils/orderId';
 
 export default function OrderSuccess() {
   const navigate = useNavigate();
   const location = useLocation();
   const [countdown, setCountdown] = useState(5);
-  const orderId = location.state?.orderId || null;
-  const orderNumber = location.state?.orderNumber || null;
+  const rawRef =
+    location.state?.orderId ?? location.state?.orderNumber ?? location.state?.order ?? null;
+  const displayOrderId = formatDisplayOrderId(rawRef);
+  const paymentMethod = location.state?.paymentMethod || 'cod';
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -52,22 +55,34 @@ export default function OrderSuccess() {
           Thank you for your order. We've received your order and will begin processing it right away.
         </p>
 
-        {orderId && (
+        {displayOrderId ? (
           <p className="text-sm text-gray-500 mb-8">
-            Order ID: <span className="font-mono font-semibold">{orderId}</span>
+            Order ID: <span className="font-mono font-semibold tracking-wide">#{displayOrderId}</span>
           </p>
-        )}
+        ) : null}
 
         {/* Order Info Box */}
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <FaShoppingBag className="text-amber-700 text-2xl" />
-            <h2 className="text-xl font-semibold text-amber-900">Cash on Delivery</h2>
+        {paymentMethod === 'razorpay' ? (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6 mb-8">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <FaCreditCard className="text-emerald-700 text-2xl" />
+              <h2 className="text-xl font-semibold text-emerald-900">Payment received</h2>
+            </div>
+            <p className="text-emerald-800 text-sm">
+              Your online payment was successful. We will process and ship your order to your saved address.
+            </p>
           </div>
-          <p className="text-amber-800 text-sm">
-            Your order will be delivered to your address. Please keep the exact cash ready for payment when the delivery arrives.
-          </p>
-        </div>
+        ) : (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-8">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <FaShoppingBag className="text-amber-700 text-2xl" />
+              <h2 className="text-xl font-semibold text-amber-900">Cash on Delivery</h2>
+            </div>
+            <p className="text-amber-800 text-sm">
+              Your order will be delivered to your address. Please keep the exact cash ready for payment when the delivery arrives.
+            </p>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">

@@ -1,20 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchSarees } from '../services/api';
+import { fetchSarees, fetchPricingSettings } from '../services/api';
 import ProductImage from './ProductImage';
+import { getProductPromoBadges } from '../utils/productBadges';
 
 const WomenSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lowStockThreshold, setLowStockThreshold] = useState(8);
 
   useEffect(() => {
     let ignore = false;
     const load = async () => {
       try {
         setLoading(true);
-        const response = await fetchSarees('women', { limit: 8 });
+        const [response, pricing] = await Promise.all([
+          fetchSarees('women', { limit: 8 }),
+          fetchPricingSettings(),
+        ]);
         const list = Array.isArray(response) ? response : response?.products || [];
         if (!ignore) setProducts(list.slice(0, 4));
+        if (!ignore && typeof pricing?.lowStockThreshold === 'number') {
+          setLowStockThreshold(pricing.lowStockThreshold);
+        }
       } catch {
         if (!ignore) setProducts([]);
       } finally {
@@ -46,7 +54,7 @@ const WomenSection = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {products.map((item, idx) => {
+          {products.map((item) => {
             const id = item._id || item.id;
             if (!id) return null;
             const name = item.title || item.name || 'Perfume';
@@ -54,16 +62,30 @@ const WomenSection = () => {
             const price = Number(item.price || item.salePrice || item.mrp || 0);
             const mrp = Number(item.mrp || 0);
             const img = item.images?.image1 || item.image;
+            const { showBestSeller, showFewLeft } = getProductPromoBadges(item, lowStockThreshold);
+            const highly = Array.isArray(item.tags) && item.tags.includes('Highly Recommended');
 
             return (
               <Link key={id} to={`/product/${id}`} className="group block">
                 <div className="relative bg-white border border-gray-200 overflow-hidden">
                   <ProductImage src={img} alt={name} className="w-full aspect-[4/5] object-cover group-hover:scale-105 transition-transform duration-500" />
-                  {idx === 0 && (
-                    <span className="absolute top-2 left-2 bg-[#f16b80] text-white text-[9px] px-2 py-1 rounded-full font-semibold">
-                      HIGHLY RECOMMENDED
-                    </span>
-                  )}
+                  <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start max-w-[88%] pointer-events-none">
+                    {showBestSeller && (
+                      <span className="bg-amber-500 text-white text-[9px] px-2 py-1 rounded-full font-semibold shadow-sm">
+                        BEST SELLER
+                      </span>
+                    )}
+                    {showFewLeft && (
+                      <span className="bg-rose-600 text-white text-[9px] px-2 py-1 rounded-full font-semibold shadow-sm leading-tight">
+                        FEW LEFT — HURRY
+                      </span>
+                    )}
+                    {highly && (
+                      <span className="bg-[#f16b80] text-white text-[9px] px-2 py-1 rounded-full font-semibold">
+                        HIGHLY RECOMMENDED
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="pt-3 text-center">
                   <h3 className="text-xs sm:text-sm font-semibold text-black line-clamp-1">{name}</h3>

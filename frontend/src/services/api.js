@@ -1,8 +1,11 @@
 // VITE_API_URL can be set either to:
-// - http://localhost:7000/api
-// - http://localhost:7000
+// - http://localhost:5001/api
+// - http://localhost:5001
 // We normalize it to always include `/api` since backend mounts routes under `/api/*`.
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:7000').replace(/\/$/, '');
+// Default port matches backend/.env PORT=5001 (see also utils/api.js).
+import { extractOrderHexFromInput } from '../utils/orderId.js';
+
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
 const API_URL = API_BASE.endsWith('/api') ? API_BASE : `${API_BASE}/api`;
 
 export const fetchSarees = async (category, options = {}) => {
@@ -226,8 +229,16 @@ export const createPaymentOrder = async (amount, notes = {}) => {
     body: JSON.stringify({ amount, currency: 'INR', notes }),
     credentials: 'include',
   });
-  if (!res.ok) throw new Error('Failed to create payment order');
-  return res.json();
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const parts = [data.error, data.details].filter((x) => typeof x === 'string' && x.trim());
+    const msg =
+      parts.join(' — ') ||
+      data.message ||
+      `Failed to create payment order (${res.status})`;
+    throw new Error(msg);
+  }
+  return data;
 };
 
 export const verifyPayment = async (payload) => {
@@ -291,6 +302,30 @@ export const getMyOrders = async () => {
   return res.json();
 };
 
+/** @param {string} orderIdOrCode Full Mongo order id or 8-char display code (see Profile / confirmation) */
+export const getOrderById = async (orderIdOrCode) => {
+  const id = extractOrderHexFromInput(String(orderIdOrCode || ''));
+  if (!id || id.length < 8) {
+    throw new Error('Enter your order ID or 8-character code.');
+  }
+  const qs = new URLSearchParams({ q: id });
+  const res = await fetch(`${API_URL}/orders/lookup?${qs.toString()}`, {
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    credentials: 'include',
+  });
+  let data = {};
+  try {
+    data = await res.json();
+  } catch {
+    data = {};
+  }
+  if (!res.ok) {
+    const msg = data.message || data.error || 'Failed to fetch order';
+    throw new Error(typeof msg === 'string' ? msg : 'Failed to fetch order');
+  }
+  return data;
+};
+
 // Fetch pricing settings for dynamic tax and shipping calculation
 export const fetchPricingSettings = async () => {
   try {
@@ -300,12 +335,17 @@ export const fetchPricingSettings = async () => {
     });
     if (!res.ok) throw new Error('Failed to fetch pricing settings');
     const data = await res.json();
-    return data.settings || {
-      taxPercentage: 5,
-      shippingCharge: 50,
-      freeShippingMinAmount: 500,
-      isFreeShippingEnabled: true
-    };
+    return (
+      data.settings || {
+        taxPercentage: 5,
+        shippingCharge: 50,
+        freeShippingMinAmount: 500,
+        isFreeShippingEnabled: true,
+        announcementMarquee:
+          '• 1st Order - 50% Off • USE CODE SMELLGOOD5 TO GET EXTRA 5% OFF ON PREPAID ORDERS • GET A FREE SAMPLE ON EVERY ORDER •',
+        lowStockThreshold: 8,
+      }
+    );
   } catch (error) {
     console.error('Error fetching pricing settings:', error);
     // Return default values if API fails
@@ -313,7 +353,10 @@ export const fetchPricingSettings = async () => {
       taxPercentage: 5,
       shippingCharge: 50,
       freeShippingMinAmount: 500,
-      isFreeShippingEnabled: true
+      isFreeShippingEnabled: true,
+      announcementMarquee:
+        '• 1st Order - 50% Off • USE CODE SMELLGOOD5 TO GET EXTRA 5% OFF ON PREPAID ORDERS • GET A FREE SAMPLE ON EVERY ORDER •',
+      lowStockThreshold: 8,
     };
   }
 };

@@ -1,8 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaTrash, FaPlus, FaMinus, FaArrowLeft, FaShoppingCart, FaHeart, FaTimes, FaCheck, FaTicketAlt } from 'react-icons/fa';
+import { FaTrash, FaPlus, FaMinus, FaArrowLeft, FaShoppingCart, FaTimes, FaCheck, FaTicketAlt, FaRedo, FaUndo } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
-import { fetchPricingSettings } from '../services/api';
+import { fetchPricingSettings, getMyOrders } from '../services/api';
+
+const authToken = () => {
+  try {
+    return localStorage.getItem('auth_token');
+  } catch {
+    return null;
+  }
+};
+
+const formatOrderDate = (iso) => {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch {
+    return '';
+  }
+};
 
 function Cart() {
   const navigate = useNavigate();
@@ -28,8 +45,80 @@ function Cart() {
     finalTotal,
     applyCouponCode,
     removeCoupon,
-    eligibleCoupons
+    eligibleCoupons,
+    fetchEligibleCoupons,
+    addToCart,
   } = useCart();
+
+  const [pastOrders, setPastOrders] = useState([]);
+  const [pastOrdersLoading, setPastOrdersLoading] = useState(false);
+  const [reorderingOrderId, setReorderingOrderId] = useState(null);
+
+  const loadPastOrders = useCallback(async () => {
+    if (!authToken()) {
+      setPastOrders([]);
+      return;
+    }
+    setPastOrdersLoading(true);
+    try {
+      const data = await getMyOrders();
+      const list = data?.orders || (Array.isArray(data) ? data : []);
+      const sorted = [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setPastOrders(sorted.slice(0, 12));
+    } catch {
+      setPastOrders([]);
+    } finally {
+      setPastOrdersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadPastOrders();
+  }, [loadPastOrders]);
+
+  useEffect(() => {
+    const onAuth = () => loadPastOrders();
+    window.addEventListener('auth:updated', onAuth);
+    window.addEventListener('storage', onAuth);
+    return () => {
+      window.removeEventListener('auth:updated', onAuth);
+      window.removeEventListener('storage', onAuth);
+    };
+  }, [loadPastOrders]);
+
+  const handleReorder = async (order) => {
+    const oid = order?._id;
+    if (!oid || !Array.isArray(order.items) || order.items.length === 0) return;
+    setReorderingOrderId(oid);
+    const failed = [];
+    try {
+      for (const it of order.items) {
+        const pid = it.productId || it.product?._id || it.product;
+        if (!pid) continue;
+        try {
+          await addToCart(String(pid), Number(it.quantity) || 1, it.size || null);
+        } catch (e) {
+          failed.push(it.name || 'Item');
+        }
+      }
+      if (failed.length) {
+        window.alert(`Some items could not be added (product may no longer be available): ${failed.join(', ')}`);
+      } else {
+        try {
+          window.dispatchEvent(new CustomEvent('app:toast', { detail: { text: `Added order #${order.orderId || ''} to cart`, type: 'success' } }));
+        } catch {
+          /* ignore */
+        }
+      }
+    } finally {
+      setReorderingOrderId(null);
+    }
+  };
+
+  const handleReturnClick = (order) => {
+    const ref = order?.orderId || String(order?._id || '').slice(-8).toUpperCase();
+    navigate(`/contact?topic=return&order=${encodeURIComponent(ref)}`);
+  };
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -78,6 +167,7 @@ function Cart() {
     
     if (result.success) {
       setCouponCode('');
+      fetchEligibleCoupons();
     }
   };
 
@@ -154,35 +244,102 @@ function Cart() {
         </div>
       </div>
 
-      {/* First Order Offer Banner - only show if API returns first order coupon */}
-      {(() => {
-        const firstOrderCoupon = eligibleCoupons?.find(c => c.isFirstOrderOnly);
-        console.log('[Cart Banner] firstOrderCoupon from API:', firstOrderCoupon);
-        console.log('[Cart Banner] eligibleCoupons:', eligibleCoupons);
-        if (!firstOrderCoupon || appliedCoupon) return null;
-        return (
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-3">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">🎉</span>
-                <div>
-                  <span className="font-semibold">First Order Offer Available!</span>
-                  <span className="text-sm ml-2 opacity-90">
-                    Use code <span className="font-mono font-bold bg-white/20 px-2 py-0.5 rounded">{firstOrderCoupon.code}</span> for {firstOrderCoupon.discountValue}%
-                    off your first order
-                  </span>
-                </div>
-              </div>
-              <button
-                onClick={() => setCouponCode(firstOrderCoupon.code)}
-                className="text-sm bg-white text-blue-600 px-3 py-1 rounded-full font-medium hover:bg-gray-100 transition-colors"
-              >
-                Apply Now
-              </button>
-            </div>
+      {/* Cart page only: past purchases grouped by order number */}
+      <div className="px-4 max-w-7xl mx-auto pt-2 pb-4">
+        <h2 className="text-sm font-semibold tracking-wide text-gray-900 mb-1">Your orders</h2>
+        <p className="text-xs text-gray-500 mb-3">
+          Same order # groups the products you bought. Reorder adds them to this cart; Return opens contact with your order reference.
+        </p>
+        {!authToken() ? (
+          <div className="rounded-lg border border-dashed border-gray-200 bg-white p-4 text-center text-sm text-gray-600">
+            <p className="mb-3">Sign in to see orders you can reorder or request a return from the cart.</p>
+            <button
+              type="button"
+              onClick={() => navigate('/signin', { state: { from: { pathname: '/cart' } } })}
+              className="inline-flex items-center justify-center px-4 py-2 rounded-md bg-black text-white text-sm font-medium hover:bg-gray-800"
+            >
+              Sign in
+            </button>
           </div>
-        );
-      })()}
+        ) : pastOrdersLoading ? (
+          <div className="text-sm text-gray-500 py-4">Loading your orders…</div>
+        ) : pastOrders.length === 0 ? (
+          <div className="text-sm text-gray-500 py-2">No past orders yet. After you shop, they will appear here.</div>
+        ) : (
+          <div className="space-y-3">
+            {pastOrders.map((order) => {
+              const orderRef = order.orderId || String(order._id || '').slice(-8).toUpperCase();
+              const busy = reorderingOrderId === order._id;
+              const cancelled = String(order.orderStatus || '').toLowerCase() === 'cancelled';
+              return (
+                <div
+                  key={order._id}
+                  className={`rounded-lg border bg-white p-3 sm:p-4 shadow-sm ${cancelled ? 'opacity-75 border-gray-200' : 'border-gray-200'}`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-2">
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        Order #{orderRef}
+                        <span className="font-normal text-gray-500"> · {formatOrderDate(order.createdAt)}</span>
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5 capitalize">
+                        {(order.orderStatus || order.status || 'pending').replace(/_/g, ' ')}
+                        {order.priceDetails?.totalPrice != null && (
+                          <span className="text-gray-400"> · ₹{Number(order.priceDetails.totalPrice).toLocaleString('en-IN')}</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 shrink-0">
+                      <button
+                        type="button"
+                        disabled={busy || cancelled || !order.items?.length}
+                        onClick={() => handleReorder(order)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-900 bg-gray-900 text-white text-xs font-semibold hover:bg-black disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <FaRedo className="w-3 h-3" />
+                        {busy ? 'Adding…' : 'Reorder'}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={cancelled}
+                        onClick={() => handleReturnClick(order)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-300 bg-white text-gray-900 text-xs font-semibold hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <FaUndo className="w-3 h-3" />
+                        Return
+                      </button>
+                    </div>
+                  </div>
+                  <ul className="mt-2 divide-y divide-gray-100 border-t border-gray-100 pt-2">
+                    {(order.items || []).map((line, idx) => (
+                      <li key={`${order._id}-${idx}-${line.productId || line.name}`} className="flex gap-2 py-1.5 text-xs text-gray-700">
+                        <div className="w-10 h-10 rounded bg-gray-100 shrink-0 overflow-hidden">
+                          <img
+                            src={line.image || '/no-image.png'}
+                            alt=""
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              e.currentTarget.src = '/no-image.png';
+                            }}
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-gray-900 truncate">{line.name}</p>
+                          <p className="text-gray-500">
+                            Qty {line.quantity || 1}
+                            {line.size ? ` · ${line.size}` : ''}
+                            {line.price != null ? ` · ₹${Number(line.price).toLocaleString('en-IN')} each` : ''}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {cart.length === 0 ? (
         <div className="text-center py-12 px-4">
@@ -197,14 +354,78 @@ function Cart() {
           </button>
         </div>
       ) : (
-        <div className="px-4 py-4 max-w-7xl mx-auto">
+        <div className="px-4 py-4 max-w-7xl mx-auto space-y-4">
+          {Array.isArray(eligibleCoupons) && eligibleCoupons.length > 0 && (
+            <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+              <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                <FaTicketAlt className="text-gray-600" />
+                Available coupons
+              </h3>
+              <p className="text-xs text-gray-500 mb-3">
+                Codes you can use right now are highlighted. Others are shown so you can see the offer, but they cannot be applied until the requirement is met.
+              </p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {eligibleCoupons.map((c) => {
+                  const id = c._id || c.code;
+                  const applicable = c.applicableForUser !== false;
+                  const isApplied = appliedCoupon?.code === c.code;
+                  const off =
+                    c.discountType === 'percentage'
+                      ? `${c.discountValue}% off`
+                      : `₹${Number(c.discountValue || 0).toLocaleString('en-IN')} off`;
+                  return (
+                    <div
+                      key={id}
+                      className={`rounded-lg border p-3 flex flex-col gap-2 ${
+                        applicable ? 'border-gray-200 bg-white' : 'border-amber-200 bg-amber-50/60'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-mono font-bold text-gray-900">{c.code}</p>
+                          <p className="text-sm text-gray-700">{off}</p>
+                          {c.isFirstOrderOnly && (
+                            <span className="inline-block mt-1 text-[10px] uppercase tracking-wide text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                              First order
+                            </span>
+                          )}
+                          {!applicable && c.unavailableReason && (
+                            <p className="text-xs text-amber-900 mt-1.5 leading-snug">{c.unavailableReason}</p>
+                          )}
+                        </div>
+                        {isApplied ? (
+                          <span className="shrink-0 text-xs font-semibold text-green-700 flex items-center gap-1">
+                            <FaCheck className="w-3 h-3" /> Applied
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={!applicable || applyingCoupon}
+                            onClick={async () => {
+                              setApplyingCoupon(true);
+                              const r = await applyCouponCode(c.code);
+                              setApplyingCoupon(false);
+                              setCouponMessage({ type: r.success ? 'success' : 'error', text: r.message });
+                              if (r.success) fetchEligibleCoupons();
+                            }}
+                            className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-black text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800"
+                          >
+                            Apply
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Product Listings - Left Side */}  
             <div className="lg:col-span-2 space-y-4">
               {cart.map((item) => (
                 <div key={item.id} className="bg-white rounded-lg shadow-sm p-4">
-                  {/* Debug info - remove later */}
-                  {console.log('Cart item:', item.id, item.name, item.quantity)}
                   <div className="flex gap-4">
                     {/* Product Image - Left */}
                     <div className="w-32 h-32 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
@@ -451,7 +672,7 @@ function Cart() {
                       </p>
                     )}
                     
-                    {!appliedCoupon && !couponMessage && (
+                    {!appliedCoupon && !couponMessage && (!eligibleCoupons || eligibleCoupons.length === 0) && (
                       <p className="text-xs text-gray-500 mt-2">
                         Apply a coupon code to get discounts on your order
                       </p>

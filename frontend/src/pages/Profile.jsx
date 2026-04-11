@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../utils/api';
-import { getMyAddress, getMyOrders, fetchPricingSettings } from '../services/api';
+import { getMyAddress, getMyOrders, getOrderById, fetchPricingSettings } from '../services/api';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { FiSettings, FiUser, FiPackage, FiMapPin, FiLogOut, FiRefreshCw, FiShoppingBag, FiMail, FiPhone, FiEdit2, FiHeart, FiHome } from 'react-icons/fi';
+import { FiSettings, FiUser, FiPackage, FiMapPin, FiLogOut, FiRefreshCw, FiShoppingBag, FiMail, FiPhone, FiEdit2, FiHeart, FiHome, FiSearch } from 'react-icons/fi';
 import ProductImage from '../components/ProductImage';
+import { formatDisplayOrderId } from '../utils/orderId';
+
+const PROFILE_TABS = ['profile', 'orders', 'track', 'addresses'];
 
 export default function Profile() {
   const initialTab = (() => {
     try {
       const params = new URLSearchParams(window.location.search);
       const tab = params.get('tab');
-      return tab && ['orders', 'profile', 'addresses'].includes(tab) ? tab : 'profile';
+      return tab && PROFILE_TABS.includes(tab) ? tab : 'profile';
     } catch {
       return 'profile';
     }
@@ -33,6 +36,10 @@ export default function Profile() {
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [trackQuery, setTrackQuery] = useState('');
+  const [trackLoading, setTrackLoading] = useState(false);
+  const [trackError, setTrackError] = useState('');
+  const [trackedOrder, setTrackedOrder] = useState(null);
   const [pricingSettings, setPricingSettings] = useState({
     taxPercentage: 5,
     shippingCharge: 50,
@@ -253,7 +260,7 @@ export default function Profile() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tab = params.get('tab');
-    if (tab && ['profile', 'orders', 'addresses'].includes(tab)) {
+    if (tab && PROFILE_TABS.includes(tab)) {
       setActiveSection(tab);
     } else {
       setActiveSection('profile');
@@ -268,21 +275,46 @@ export default function Profile() {
   }, [activeSection]);
 
 
-  const refreshOrders = async () => {
+  const refreshOrders = async (opts = { showLoading: true }) => {
+    const showLoading = opts.showLoading !== false;
     try {
-      setLoadingOrders(true);
-      // Fetch pricing settings first
+      if (showLoading) setLoadingOrders(true);
       const settings = await fetchPricingSettings();
       setPricingSettings(settings);
       const data = await getMyOrders();
-      // Handle new API response format: { success: true, orders: [...], count: n }
       const ordersArray = data?.orders || (Array.isArray(data) ? data : []);
       setOrders(ordersArray);
     } catch (e) {
       console.error('Error fetching orders:', e);
-      setOrders([]);
+      if (showLoading) setOrders([]);
     } finally {
-      setLoadingOrders(false);
+      if (showLoading) setLoadingOrders(false);
+    }
+  };
+
+  const handleTrackOrderSubmit = async (e) => {
+    e.preventDefault();
+    setTrackError('');
+    setTrackedOrder(null);
+    const id = trackQuery.trim().replace(/^#/, '').trim();
+    if (!id) {
+      setTrackError('Enter your order ID or 8-character code.');
+      return;
+    }
+    setTrackLoading(true);
+    try {
+      const data = await getOrderById(id);
+      if (data?.success && data.order) {
+        setTrackedOrder(data.order);
+        setTrackQuery('');
+        await refreshOrders({ showLoading: false });
+      } else {
+        setTrackError('Order not found.');
+      }
+    } catch (err) {
+      setTrackError(err?.message || 'Could not load this order.');
+    } finally {
+      setTrackLoading(false);
     }
   };
 
@@ -299,6 +331,7 @@ export default function Profile() {
   const handleSectionChange = (section) => {
     setActiveSection(section);
     setMobileMenuOpen(false);
+    navigate(`/profile?tab=${section}`, { replace: true });
   };
 
   const formatDate = (dateString) => {
@@ -448,6 +481,29 @@ export default function Profile() {
                 </button>
 
                 <button
+                  onClick={() => handleSectionChange('track')}
+                  className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 mt-2 relative ${
+                    activeSection === 'track'
+                      ? 'bg-gray-900 text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className={`p-2 rounded-lg ${activeSection === 'track' ? 'bg-white/20' : 'bg-gray-100'}`}>
+                    <FiSearch className={`w-5 h-5 ${activeSection === 'track' ? 'text-white' : 'text-gray-700'}`} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="font-semibold">Track order</div>
+                    <div className={`text-xs ${activeSection === 'track' ? 'text-white/80' : 'text-gray-500'}`}>
+                      Look up by order ID
+                    </div>
+                  </div>
+                  {activeSection === 'track' && (
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full"></div>
+                  )}
+                  <span className={`${activeSection === 'track' ? 'text-white/60' : 'text-gray-400'}`}>›</span>
+                </button>
+
+                <button
                   onClick={() => handleSectionChange('addresses')}
                   className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 mt-2 relative ${
                     activeSection === 'addresses'
@@ -548,17 +604,27 @@ export default function Profile() {
                 </button>
                 <button
                   onClick={() => handleSectionChange('orders')}
-                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                  className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                     activeSection === 'orders'
                       ? 'bg-gray-900 text-white shadow-sm'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
                   }`}
                 >
-                  My Orders
+                  Orders
+                </button>
+                <button
+                  onClick={() => handleSectionChange('track')}
+                  className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                    activeSection === 'track'
+                      ? 'bg-gray-900 text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
+                  }`}
+                >
+                  Track
                 </button>
                 <button
                   onClick={() => handleSectionChange('addresses')}
-                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+                  className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                     activeSection === 'addresses'
                       ? 'bg-gray-900 text-white shadow-sm'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
@@ -655,7 +721,8 @@ export default function Profile() {
                     My Orders ({orders.length})
                   </h2>
                   <button
-                    onClick={refreshOrders}
+                    type="button"
+                    onClick={() => refreshOrders()}
                     className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     <FiRefreshCw className={`w-4 h-4 ${loadingOrders ? 'animate-spin' : ''}`} />
@@ -702,7 +769,7 @@ export default function Profile() {
                           {/* Order Header */}
                           <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex flex-wrap items-center justify-between gap-2">
                             <div className="flex items-center gap-3">
-                              <span className="text-sm font-medium text-gray-900">#{order.orderId || String(order._id).slice(-8).toUpperCase()}</span>
+                              <span className="text-sm font-medium text-gray-900">#{formatDisplayOrderId(order)}</span>
                               <span className="text-xs text-gray-500">•</span>
                               <span className="text-xs text-gray-500">{dateTime.date}</span>
                             </div>
@@ -840,6 +907,94 @@ export default function Profile() {
               </div>
             )}
 
+            {activeSection === 'track' && (
+              <div className="max-w-md mx-auto">
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <FiSearch className="w-5 h-5" />
+                    Track order
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    8-character code from your order card or confirmation, or the full 24-character order ID.
+                  </p>
+                </div>
+
+                <form onSubmit={handleTrackOrderSubmit} className="space-y-3">
+                  <label htmlFor="profile-track-id" className="sr-only">
+                    Order ID or code
+                  </label>
+                  <input
+                    id="profile-track-id"
+                    type="text"
+                    autoComplete="off"
+                    placeholder="e.g. 069477F7"
+                    value={trackQuery}
+                    onChange={(e) => setTrackQuery(e.target.value)}
+                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm font-mono bg-white focus:ring-2 focus:ring-gray-900 focus:border-gray-900 outline-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={trackLoading}
+                    className="w-full py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 disabled:opacity-60 transition-colors"
+                  >
+                    {trackLoading ? 'Searching…' : 'Track'}
+                  </button>
+                </form>
+                {trackError ? <p className="text-sm text-red-600 mt-3">{trackError}</p> : null}
+
+                {trackedOrder && (
+                  <div className="mt-8 rounded-xl border border-gray-200 bg-gray-50 p-5 space-y-4">
+                    <div className="flex justify-between items-baseline gap-2 text-sm">
+                      <span className="text-gray-500">Order</span>
+                      <span className="font-mono font-semibold text-gray-900">#{formatDisplayOrderId(trackedOrder)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Order status</span>
+                      <span className="font-medium text-gray-900 capitalize">
+                        {String(trackedOrder.orderStatus || trackedOrder.status || 'pending').replace(/_/g, ' ')}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Payment</span>
+                      <span className="font-medium text-gray-900 capitalize">
+                        {trackedOrder.paymentStatus || (trackedOrder.isPaid ? 'paid' : 'pending')} ·{' '}
+                        {trackedOrder.paymentMethod || 'cod'}
+                      </span>
+                    </div>
+                    {trackedOrder.createdAt && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Placed</span>
+                        <span className="text-gray-900">{formatDate(trackedOrder.createdAt).date}</span>
+                      </div>
+                    )}
+                    {trackedOrder.priceDetails?.totalPrice != null && (
+                      <div className="flex justify-between text-sm font-semibold pt-2 border-t border-gray-200">
+                        <span className="text-gray-700">Total</span>
+                        <span className="text-gray-900">
+                          ₹{Number(trackedOrder.priceDetails.totalPrice).toLocaleString('en-IN')}
+                        </span>
+                      </div>
+                    )}
+                    <ul className="text-sm border-t border-gray-200 pt-3 space-y-2">
+                      {(trackedOrder.items || []).map((it, idx) => (
+                        <li key={`${it.productId || idx}-${idx}`} className="flex justify-between gap-2 text-gray-800">
+                          <span className="truncate">{it.name}</span>
+                          <span className="text-gray-500 shrink-0">×{it.quantity || 1}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedOrder(trackedOrder)}
+                      className="w-full pt-2 text-sm font-medium text-gray-900 underline underline-offset-2 hover:text-gray-600"
+                    >
+                      Full details, timeline & address
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Order Details Modal */}
             {selectedOrder && (
               <div 
@@ -854,7 +1009,7 @@ export default function Profile() {
                   <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
                     <div>
                       <h2 className="text-xl font-bold text-gray-900">
-                        Order #{selectedOrder.orderId || String(selectedOrder._id).slice(-8).toUpperCase()}
+                        Order #{formatDisplayOrderId(selectedOrder)}
                       </h2>
                       <p className="text-sm text-gray-500">
                         Placed on {formatDate(selectedOrder.createdAt).date}

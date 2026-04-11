@@ -49,7 +49,14 @@ export const api = {
   updateCart: ({ productId, quantity }) => request('/cart/update', { method: 'PUT', body: JSON.stringify({ productId, quantity }) }),
   // Coupon endpoints (both now use JWT token for user identification)
   applyCoupon: (payload) => request('/coupons/apply', { method: 'POST', body: JSON.stringify(payload) }),
-  getCoupons: () => request('/coupons', { method: 'GET' }),
+  getCoupons: (opts = {}) => {
+    const params = new URLSearchParams();
+    if (opts.cartTotal != null && opts.cartTotal !== '' && !Number.isNaN(Number(opts.cartTotal))) {
+      params.set('cartTotal', String(Math.round(Number(opts.cartTotal))));
+    }
+    const qs = params.toString();
+    return request(`/coupons${qs ? `?${qs}` : ''}`, { method: 'GET' });
+  },
   // Cart coupon endpoints
   applyCouponToCart: (payload) => request('/cart/coupon', { method: 'POST', body: JSON.stringify(payload) }),
   removeCouponFromCart: () => request('/cart/coupon', { method: 'DELETE' }),
@@ -75,6 +82,16 @@ export const api = {
     // Hero Slider endpoints
     getHeroSlider: () => request('/admin/hero-slider', { method: 'GET' }),
     updateHeroSlider: (payload) => request('/admin/hero-slider', { method: 'PUT', body: JSON.stringify(payload) }),
+    // Coupons (same routes as standalone admin app; requires isAdmin JWT)
+    couponsList: () => request('/coupons/admin/all', { method: 'GET' }),
+    couponCreate: (payload) => request('/coupons', { method: 'POST', body: JSON.stringify(payload) }),
+    couponUpdate: (id, payload) => request(`/coupons/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
+    couponDelete: (id) => request(`/coupons/${id}`, { method: 'DELETE' }),
+    couponToggle: (id) => request(`/coupons/${id}/toggle`, { method: 'PATCH' }),
+    /** Storefront tax, shipping, free-shipping rules, marquee, low-stock (admin JWT) */
+    getPricingSettings: () => request('/settings/pricing', { method: 'GET' }),
+    updatePricingSettings: (payload) =>
+      request('/settings/pricing', { method: 'PUT', body: JSON.stringify(payload) }),
   },
   // Public policy endpoint
   getPolicy: (type) => request(`/policy/${type}`, { method: 'GET' }),

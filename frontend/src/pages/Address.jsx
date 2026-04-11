@@ -146,7 +146,8 @@ export default function AddressForm() {
             state: {
               orderId: result.order?._id || result.order?.id,
               orderNumber: result.order?.orderNumber || null,
-            }
+              paymentMethod: 'cod',
+            },
           });
         } else {
           await new Promise(resolve => setTimeout(resolve, remainingTime));
@@ -186,7 +187,12 @@ export default function AddressForm() {
             const r = await verifyPayment(response);
             if (r && r.success) {
               await loadCart();
-              navigate('/profile?tab=orders');
+              navigate('/order/success', {
+                state: {
+                  orderId: r.order?._id || r.order?.id,
+                  paymentMethod: 'razorpay',
+                },
+              });
             } else {
               alert('Payment verification failed');
             }

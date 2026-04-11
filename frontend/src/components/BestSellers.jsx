@@ -19,7 +19,13 @@ const BestSellers = () => {
         const products = Array.isArray(res) ? res : res?.products || [];
 
         // Filter products marked as isBestSeller
-        const bestSellersList = products.filter((p) => p.isBestSeller === true).slice(0, 4);
+        const bestSellersList = products
+          .filter(
+            (p) =>
+              p.isBestSeller === true ||
+              (Array.isArray(p.tags) && p.tags.includes('Best Seller'))
+          )
+          .slice(0, 4);
 
         if (!ignore) {
           setBestSellers(bestSellersList);

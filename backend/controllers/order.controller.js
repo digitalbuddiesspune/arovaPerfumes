@@ -1,6 +1,17 @@
 import Order from '../models/Order.js';
 import mongoose from 'mongoose';
 
+/** Pull 8+ hex run from pasted text (handles "#ID", spaces, labels); avoids mangling strings like "order-…". */
+const extractOrderHexFromParam = (raw) => {
+  const t = String(raw || '').trim().replace(/^#/, '').trim();
+  if (!t) return '';
+  const runs = t.match(/[0-9a-f]{8,}/gi);
+  if (runs?.length) {
+    return runs.sort((a, b) => b.length - a.length)[0].toLowerCase();
+  }
+  return t.replace(/[^0-9a-f]/gi, '').toLowerCase();
+};
+
 // Helper function to format order for frontend
 const formatOrderForFrontend = (order) => {
   // Get price details with fallbacks (use nullish coalescing ?? to preserve 0 as valid value)
@@ -55,7 +66,11 @@ export const getMyOrders = async (req, res) => {
       });
     }
 
-    const orders = await Order.find({ user: userId })
+    const userObjectId = mongoose.Types.ObjectId.isValid(userId)
+      ? new mongoose.Types.ObjectId(userId)
+      : userId;
+
+    const orders = await Order.find({ user: userObjectId })
       .sort({ createdAt: -1 })
       .populate('items.product');
 
@@ -87,17 +102,49 @@ export const getOrderById = async (req, res) => {
       });
     }
 
-    const { id } = req.params;
-    
-    // Validate ObjectId
-    if (!mongoose.isValidObjectId(id)) {
+    const userObjectId = mongoose.Types.ObjectId.isValid(userId)
+      ? new mongoose.Types.ObjectId(userId)
+      : userId;
+
+    const rawInput = String(
+      req.query?.q ??
+      req.query?.code ??
+      req.params?.id ??
+      ''
+    ).trim();
+
+    const hex = extractOrderHexFromParam(rawInput);
+    let order = null;
+
+    if (hex.length === 24 && mongoose.isValidObjectId(hex)) {
+      order = await Order.findOne({ _id: hex, user: userObjectId }).populate('items.product');
+    } else if (hex.length >= 8) {
+      // Match the same 8-char display code as formatOrderForFrontend (last 8 hex of ObjectId).
+      // Scan user orders by _id only — avoids $expr / Mongo version quirks so short codes always work.
+      const suffix = hex.slice(-8).toUpperCase();
+      const oidRows = await Order.find({ user: userObjectId }).select('_id').lean();
+      const matchingIds = oidRows
+        .filter((row) => String(row._id).slice(-8).toUpperCase() === suffix)
+        .map((row) => row._id);
+      if (matchingIds.length === 0) {
+        order = null;
+      } else if (matchingIds.length > 1) {
+        return res.status(400).json({
+          success: false,
+          message:
+            'Multiple orders match this code. Use the full Order ID from your confirmation email or open My Orders in your profile.',
+        });
+      } else {
+        order = await Order.findOne({ _id: matchingIds[0], user: userObjectId }).populate('items.product');
+      }
+    } else {
       return res.status(400).json({
         success: false,
-        message: 'Invalid order ID'
+        message:
+          'Invalid order ID. Enter the full ID from your order confirmation, or the 8-character order code from My Orders.',
       });
     }
-    
-    const order = await Order.findOne({ _id: id, user: userId }).populate('items.product');
+
     if (!order) {
       return res.status(404).json({ 
         success: false,

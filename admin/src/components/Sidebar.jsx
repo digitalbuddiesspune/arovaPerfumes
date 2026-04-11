@@ -1,14 +1,5 @@
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
-
-const navItems = [
-  { label: 'Dashboard', to: '/dashboard' },
-  { label: 'Products', to: '/products' },
-  { label: 'Categories', to: '/categories' },
-  { label: 'Orders', to: '/orders' },
-  { label: 'Users', to: '/users' },
-  { label: 'Coupons', to: '/coupons' },
-  { label: 'Price Settings', to: '/price-settings' },
-]
+import { ADMIN_NAV_ITEMS, navItemIsActive } from '../config/adminNav'
 
 const Sidebar = () => {
   const navigate = useNavigate()
@@ -19,13 +10,6 @@ const Sidebar = () => {
     navigate('/login')
   }
 
-  const isActive = (path) => {
-    if (path === '/orders') {
-      return location.pathname.startsWith('/orders')
-    }
-    return location.pathname === path || location.pathname.startsWith(`${path}/`)
-  }
-
   return (
     <aside className="hidden md:flex md:w-64 shrink-0 bg-slate-900 text-white min-h-screen flex-col">
       <div className="px-6 py-5 border-b border-slate-700">
@@ -33,13 +17,15 @@ const Sidebar = () => {
       </div>
 
       <nav className="p-4 space-y-2 flex-1">
-        {navItems.map((item) => (
+        {ADMIN_NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
             className={() =>
               `block px-3 py-2 rounded-lg text-sm transition ${
-                isActive(item.to) ? 'bg-white text-slate-900 font-semibold' : 'text-slate-200 hover:bg-slate-800'
+                navItemIsActive(location.pathname, item.to)
+                  ? 'bg-white text-slate-900 font-semibold'
+                  : 'text-slate-200 hover:bg-slate-800'
               }`
             }
           >
@@ -61,4 +47,3 @@ const Sidebar = () => {
 }
 
 export default Sidebar
-

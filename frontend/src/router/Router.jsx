@@ -29,10 +29,14 @@ import AdminOrderDetails from '../pages/admin/AdminOrderDetails';
 import AdminPolicies from '../pages/admin/AdminPolicies';
 import AdminLogoSettings from '../pages/admin/AdminLogoSettings';
 import AdminHeroSlider from '../pages/admin/AdminHeroSlider';
+import AdminCoupons from '../pages/admin/AdminCoupons';
+import AdminPriceSettings from '../pages/admin/AdminPriceSettings';
 import PrivacyPolicy from '../pages/PrivacyPolicy';
 import TermsOfService from '../pages/TermsOfService';
 import ShippingPolicy from '../pages/ShippingPolicy';
 import ReturnPolicy from '../pages/ReturnPolicy';
+import LegalPages from '../pages/LegalPages';
+import SocialProofs from '../pages/SocialProofs';
 
 const isAuthenticated = () => {
   try {
@@ -108,12 +112,15 @@ const Router = () => {
           {/* Product Detail - Using ID for better reliability */}
           <Route path="product/:id" element={<ProductDetail />} />
           <Route path="about" element={<About />} />
+          <Route path="legal" element={<LegalPages />} />
+          <Route path="social-proofs" element={<SocialProofs />} />
           <Route path="contact" element={<Contact />} />
           <Route path="wishlist" element={<Wishlist />} />
           <Route path="privacy" element={<PrivacyPolicy />} />
           <Route path="terms" element={<TermsOfService />} />
           <Route path="shipping" element={<ShippingPolicy />} />
           <Route path="returns" element={<ReturnPolicy />} />
+          <Route path="track-order" element={<Navigate to="/profile?tab=track" replace />} />
 
           {/* Private route(s) */}
           <Route path="cart" element={<RequireAuth><Cart /></RequireAuth>} />
@@ -138,6 +145,8 @@ const Router = () => {
           <Route path="policies" element={<AdminPolicies />} />
           <Route path="logo" element={<AdminLogoSettings />} />
           <Route path="hero-slider" element={<AdminHeroSlider />} />
+          <Route path="coupons" element={<AdminCoupons />} />
+          <Route path="shipping-pricing" element={<AdminPriceSettings />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

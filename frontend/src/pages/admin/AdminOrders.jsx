@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../utils/api';
+import { formatDisplayOrderId } from '../../utils/orderId';
 
 const ORDER_STATUS_OPTIONS = [
   { value: 'pending', label: 'Pending' },
@@ -99,7 +100,7 @@ const AdminOrders = () => {
       const statusOk = orderStatus === 'all' || normalizedStatus(o) === orderStatus;
       const payOk = paymentStatus === 'all' || normalizedPaymentStatus(o) === paymentStatus;
       const dateOk = filterByDate(o.createdAt);
-      const text = `${o.user?.name || ''} ${o.user?.email || ''} ${o._id || ''}`.toLowerCase();
+      const text = `${o.user?.name || ''} ${o.user?.email || ''} ${o._id || ''} ${formatDisplayOrderId(o)}`.toLowerCase();
       const searchOk = !q || text.includes(q);
       return statusOk && payOk && dateOk && searchOk;
     });
@@ -216,7 +217,7 @@ const AdminOrders = () => {
             {pageItems.map((o) => (
               <div key={o._id} className="p-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="font-semibold">#{String(o._id).slice(-6)}</div>
+                  <div className="font-semibold">#{formatDisplayOrderId(o)}</div>
                   <div className="text-sm">{formatINR(o.amount)}</div>
                 </div>
                 <div className="text-sm text-gray-800">{o.user?.name}</div>
@@ -280,7 +281,7 @@ const AdminOrders = () => {
               <tbody>
                 {pageItems.map((o) => (
                   <tr key={o._id} className="border-b hover:bg-rose-50/40">
-                    <td className="p-2 whitespace-nowrap font-medium">#{String(o._id).slice(-6)}</td>
+                    <td className="p-2 whitespace-nowrap font-medium">#{formatDisplayOrderId(o)}</td>
                     <td className="p-2 max-w-[220px]">
                       <div className="truncate font-medium">{o.user?.name || 'Customer'}</div>
                       <div className="text-gray-500 text-xs truncate">{renderAddress(o.address)}</div>

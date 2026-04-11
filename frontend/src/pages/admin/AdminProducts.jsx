@@ -9,6 +9,7 @@ const AdminProducts = () => {
     discountPercent: 0,
     description: '',
     category: '',
+    isReturnable: true,
     images: { image1: '' },
     product_info: { brand: '', manufacturer: '', SareeLength: '', SareeMaterial: '', SareeColor: '', IncludedComponents: '' },
   });
@@ -21,7 +22,8 @@ const AdminProducts = () => {
     _id: '',
     mrp: '',
     discountPercent: 0,
-    price: ''
+    price: '',
+    isReturnable: true,
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [toast, setToast] = useState({ show: false, text: '', type: 'success' });
@@ -65,10 +67,13 @@ const AdminProducts = () => {
         category: form.category,
         images: form.images,
         product_info: form.product_info,
+        shippingAndReturns: {
+          returns: { isReturnable: Boolean(form.isReturnable) },
+        },
       };
       await api.admin.createProduct(payload);
       setToast({ show: true, text: 'Product created', type: 'success' });
-      setForm({ title: '', mrp: '', discountPercent: 0, description: '', category: '', images: { image1: '' }, product_info: { brand: '', manufacturer: '', SareeLength: '', SareeMaterial: '', SareeColor: '', IncludedComponents: '' } });
+      setForm({ title: '', mrp: '', discountPercent: 0, description: '', category: '', isReturnable: true, images: { image1: '' }, product_info: { brand: '', manufacturer: '', SareeLength: '', SareeMaterial: '', SareeColor: '', IncludedComponents: '' } });
       await load();
     } catch (e2) {
       setError(e2.message || 'Failed to create product');
@@ -98,11 +103,13 @@ const AdminProducts = () => {
     const productId = product._id?.toString ? product._id.toString() : String(product._id || '');
     const mrp = Number(product.mrp) || 0;
     const discountPercent = Number(product.discountPercent) || 0;
+    const isReturnable = product.shippingAndReturns?.returns?.isReturnable !== false;
     setEditForm({
       _id: productId,
       mrp: mrp,
       discountPercent: discountPercent,
-      price: Math.round(mrp - (mrp * discountPercent) / 100)
+      price: Math.round(mrp - (mrp * discountPercent) / 100),
+      isReturnable,
     });
     setIsEditModalOpen(true);
   };
@@ -110,7 +117,7 @@ const AdminProducts = () => {
   const closeEditModal = () => {
     setIsEditModalOpen(false);
     setEditingProduct(null);
-    setEditForm({ _id: '', mrp: '', discountPercent: 0, price: '' });
+    setEditForm({ _id: '', mrp: '', discountPercent: 0, price: '', isReturnable: true });
   };
 
   const handleEditChange = (e) => {
@@ -137,7 +144,10 @@ const AdminProducts = () => {
       }
       await api.admin.updateProduct(editForm._id, {
         mrp: Number(editForm.mrp),
-        discountPercent: Number(editForm.discountPercent) || 0
+        discountPercent: Number(editForm.discountPercent) || 0,
+        shippingAndReturns: {
+          returns: { isReturnable: Boolean(editForm.isReturnable) },
+        },
       });
       setToast({ show: true, text: 'Product updated', type: 'success' });
       await load();
@@ -186,6 +196,29 @@ const AdminProducts = () => {
             <input name="title" value={form.title} onChange={onChange} placeholder="Title" className="w-full border rounded px-3 py-2" required />
             <input name="mrp" type="number" value={form.mrp} onChange={onChange} placeholder="MRP" className="w-full border rounded px-3 py-2" required />
             <input name="discountPercent" type="number" value={form.discountPercent} onChange={onChange} placeholder="Discount %" className="w-full border rounded px-3 py-2" />
+            <div>
+              <div className="text-xs font-medium text-gray-700 mb-1.5">Returns (after purchase)</div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setForm((prev) => ({ ...prev, isReturnable: true }))}
+                  className={`flex-1 px-3 py-2 rounded border text-sm font-medium transition-colors ${
+                    form.isReturnable ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  Enable
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm((prev) => ({ ...prev, isReturnable: false }))}
+                  className={`flex-1 px-3 py-2 rounded border text-sm font-medium transition-colors ${
+                    !form.isReturnable ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  Disable
+                </button>
+              </div>
+            </div>
             <input name="category" value={form.category} onChange={onChange} placeholder="Category" className="w-full border rounded px-3 py-2" required />
             <textarea name="description" value={form.description} onChange={onChange} placeholder="Description" className="w-full border rounded px-3 py-2" rows="3" />
             <div className="grid grid-cols-1 gap-2">
@@ -355,6 +388,30 @@ const AdminProducts = () => {
                 </div>
                 <div className="text-xs text-gray-500 mt-1">
                   (MRP - {editForm.discountPercent || 0}%)
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Returns (after purchase)</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditForm((prev) => ({ ...prev, isReturnable: true }))}
+                    className={`flex-1 px-3 py-2 rounded border text-sm font-medium transition-colors ${
+                      editForm.isReturnable ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    Enable
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditForm((prev) => ({ ...prev, isReturnable: false }))}
+                    className={`flex-1 px-3 py-2 rounded border text-sm font-medium transition-colors ${
+                      !editForm.isReturnable ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    Disable
+                  </button>
                 </div>
               </div>
               

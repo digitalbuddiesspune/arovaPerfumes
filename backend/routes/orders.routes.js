@@ -7,6 +7,9 @@ const router = Router();
 // GET /api/orders - list current user's orders
 router.get('/', auth, getMyOrders);
 
+// GET /api/orders/lookup?q=... — same as /:id but avoids path-segment quirks (short codes, encoding)
+router.get('/lookup', auth, getOrderById);
+
 // GET /api/orders/:id - get a specific order (owned by user)
 router.get('/:id', auth, getOrderById);
 

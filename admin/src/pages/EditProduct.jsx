@@ -28,6 +28,7 @@ const EditProduct = () => {
     freeDelivery: false,
     isReturnable: true,
     tags: [],
+    isBestSeller: false,
   })
 
   useEffect(() => {
@@ -57,6 +58,7 @@ const EditProduct = () => {
           freeDelivery: p.services?.freeDelivery || false,
           isReturnable: p.shippingAndReturns?.returns?.isReturnable ?? true,
           tags: p.tags || [],
+          isBestSeller: Boolean(p.isBestSeller),
         })
       } catch (error) {
         setMessage(error.response?.data?.message || 'Failed to load product')
@@ -110,6 +112,7 @@ const EditProduct = () => {
           },
         },
         tags: form.tags,
+        isBestSeller: form.isBestSeller,
       }
       await productsAPI.update(id, payload)
       setMessage('Product updated successfully.')
@@ -233,6 +236,18 @@ const EditProduct = () => {
               <span className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium">Highly Recommended</span>
             </label>
           </div>
+        </div>
+
+        <div>
+          <h4 className="font-medium text-slate-900 mb-3">Best seller</h4>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={form.isBestSeller}
+              onChange={(e) => setForm((prev) => ({ ...prev, isBestSeller: e.target.checked }))}
+            />
+            <span className="text-sm text-slate-700">Mark as best seller (shows badge on storefront)</span>
+          </label>
         </div>
 
         {/* Services */}

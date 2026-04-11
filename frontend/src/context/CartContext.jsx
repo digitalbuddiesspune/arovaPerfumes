@@ -275,20 +275,19 @@ export const CartProvider = ({ children }) => {
 
   // Fetch eligible coupons - API uses JWT token to identify user
   const fetchEligibleCoupons = useCallback(async () => {
-    if (!hasToken()) return;
-    console.log('[Frontend] Fetching coupons (using JWT token)');
+    if (!hasToken()) {
+      setEligibleCoupons([]);
+      return;
+    }
     try {
-      const result = await api.getCoupons();
-      console.log('[Frontend] Coupons from API:', result);
+      const result = await api.getCoupons({ cartTotal });
       if (result.success) {
         setEligibleCoupons(result.data || []);
-        const hasFirstOrderCoupon = result.data?.some(c => c.isFirstOrderOnly);
-        console.log('[Frontend] Has first order coupon in response:', hasFirstOrderCoupon);
       }
     } catch (error) {
       console.warn('Failed to fetch eligible coupons:', error);
     }
-  }, []);
+  }, [cartTotal]);
 
   // Coupon functions
   const applyCouponCode = useCallback(async (code) => {
@@ -329,6 +328,11 @@ export const CartProvider = ({ children }) => {
         setCouponDiscount(result.data.discountAmount);
         // Save to localStorage
         localStorage.setItem('appliedCoupon', JSON.stringify(couponData));
+        try {
+          await fetchEligibleCoupons();
+        } catch {
+          /* ignore */
+        }
         return {
           success: true,
           message: `Coupon applied! You saved ₹${result.data.discountAmount.toLocaleString()}`,
@@ -346,7 +350,7 @@ export const CartProvider = ({ children }) => {
         message: error.message || 'Failed to apply coupon'
       };
     }
-  }, [cartTotal]);
+  }, [cartTotal, fetchEligibleCoupons]);
 
   const removeCoupon = useCallback(async () => {
     setAppliedCoupon(null);
@@ -356,11 +360,15 @@ export const CartProvider = ({ children }) => {
     // Remove coupon from backend cart
     try {
       await api.removeCouponFromCart();
-      console.log('[CartContext] Coupon removed from cart backend');
     } catch (cartError) {
       console.error('[CartContext] Failed to remove coupon from cart:', cartError);
     }
-  }, []);
+    try {
+      await fetchEligibleCoupons();
+    } catch {
+      /* ignore */
+    }
+  }, [fetchEligibleCoupons]);
 
   // Final amount after coupon discount
   const finalTotal = Math.max(0, cartTotal - couponDiscount);
@@ -385,10 +393,13 @@ export const CartProvider = ({ children }) => {
 
   // Reload in same tab on auth updates.
   useEffect(() => {
-    const onAuthUpdated = () => loadCart();
+    const onAuthUpdated = () => {
+      loadCart();
+      fetchEligibleCoupons();
+    };
     window.addEventListener('auth:updated', onAuthUpdated);
     return () => window.removeEventListener('auth:updated', onAuthUpdated);
-  }, [loadCart]);
+  }, [loadCart, fetchEligibleCoupons]);
 
   return (
     <CartContext.Provider value={{

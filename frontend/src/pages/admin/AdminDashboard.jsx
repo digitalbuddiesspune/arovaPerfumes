@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../utils/api';
+import { formatDisplayOrderId } from '../../utils/orderId';
 import { FiCreditCard, FiShoppingBag, FiBox, FiBookOpen } from 'react-icons/fi';
 
 const AdminDashboard = () => {
@@ -61,7 +62,7 @@ const AdminDashboard = () => {
 
   const activity = recentOrders.map(o => ({
     id: o._id,
-    text: `${o.user?.name || 'Customer'} placed order #${String(o._id).slice(-6)}`,
+    text: `${o.user?.name || 'Customer'} placed order #${formatDisplayOrderId(o)}`,
     time: new Date(o.createdAt).toLocaleString()
   }));
 
@@ -98,7 +99,7 @@ const AdminDashboard = () => {
                 {recentOrders.map(o => (
                   <div key={o._id} className="p-3 space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <div className="font-medium">#{String(o._id).slice(-6)}</div>
+                      <div className="font-medium">#{formatDisplayOrderId(o)}</div>
                       <div className="text-sm font-semibold">{formatINR(o.amount)}</div>
                     </div>
                     <div className="text-sm text-gray-700">{o.user?.name || ''}</div>
@@ -125,7 +126,7 @@ const AdminDashboard = () => {
                   <tbody>
                     {recentOrders.map(o => (
                       <tr key={o._id} className="border-b">
-                        <td className="p-3">#{String(o._id).slice(-6)}</td>
+                        <td className="p-3">#{formatDisplayOrderId(o)}</td>
                         <td className="p-3">{o.user?.name || ''}<div className="text-gray-500">{o.user?.email || ''}</div></td>
                         <td className="p-3">{o.items?.length || 0}</td>
                         <td className="p-3">₹{Number(o.amount || 0).toLocaleString('en-IN')}</td>

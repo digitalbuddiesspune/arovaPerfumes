@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaBolt, FaShoppingCart, FaSpinner } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
-import { fetchSareeById } from "../services/api";
+import { fetchSareeById, fetchPricingSettings } from "../services/api";
+import { getProductPromoBadges } from "../utils/productBadges";
 import ProductSuggestions from "./ProductSuggestions";
 
 const FALLBACK_IMAGE = "/no-image.png";
@@ -19,6 +20,22 @@ const ProductDetail = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
   const [toast, setToast] = useState({ show: false, text: "", type: "success" });
+  const [lowStockThreshold, setLowStockThreshold] = useState(8);
+
+  useEffect(() => {
+    let ignore = false;
+    (async () => {
+      try {
+        const s = await fetchPricingSettings();
+        if (!ignore && typeof s.lowStockThreshold === "number") setLowStockThreshold(s.lowStockThreshold);
+      } catch {
+        /* default */
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -64,6 +81,19 @@ const ProductDetail = () => {
   const sellingPrice = Number(product?.price || product?.salePrice || Math.round(mrp - (mrp * Number(product?.discountPercent || 0)) / 100) || 0);
   const discountPercent = Number(product?.discountPercent || 0);
 
+  const stockQty = Number(product?.quantity ?? 0);
+  const maxBuyQty = stockQty > 0 ? stockQty : 99;
+  const { showBestSeller, showFewLeft } = useMemo(
+    () => (product ? getProductPromoBadges(product, lowStockThreshold) : { showBestSeller: false, showFewLeft: false }),
+    [product, lowStockThreshold]
+  );
+
+  useEffect(() => {
+    if (!product) return;
+    const max = Number(product.quantity ?? 0) > 0 ? Number(product.quantity) : 99;
+    setQuantity((q) => Math.min(Math.max(1, q), max));
+  }, [product]);
+
   const notes = [
     ...(product?.topNotes || []),
     ...(product?.middleNotes || []),
@@ -78,6 +108,10 @@ const ProductDetail = () => {
     { label: "Secure Transaction", value: product?.secureTransaction ? "Yes" : "No" },
     { label: "Easy Tracking", value: product?.easyTracking ? "Yes" : "No" },
     { label: "Free Delivery", value: product?.freeDelivery ? "Yes" : "No" },
+    {
+      label: "Returns",
+      value: product?.isReturnable !== false ? "Eligible" : "Not eligible",
+    },
   ].filter((f) => f.value !== null && f.value !== undefined && f.value !== "");
 
   const handleAddToCart = async () => {
@@ -141,7 +175,19 @@ const ProductDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left image gallery */}
           <div>
-            <div className="bg-white p-2 border border-gray-100">
+            <div className="bg-white p-2 border border-gray-100 relative">
+              <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 items-start max-w-[min(90%,14rem)] pointer-events-none">
+                {showBestSeller && (
+                  <span className="inline-flex bg-amber-500 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide shadow-md">
+                    BEST SELLER
+                  </span>
+                )}
+                {showFewLeft && (
+                  <span className="inline-flex bg-rose-600 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide shadow-md leading-tight">
+                    ONLY FEW LEFT — HURRY
+                  </span>
+                )}
+              </div>
               <img
                 src={images[selectedImageIdx] || FALLBACK_IMAGE}
                 alt={product.title}
@@ -182,14 +228,6 @@ const ProductDetail = () => {
           {/* Right details panel */}
           <div className="bg-white p-4 sm:p-5">
             <div>
-              {/* Best Seller Badge */}
-              {product.isBestSeller && (
-                <div className="mb-2">
-                  <span className="inline-flex items-center gap-1 bg-amber-500 text-white text-xs px-3 py-1.5 rounded-full font-semibold tracking-wide shadow-md">
-                    🔥 BEST SELLER
-                  </span>
-                </div>
-              )}
               <h1 className="text-3xl sm:text-4xl font-semibold uppercase tracking-wide text-gray-900 leading-tight">
                 {product.title}
               </h1>
@@ -239,7 +277,7 @@ const ProductDetail = () => {
                   <span className="w-10 text-center text-sm">{quantity}</span>
                   <button
                     type="button"
-                    onClick={() => setQuantity((q) => q + 1)}
+                    onClick={() => setQuantity((q) => Math.min(maxBuyQty, q + 1))}
                     className="w-8 h-8 text-gray-700 hover:bg-gray-100"
                   >
                     +
@@ -247,7 +285,7 @@ const ProductDetail = () => {
                 </div>
                 <button
                   onClick={handleAddToCart}
-                  disabled={isAdding}
+                  disabled={isAdding || stockQty === 0}
                   className="flex-1 border border-black text-black py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   <FaShoppingCart className="w-4 h-4" />
@@ -258,7 +296,7 @@ const ProductDetail = () => {
 
             <button
               onClick={handleBuyNow}
-              disabled={isAdding}
+              disabled={isAdding || stockQty === 0}
               className="w-full mt-3 bg-black text-white py-2 text-sm font-medium hover:bg-gray-800 disabled:opacity-60 flex items-center justify-center gap-2"
             >
               <FaBolt className="w-4 h-4" />
@@ -269,6 +307,20 @@ const ProductDetail = () => {
               <div>Secure Transaction</div>
               <div>Easy Order Tracking</div>
             </div>
+
+            <p className="mt-3 text-xs text-gray-600 leading-relaxed">
+              {product.isReturnable !== false ? (
+                <>
+                  This product is eligible for return under our{" "}
+                  <Link to="/returns" className="text-gray-900 underline underline-offset-2 hover:no-underline">
+                    return policy
+                  </Link>
+                  .
+                </>
+              ) : (
+                <>This product is not eligible for return (final sale).</>
+              )}
+            </p>
 
             {product.description && (
               <div className="mt-5">

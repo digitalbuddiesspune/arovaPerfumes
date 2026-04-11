@@ -101,9 +101,13 @@ const productSchema = new mongoose.Schema(
     },
 
     tags: {
-      type: [String],
+      type: [
+        {
+          type: String,
+          enum: ['Best Seller', 'Only Few Left Hurry', 'Highly Recommended'],
+        },
+      ],
       default: [],
-      enum: ['Best Seller', 'Only Few Left Hurry', 'Highly Recommended'],
     },
 
     pincodeServiceable: { type: Boolean, default: true },

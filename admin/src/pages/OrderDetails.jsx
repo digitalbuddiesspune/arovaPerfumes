@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ordersAPI } from '../services/api'
+import { formatDisplayOrderId } from '../utils/orderId'
 
 const OrderDetails = () => {
   const { id } = useParams()
@@ -199,7 +200,7 @@ const OrderDetails = () => {
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-slate-900">
-                  Order #{String(order._id).slice(-8).toUpperCase()}
+                  Order #{formatDisplayOrderId(order)}
                 </h1>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${getOrderStatusColor(orderStatus)}`}>
                   <span>{getStatusIcon(orderStatus)}</span>
@@ -461,7 +462,7 @@ const OrderDetails = () => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-slate-500">Order ID</span>
-                <span className="font-medium text-slate-900 font-mono">{String(order._id).slice(-8).toUpperCase()}</span>
+                <span className="font-medium text-slate-900 font-mono">{formatDisplayOrderId(order)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Order Date</span>

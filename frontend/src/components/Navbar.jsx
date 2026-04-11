@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { searchProducts } from '../services/api';
+import { searchProducts, fetchPricingSettings } from '../services/api';
 import ProductImage from './ProductImage';
+
+const DEFAULT_ANNOUNCEMENT =
+  '• 1st Order - 50% Off • USE CODE SMELLGOOD5 TO GET EXTRA 5% OFF ON PREPAID ORDERS • GET A FREE SAMPLE ON EVERY ORDER •';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,6 +20,23 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [announcementMarquee, setAnnouncementMarquee] = useState(DEFAULT_ANNOUNCEMENT);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const s = await fetchPricingSettings();
+        const line = (s?.announcementMarquee && String(s.announcementMarquee).trim()) || DEFAULT_ANNOUNCEMENT;
+        if (!cancelled) setAnnouncementMarquee(line);
+      } catch {
+        /* keep default */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -159,6 +179,7 @@ const Navbar = () => {
 
   // Navigation links matching suuupply style
   const navLinks = [
+    { name: 'Shop Now', path: '/products' },
     { name: 'MEN', path: '/category/men' },
     { name: 'WOMEN', path: '/category/women' },
   ];
@@ -174,10 +195,11 @@ const Navbar = () => {
     <div className="relative z-[70]">
       <div className="bg-black text-white text-[10px] sm:text-xs md:text-sm font-medium tracking-wide py-1.5 overflow-hidden whitespace-nowrap">
         <div className="animate-scroll inline-flex min-w-max">
-          <span className="px-4 sm:px-6">• 1st Order - 50% Off • USE CODE SMELLGOOD5 TO GET EXTRA 5% OFF ON PREPAID ORDERS • GET A FREE SAMPLE ON EVERY ORDER •</span>
-          <span className="px-4 sm:px-6">• 1st Order - 50% Off • USE CODE SMELLGOOD5 TO GET EXTRA 5% OFF ON PREPAID ORDERS • GET A FREE SAMPLE ON EVERY ORDER •</span>
-          <span className="px-4 sm:px-6">• 1st Order - 50% Off • USE CODE SMELLGOOD5 TO GET EXTRA 5% OFF ON PREPAID ORDERS • GET A FREE SAMPLE ON EVERY ORDER •</span>
-          <span className="px-4 sm:px-6">• 1st Order - 50% Off • USE CODE SMELLGOOD5 TO GET EXTRA 5% OFF ON PREPAID ORDERS • GET A FREE SAMPLE ON EVERY ORDER •</span>
+          {[0, 1, 2, 3].map((i) => (
+            <span key={i} className="px-4 sm:px-6">
+              {announcementMarquee}
+            </span>
+          ))}
         </div>
       </div>
       <nav className="bg-white border-b border-gray-200 border-t-0">

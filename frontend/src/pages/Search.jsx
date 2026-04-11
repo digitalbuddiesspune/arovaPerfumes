@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { FaRupeeSign, FaFilter, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { searchProducts } from '../services/api';
+import { searchProducts, fetchPricingSettings } from '../services/api';
+import { getProductPromoBadges } from '../utils/productBadges';
 
 // Add CSS to hide scrollbar
 const styles = `
@@ -29,7 +30,23 @@ const Search = () => {
   const [filteredResults, setFilteredResults] = useState([]);
   const [error, setError] = useState('');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  
+  const [lowStockThreshold, setLowStockThreshold] = useState(8);
+
+  useEffect(() => {
+    let ignore = false;
+    (async () => {
+      try {
+        const s = await fetchPricingSettings();
+        if (!ignore && typeof s.lowStockThreshold === 'number') setLowStockThreshold(s.lowStockThreshold);
+      } catch {
+        /* default */
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   // Filter states
   const [selectedPriceRange, setSelectedPriceRange] = useState(null);
   const [selectedFabrics, setSelectedFabrics] = useState([]);
@@ -374,6 +391,7 @@ const Search = () => {
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
                 {filteredResults.map((p) => {
               const pid = p._id || p.id;
+              const { showBestSeller, showFewLeft } = getProductPromoBadges(p, lowStockThreshold);
               return (
               <div
                 key={p._id || p.title}
@@ -381,6 +399,18 @@ const Search = () => {
               >
                 <Link to={pid ? `/product/${pid}` : '#'} className="block" onClick={(e) => { if (!pid) e.preventDefault(); }}>
                   <div className="relative w-full aspect-[3/4] bg-gray-50">
+                    <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start max-w-[85%] pointer-events-none">
+                      {showBestSeller && (
+                        <span className="bg-amber-500 text-white text-[9px] px-2 py-0.5 rounded-full font-semibold shadow-sm">
+                          BEST SELLER
+                        </span>
+                      )}
+                      {showFewLeft && (
+                        <span className="bg-rose-600 text-white text-[9px] px-2 py-0.5 rounded-full font-semibold shadow-sm leading-tight">
+                          FEW LEFT — HURRY
+                        </span>
+                      )}
+                    </div>
                     <img
                       src={p.images?.image1 || p.image || 'https://res.cloudinary.com/dnyp5jknp/image/upload/v1775567474/d3b4e9cd-feaf-4362-9a38-20c30bbb5db9.png'}
                       alt={p.title || p.name || 'Product'}

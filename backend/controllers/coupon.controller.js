@@ -97,7 +97,7 @@ export const createCoupon = async (req, res) => {
   }
 };
 
-// Get all coupons (Protected - only active coupons, filters first order by authenticated user)
+// Get all coupons (Protected): returns active coupons with applicableForUser + unavailableReason (cartTotal query optional)
 export const getAllCoupons = async (req, res) => {
   try {
     const { sortBy = 'createdAt', order = 'desc' } = req.query;
@@ -115,86 +115,61 @@ export const getAllCoupons = async (req, res) => {
       .sort({ [sortBy]: sortOrder })
       .lean();
 
-    console.log('[GET /coupons] Total active coupons:', coupons.length);
-    console.log('[GET /coupons] First order coupons:', coupons.filter(c => c.isFirstOrderOnly).map(c => c.code));
+    const cartTotalRaw = req.query.cartTotal;
+    const cartTotal =
+      cartTotalRaw !== undefined && cartTotalRaw !== null && String(cartTotalRaw).trim() !== ''
+        ? Math.max(0, Number(cartTotalRaw))
+        : null;
 
-    // If userId provided, filter out first order only coupons for users who have orders
+    let hasOrder = false;
     if (userId) {
-      // Convert userId to proper ObjectId for comparison
       let userObjectId;
       try {
         userObjectId = new mongoose.Types.ObjectId(userId);
-      } catch (e) {
-        console.log('[GET /coupons] Invalid userId format:', userId);
-        userObjectId = userId; // fallback to string
+      } catch {
+        userObjectId = userId;
       }
-
-      // Check if user has any orders - try both ObjectId and string formats
       let orderFound = await Order.findOne({ user: userObjectId });
-      
-      // If not found with ObjectId, try with string (for old orders)
-      if (!orderFound) {
-        orderFound = await Order.findOne({ user: userId.toString() });
-        console.log('[GET /coupons] Tried string query, found:', orderFound ? 'YES' : 'NO');
-      }
-      
-      // Also try with just the userId as-is (could be string or ObjectId already)
-      if (!orderFound) {
-        orderFound = await Order.findOne({ user: userId });
-        console.log('[GET /coupons] Tried raw userId query, found:', orderFound ? 'YES' : 'NO');
-      }
-
-      const hasOrder = !!orderFound;
-
-      if (orderFound) {
-        console.log('[GET /coupons] Order Found: YES - Order ID:', orderFound._id);
-        console.log('[GET /coupons] Order user field type:', typeof orderFound.user);
-        console.log('[GET /coupons] Order user field value:', orderFound.user);
-      } else {
-        console.log('[GET /coupons] Order Found: NO');
-        // Debug: List all orders for this user (any format)
-        try {
-          const allOrders = await Order.find({ $or: [{ user: userObjectId }, { user: userId.toString() }, { user: userId }] });
-          console.log('[GET /coupons] All matching orders count:', allOrders?.length || 0);
-          if (allOrders && allOrders.length > 0) {
-            console.log('[GET /coupons] First order user field:', allOrders[0].user, 'type:', typeof allOrders[0].user);
-          }
-        } catch (err) {
-          console.log('[GET /coupons] Error finding all orders:', err.message);
-        }
-      }
-      console.log('[GET /coupons] hasOrder:', hasOrder);
-
-      if (hasOrder) {
-        // User has orders - filter out first order only coupons
-        const beforeCount = coupons.length;
-        coupons = coupons.filter(coupon => {
-          if (coupon.isFirstOrderOnly) {
-            console.log('[GET /coupons] FILTERING OUT first order coupon:', coupon.code);
-            return false;
-          }
-          return true;
-        });
-        console.log(`[GET /coupons] Filtered ${beforeCount - coupons.length} first order coupons. Remaining:`, coupons.length);
-      } else {
-        console.log('[GET /coupons] User has no orders - keeping all first order coupons');
-      }
+      if (!orderFound) orderFound = await Order.findOne({ user: userId.toString() });
+      if (!orderFound) orderFound = await Order.findOne({ user: userId });
+      hasOrder = !!orderFound;
     }
 
-    // Add validity info to each coupon
     const now = new Date();
-    const enrichedCoupons = coupons.map(coupon => {
+    const enrichedCoupons = coupons.map((coupon) => {
       const isExpired = now > new Date(coupon.expiryDate);
       const isLimitReached = coupon.usageLimit !== null && coupon.usedCount >= coupon.usageLimit;
+      const firstOrderBlocked = Boolean(coupon.isFirstOrderOnly && hasOrder);
+      const minAmt = Number(coupon.minOrderAmount) || 0;
+      const belowMin =
+        cartTotal !== null && !Number.isNaN(cartTotal) && minAmt > 0 && cartTotal < minAmt;
+
+      let unavailableReason = null;
+      if (isExpired) {
+        unavailableReason = 'This coupon has expired';
+      } else if (isLimitReached) {
+        unavailableReason = 'This coupon has reached its usage limit';
+      } else if (firstOrderBlocked) {
+        unavailableReason = 'Only valid on your first order with us';
+      } else if (belowMin) {
+        const need = Math.max(0, minAmt - cartTotal);
+        unavailableReason = `Minimum order ₹${minAmt.toLocaleString('en-IN')} — add ₹${Math.ceil(need).toLocaleString('en-IN')} more`;
+      }
+
+      const applicableForUser = unavailableReason === null;
 
       return {
         ...coupon,
-        status: isExpired ? 'expired' :
-                isLimitReached ? 'limit_reached' : 'active'
+        status: isExpired ? 'expired' : isLimitReached ? 'limit_reached' : 'active',
+        applicableForUser,
+        unavailableReason,
       };
     });
 
-    console.log('[GET /coupons] Returning coupons:', enrichedCoupons.map(c => c.code));
+    enrichedCoupons.sort((a, b) => {
+      if (a.applicableForUser !== b.applicableForUser) return a.applicableForUser ? -1 : 1;
+      return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+    });
 
     res.status(200).json({
       success: true,

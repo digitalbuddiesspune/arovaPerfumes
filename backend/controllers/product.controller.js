@@ -80,6 +80,12 @@ const mapPayload = (body = {}) => {
     shippingAndReturns: body.shippingAndReturns || undefined,
     images,
     pincodeServiceable: body.pincodeServiceable,
+    tags: Array.isArray(body.tags)
+      ? body.tags.filter((t) =>
+          ['Best Seller', 'Only Few Left Hurry', 'Highly Recommended'].includes(String(t))
+        )
+      : [],
+    isBestSeller: Boolean(body.isBestSeller),
   };
 };
 
@@ -92,6 +98,7 @@ const toClientShape = (product) => {
   const notes = doc.notes || {};
   const offers = doc.offers || {};
   const services = doc.services || {};
+  const returnsEligible = doc.shippingAndReturns?.returns?.isReturnable !== false;
   return {
     ...doc,
     salePrice: pricing.salePrice,
@@ -117,6 +124,7 @@ const toClientShape = (product) => {
     images: { image1: gallery[0] || '', image2: gallery[1] || '', image3: gallery[2] || '' },
     product_info: { brand: doc.brand || '' },
     price: pricing.salePrice,
+    isReturnable: returnsEligible,
   };
 };
 

@@ -7,10 +7,24 @@ import { Address } from '../models/Address.js';
 import { getPricingSettingsForCalculation } from './pricingSettings.controller.js';
 
 const getClient = () => {
-  const key_id = process.env.RAZORPAY_KEY_ID || '';
-  const key_secret = process.env.RAZORPAY_KEY_SECRET || '';
+  const key_id = String(process.env.RAZORPAY_KEY_ID || '').trim();
+  const key_secret = String(process.env.RAZORPAY_KEY_SECRET || '').trim();
   if (!key_id || !key_secret) return null;
   return { client: new Razorpay({ key_id, key_secret }), key_id, key_secret };
+};
+
+/** Razorpay expects note values to be strings (max 15 keys, short values). */
+const normalizeNotes = (notes) => {
+  const out = {};
+  if (!notes || typeof notes !== 'object') return out;
+  let n = 0;
+  for (const [k, v] of Object.entries(notes)) {
+    if (n >= 15) break;
+    if (v === undefined || v === null) continue;
+    out[String(k).slice(0, 40)] = String(v).slice(0, 256);
+    n += 1;
+  }
+  return out;
 };
 
 export const createOrder = async (req, res) => {
@@ -28,8 +42,8 @@ export const createOrder = async (req, res) => {
     const options = {
       amount: Math.round(rupees * 100),
       currency,
-      receipt: receipt || `rcpt_${Date.now()}`,
-      notes,
+      receipt: String(receipt || `rcpt_${Date.now()}`).slice(0, 40),
+      notes: normalizeNotes(notes),
     };
 
     const order = await ctx.client.orders.create(options);
@@ -37,7 +51,29 @@ export const createOrder = async (req, res) => {
   } catch (err) {
     console.error('Razorpay createOrder error:', err?.message || err);
     if (err?.error?.description) console.error('Razorpay API:', err.error.description);
-    return res.status(500).json({ error: 'Failed to create order' });
+    const rawStatus = err?.statusCode ?? err?.status ?? err?.response?.status;
+    const statusNum = Number(rawStatus);
+    const errObj = err?.error;
+    const desc =
+      (typeof errObj === 'object' && errObj?.description) ||
+      (typeof errObj === 'string' ? errObj : '') ||
+      err?.message ||
+      '';
+    const isAuthFailure =
+      statusNum === 401 ||
+      String(rawStatus) === '401' ||
+      /authentication failed/i.test(String(desc));
+    if (isAuthFailure) {
+      return res.status(502).json({
+        error:
+          'Razorpay rejected your API credentials (401). In Razorpay Dashboard → API Keys, copy the Key Secret for the same Key ID as in .env (test mode secret for rzp_test_ keys). Regenerate secret if unsure; restart the backend after saving .env.',
+      });
+    }
+    return res.status(502).json({
+      error: 'Razorpay order failed',
+      details: typeof desc === 'string' && desc ? desc : undefined,
+      status: Number.isFinite(statusNum) ? statusNum : undefined,
+    });
   }
 };
 
@@ -97,12 +133,9 @@ export const verifyPayment = async (req, res) => {
     // Dynamic tax calculation
     const taxPrice = Math.round(itemsPrice * (pricingSettings.taxPercentage / 100));
     
-    // Dynamic shipping calculation
+    // Dynamic shipping calculation (free shipping uses subtotal after coupon, same as storefront cart)
     let shippingPrice = pricingSettings.shippingCharge;
-    if (pricingSettings.isFreeShippingEnabled && itemsPrice >= pricingSettings.freeShippingMinAmount) {
-      shippingPrice = 0;
-    }
-    
+
     // Apply coupon discount if available
     let discount = 0;
     let couponCode = null;
@@ -111,7 +144,12 @@ export const verifyPayment = async (req, res) => {
       couponCode = cart.appliedCoupon.code;
       console.log('[Razorpay Order] Applying coupon:', couponCode, 'discount:', discount);
     }
-    
+
+    const subtotalAfterCoupon = Math.max(0, itemsPrice - discount);
+    if (pricingSettings.isFreeShippingEnabled && subtotalAfterCoupon >= pricingSettings.freeShippingMinAmount) {
+      shippingPrice = 0;
+    }
+
     // Calculate total price
     const totalPrice = itemsPrice + taxPrice + shippingPrice - discount;
 
@@ -207,13 +245,9 @@ export const createCODOrder = async (req, res) => {
     
     // Dynamic tax calculation
     const taxPrice = Math.round(itemsPrice * (pricingSettings.taxPercentage / 100));
-    
-    // Dynamic shipping calculation
+
     let shippingPrice = pricingSettings.shippingCharge;
-    if (pricingSettings.isFreeShippingEnabled && itemsPrice >= pricingSettings.freeShippingMinAmount) {
-      shippingPrice = 0;
-    }
-    
+
     // Apply coupon discount if available
     let discount = 0;
     let couponCode = null;
@@ -222,7 +256,12 @@ export const createCODOrder = async (req, res) => {
       couponCode = cart.appliedCoupon.code;
       console.log('[COD Order] Applying coupon:', couponCode, 'discount:', discount);
     }
-    
+
+    const subtotalAfterCouponCod = Math.max(0, itemsPrice - discount);
+    if (pricingSettings.isFreeShippingEnabled && subtotalAfterCouponCod >= pricingSettings.freeShippingMinAmount) {
+      shippingPrice = 0;
+    }
+
     // Calculate total price
     const totalPrice = itemsPrice + taxPrice + shippingPrice - discount;
 

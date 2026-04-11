@@ -1,8 +1,21 @@
+import { useSearchParams } from 'react-router-dom';
+
 const Contact = () => {
+  const [searchParams] = useSearchParams();
+  const returnOrder = searchParams.get('topic') === 'return' ? searchParams.get('order') : null;
+
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-6 py-16">
-        
+        {returnOrder && (
+          <div className="max-w-2xl mx-auto mb-10 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+            <p className="font-semibold">Return request</p>
+            <p className="mt-1 text-amber-900">
+              Please mention order <span className="font-mono font-bold">#{returnOrder}</span> in your message so we can help faster.
+            </p>
+          </div>
+        )}
+
         {/* Hero Section */}
         <div className="text-center mb-20">
           <h1 className="text-5xl md:text-6xl font-light tracking-widest mb-6 text-gray-900">

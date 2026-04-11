@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../utils/api';
+import { formatDisplayOrderId } from '../../utils/orderId';
 
 const ORDER_STATUS_OPTIONS = [
   { value: 'pending', label: 'Pending' },
@@ -156,7 +157,7 @@ const AdminOrderDetails = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div>
             <div className="text-sm text-gray-500">Order ID</div>
-            <div className="text-lg font-semibold">#{String(order._id).slice(-8)}</div>
+            <div className="text-lg font-semibold">#{formatDisplayOrderId(order)}</div>
             <div className="text-xs text-gray-500">Placed on {new Date(order.createdAt).toLocaleString()}</div>
           </div>
           <div className="flex flex-wrap gap-2">
