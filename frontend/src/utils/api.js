@@ -1,10 +1,28 @@
 // Backend base URL – prefer VITE_API_URL, fallback to local 5001
 // VITE_API_URL can be with or without `/api` suffix; we normalize below.
-const RAW_API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
-const API_BASE_URL = RAW_API_BASE.endsWith('/api') ? RAW_API_BASE : `${RAW_API_BASE}/api`;
+const normalizeApiBase = (url) => {
+  const value = String(url || '').trim().replace(/\/$/, '');
+  if (!value) return '';
+  return value.endsWith('/api') ? value : `${value}/api`;
+};
+
+const RAW_API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+const API_BASE_URL = normalizeApiBase(RAW_API_BASE);
+
+// Fallbacks prevent total admin-panel outage when one Render hostname is unavailable.
+const FALLBACK_API_BASES = [
+  import.meta.env.VITE_FALLBACK_API_URL,
+  'https://arovaperfume.onrender.com',
+  'https://arovaperfumes-backend.onrender.com',
+]
+  .map(normalizeApiBase)
+  .filter(Boolean);
+
+const API_BASE_CANDIDATES = [API_BASE_URL, ...FALLBACK_API_BASES].filter(
+  (value, index, arr) => arr.indexOf(value) === index
+);
 
 async function request(path, options = {}) {
-  const url = `${API_BASE_URL}${path}`;
   const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
   const isCookieSession = token === 'cookie' || (token && !token.includes('.'));
   const headers = {
@@ -12,19 +30,31 @@ async function request(path, options = {}) {
     ...(options.headers || {}),
     ...(!isCookieSession && token ? { Authorization: `Bearer ${token}` } : {}),
   };
-  try {
-    const res = await fetch(url, { ...options, headers, credentials: 'include' });
-    const text = await res.text();
-    let data;
-    try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text }; }
-    if (!res.ok) throw new Error(data?.message || `Request failed with status ${res.status}`);
-    return data;
-  } catch (error) {
-    // Handle network errors (Failed to fetch)
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      throw new Error(`Network error: Unable to connect to server. Please check if the backend is running at ${API_BASE_URL}`);
+
+  let lastNetworkError = null;
+
+  for (const baseUrl of API_BASE_CANDIDATES) {
+    const url = `${baseUrl}${path}`;
+    try {
+      const res = await fetch(url, { ...options, headers, credentials: 'include' });
+      const text = await res.text();
+      let data;
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { message: text }; }
+      if (!res.ok) throw new Error(data?.message || `Request failed with status ${res.status}`);
+      return data;
+    } catch (error) {
+      const isNetworkError = error?.name === 'TypeError' && String(error?.message || '').includes('fetch');
+      if (!isNetworkError) {
+        throw error;
+      }
+      lastNetworkError = error;
     }
-    throw error;
+  }
+
+  if (lastNetworkError) {
+    throw new Error(
+      `Network error: Unable to connect to server. Tried: ${API_BASE_CANDIDATES.join(', ')}`
+    );
   }
 }
 
