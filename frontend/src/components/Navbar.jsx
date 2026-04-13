@@ -1,11 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FiHeart, FiMenu, FiSearch, FiShoppingBag, FiUser, FiX } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 import { searchProducts, fetchPricingSettings } from '../services/api';
 import ProductImage from './ProductImage';
 
 const DEFAULT_ANNOUNCEMENT =
   '• 1st Order - 50% Off • USE CODE SMELLGOOD5 TO GET EXTRA 5% OFF ON PREPAID ORDERS • GET A FREE SAMPLE ON EVERY ORDER •';
+const BRAND_LOGO_URL =
+  'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776086342/Untitled_design_9_fc6qsg.png';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -13,6 +16,7 @@ const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchUiOpen, setSearchUiOpen] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const searchWrapRefMobile = useRef(null);
@@ -153,6 +157,18 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', onClick);
   }, []);
 
+  useEffect(() => {
+    let timer;
+    if (searchOpen) {
+      setSearchUiOpen(true);
+    } else {
+      timer = setTimeout(() => setSearchUiOpen(false), 180);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [searchOpen]);
+
   // Close mobile menu on resize to desktop
   useEffect(() => {
     const handleResize = () => {
@@ -164,17 +180,11 @@ const Navbar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [isMobileMenuOpen]);
 
-  // Close mobile menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (isMobileMenuOpen && !e.target.closest('nav')) {
-        setIsMobileMenuOpen(false);
-      }
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
     };
-    if (isMobileMenuOpen) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
   }, [isMobileMenuOpen]);
 
   // Navigation links matching suuupply style
@@ -193,7 +203,7 @@ const Navbar = () => {
 
   return (
     <div className="relative z-[70]">
-      <div className="bg-black text-white text-[10px] sm:text-xs md:text-sm font-medium tracking-wide py-1.5 overflow-hidden whitespace-nowrap">
+      <div className="bg-[var(--brand-maroon)] text-white text-[10px] sm:text-xs md:text-sm font-medium tracking-wide py-1.5 overflow-hidden whitespace-nowrap">
         <div className="animate-scroll inline-flex min-w-max">
           {[0, 1, 2, 3].map((i) => (
             <span key={i} className="px-4 sm:px-6">
@@ -202,32 +212,67 @@ const Navbar = () => {
           ))}
         </div>
       </div>
-      <nav className="bg-white border-b border-gray-200 border-t-0">
+      <nav
+        className={`bg-[var(--brand-cream)] border-b border-[var(--brand-border)] border-t-0 transition-shadow ${
+          isScrolled ? 'shadow-sm' : ''
+        }`}
+      >
         <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
-          <div className="flex items-center justify-between h-12 sm:h-14 md:h-16 gap-2 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:h-16">
+          <div className="relative flex items-center justify-between h-12 sm:h-14 md:h-16 gap-2 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:h-16">
+          {/* Mobile left: menu button */}
+          <div className="flex items-center lg:hidden">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2.5 rounded-xl text-gray-700 hover:text-black hover:bg-white active:bg-gray-100 border border-transparent hover:border-[var(--brand-border)] focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all"
+              aria-expanded={isMobileMenuOpen}
+              aria-label="Toggle menu"
+            >
+              <span className="sr-only">Open main menu</span>
+              {isMobileMenuOpen ? <FiX className="h-5 w-5 sm:h-6 sm:w-6" /> : <FiMenu className="h-5 w-5 sm:h-6 sm:w-6" />}
+            </button>
+          </div>
+
           {/* Left: Search + Category Links */}
           <div className="hidden lg:flex items-center justify-start gap-4 xl:gap-6 2xl:gap-8">
             {/* Search Icon - Desktop (left of categories) */}
-            <div className="relative pr-2 xl:pr-3" ref={searchWrapRefDesktop}>
+            <div className="relative flex items-center gap-2 pr-2 xl:pr-3" ref={searchWrapRefDesktop}>
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="p-1.5 sm:p-2 text-gray-700 hover:text-black transition-colors"
+                className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all"
                 aria-label="Search"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <FiSearch className="w-5 h-5" />
               </button>
-              {searchOpen && (
-                <div className="absolute left-0 top-full mt-2 w-72 sm:w-80 lg:w-96 bg-white border border-gray-200 rounded-lg shadow-xl z-[80] p-3 sm:p-4">
+              {searchUiOpen && (
+                <div
+                  className={`flex items-center gap-2 overflow-hidden bg-white border border-[var(--brand-border)] rounded-xl shadow-sm p-1.5 origin-left transition-all duration-300 ease-out ${
+                    searchOpen
+                      ? 'opacity-100 scale-100 translate-x-0 w-[320px]'
+                      : 'opacity-0 scale-95 -translate-x-1 w-0 pointer-events-none border-transparent p-0'
+                  }`}
+                >
+                  <FiSearch className="w-4 h-4 text-gray-400 ml-1 shrink-0" />
                   <input
                     type="text"
                     placeholder="Search..."
                     value={searchQuery}
                     onChange={(e) => { const v = e.target.value; setSearchQuery(v); setSearchOpen(v.trim().length >= 2); }}
                     onKeyPress={handleSearchKeyPress}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
+                    className="w-full px-2 py-1.5 text-sm bg-transparent focus:outline-none"
+                    autoFocus
                   />
+                  <button
+                    type="button"
+                    onClick={() => setSearchOpen(false)}
+                    className="inline-flex items-center justify-center p-1.5 rounded-lg text-gray-500 hover:text-[var(--brand-maroon)] hover:bg-[var(--brand-cream)]"
+                    aria-label="Close search"
+                  >
+                    <FiX className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+              {searchOpen && (
+                <div className="absolute left-12 top-full mt-2 w-[320px] bg-white border border-[var(--brand-border)] rounded-xl shadow-lg z-[90] overflow-hidden animate-fade-in">
                   {searchLoading && (
                     <div className="px-4 py-3 text-sm text-gray-500">Searching…</div>
                   )}
@@ -235,7 +280,7 @@ const Navbar = () => {
                     <div className="px-4 py-3 text-sm text-gray-500">No products found</div>
                   )}
                   {!searchLoading && searchResults.length > 0 && (
-                    <ul className="max-h-80 overflow-auto divide-y divide-gray-100 mt-2">
+                    <ul className="max-h-80 overflow-auto divide-y divide-gray-100">
                       {searchResults.slice(0, 8).map((p) => (
                         <li key={p._id || p.id || p.slug}>
                           <button
@@ -246,7 +291,7 @@ const Navbar = () => {
                               setSearchOpen(false);
                               navigate(`/product/${id}`);
                             }}
-                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left"
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--brand-cream)] text-left transition-colors"
                           >
                             <ProductImage
                               src={p.images?.image1 || p.image}
@@ -273,229 +318,233 @@ const Navbar = () => {
                 key={link.name}
                 to={link.path}
                 onClick={scrollToTop}
-                className="text-gray-700 hover:text-black transition-colors duration-200 text-xs xl:text-sm uppercase tracking-wide whitespace-nowrap px-3 py-2"
+                className="group relative inline-flex items-center text-gray-700 hover:text-[var(--brand-maroon)] transition-all duration-300 text-xs xl:text-sm uppercase tracking-wide whitespace-nowrap px-2.5 py-2"
               >
-                {link.name}
+                <span className="transition-transform duration-300 group-hover:-translate-y-[1px]">{link.name}</span>
+                <span className="pointer-events-none absolute left-2.5 right-2.5 -bottom-[1px] h-[2px] rounded-full bg-[var(--brand-maroon)] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100" />
               </Link>
             ))}
           </div>
 
           {/* Center: Brand Logo Text */}
-          <Link to="/" className="z-10 lg:justify-self-center" onClick={scrollToTop}>
-            <span className="text-base sm:text-lg md:text-2xl font-semibold tracking-wide text-black">
-              ArovaPerfume
-            </span>
-          </Link>
-
-          {/* Mobile Categories Between Logo and Icons */}
-          <div className="flex lg:hidden items-center justify-end gap-3 sm:gap-4 ml-auto mr-1">
-            {navLinks.map((link) => (
-              <Link
-                key={`mobile-inline-${link.name}`}
-                to={link.path}
-                onClick={scrollToTop}
-                className="text-[11px] sm:text-xs font-medium uppercase tracking-wide text-gray-700 hover:text-black transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
-          </div>
+          {!searchOpen && (
+            <Link
+              to="/"
+              className="absolute left-1/2 -translate-x-1/2 z-10 lg:static lg:translate-x-0 lg:justify-self-center"
+              onClick={scrollToTop}
+            >
+              <img
+                src={BRAND_LOGO_URL}
+                alt="Arova"
+                className="h-8 sm:h-9 md:h-10 w-auto object-contain"
+              />
+            </Link>
+          )}
 
           {/* Right Side Icons */}
-            <div className="flex items-center justify-end gap-2 sm:gap-2 md:gap-2 lg:gap-3 xl:gap-4 flex-shrink-0">
+            <div className="flex items-center justify-end gap-2 sm:gap-2 md:gap-2 lg:gap-3 xl:gap-4 flex-shrink-0 ml-auto lg:ml-0">
             {/* Mobile Search Toggle */}
-            <div className="md:hidden relative" ref={searchWrapRefMobile}>
-              <button
-                onClick={() => setSearchOpen((v) => !v)}
-                className="p-1.5 sm:p-2 text-gray-700 hover:text-black transition-colors"
-                type="button"
-                aria-label="Search"
-              >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
+            <div className="md:hidden relative min-w-0" ref={searchWrapRefMobile}>
+              {searchUiOpen ? (
+                <div
+                  className={`flex items-center gap-2 transition-all duration-200 ${
+                    searchOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-1 pointer-events-none'
+                  }`}
+                >
+                  <div className="relative w-[58vw] max-w-[250px] min-w-[170px]">
+                    <svg
+                      className="w-4 h-4 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyPress={handleSearchKeyPress}
+                      className="w-full pl-8 pr-2 py-1.5 text-xs border border-[var(--brand-border)] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[var(--brand-maroon)]/20 focus:border-[var(--brand-maroon)] transition-all duration-200"
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSearchOpen(false)}
+                    className="p-1.5 text-gray-600 hover:text-black hover:bg-gray-100 rounded-md transition-all"
+                    aria-label="Close search"
+                  >
+                    <FiX className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all"
+                  type="button"
+                  aria-label="Search"
+                >
+                  <FiSearch className="w-5 h-5" />
+                </button>
+              )}
             </div>
 
-            {/* Mobile Search Panel */}
-            {searchOpen && (
-              <div className="md:hidden absolute left-3 right-3 top-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-[80] overflow-hidden max-h-[70vh]">
-                <div className="p-3 border-b border-gray-100">
-                  <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      setSearchQuery(v);
-                      setSearchOpen(true);
-                    }}
-                    onKeyPress={handleSearchKeyPress}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-black"
-                  />
-                </div>
-                <div className="overflow-auto max-h-[50vh]">
-                  {searchLoading && (
-                    <div className="px-4 py-3 text-sm text-gray-500">Searching…</div>
-                  )}
-                  {!searchLoading && searchQuery.trim() && searchResults.length === 0 && (
-                    <div className="px-4 py-3 text-sm text-gray-500">No products found</div>
-                  )}
-                  {!searchLoading && searchResults.length > 0 && (
-                    <ul className="max-h-80 overflow-auto divide-y divide-gray-100">
-                      {searchResults.slice(0, 8).map((p) => (
-                        <li key={p._id || p.id || p.slug}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const id = p._id || p.id;
-                              if (!id) return;
-                              setSearchOpen(false);
-                              navigate(`/product/${id}`);
-                            }}
-                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 text-left"
-                          >
-                            <ProductImage
-                              src={p.images?.image1 || p.image}
-                              alt={p.title || p.name || 'Product'}
-                              className="w-12 h-16 object-cover rounded-md border border-gray-100"
-                            />
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium text-gray-900 truncate">{p.title || p.name || 'Product'}</p>
-                              {p.price && (
-                                <p className="text-xs text-gray-600">₹{Number(p.price).toLocaleString()}</p>
-                              )}
-                            </div>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            )}
+            {/* Mobile profile icon - right of search */}
+            <div className="md:hidden">
+              {isAuthenticated ? (
+                <Link
+                  to="/profile"
+                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all"
+                  title="Profile"
+                  aria-label="Profile"
+                >
+                  <FiUser className="w-5 h-5" />
+                </Link>
+              ) : (
+                <button
+                  onClick={handleLogin}
+                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all"
+                  title="Sign In"
+                  aria-label="Sign In"
+                >
+                  <FiUser className="w-5 h-5" />
+                </button>
+              )}
+            </div>
 
             {/* User Icon - Hidden on mobile */}
             <div className="hidden md:block">
               {isAuthenticated ? (
                 <Link
                   to="/profile"
-                  className="p-1 sm:p-1.5 md:p-2 text-gray-700 hover:text-black transition-colors flex-shrink-0"
+                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all flex-shrink-0"
                   title="Profile"
                 >
-                  <svg className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
+                  <FiUser className="w-5 h-5" />
                 </Link>
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="p-1 sm:p-1.5 md:p-2 text-gray-700 hover:text-black transition-colors flex-shrink-0"
+                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all flex-shrink-0"
                   title="Sign In"
                 >
-                  <svg className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
+                  <FiUser className="w-5 h-5" />
                 </button>
               )}
             </div>
 
             {/* Wishlist Icon - Hidden on mobile */}
-            <Link to="/wishlist" className="hidden md:block p-1 sm:p-1.5 md:p-2 text-gray-700 hover:text-black relative flex-shrink-0" title="Wishlist">
-              <svg className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
+            <Link to="/wishlist" className="hidden md:inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] relative flex-shrink-0 transition-all" title="Wishlist">
+              <FiHeart className="w-5 h-5" />
               {wishlistCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-black text-white text-[9px] sm:text-[10px] md:text-xs rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 flex items-center justify-center font-medium">
+                <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-[var(--brand-maroon)] text-white text-[9px] sm:text-[10px] md:text-xs rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 flex items-center justify-center font-medium">
                   {wishlistCount > 9 ? '9+' : wishlistCount}
                 </span>
               )}
             </Link>
 
             {/* Cart Icon - Hidden on mobile */}
-            <Link to="/cart" className="hidden md:block p-1 sm:p-1.5 md:p-2 text-gray-700 hover:text-black relative flex-shrink-0">
-              <svg className="w-4 h-4 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+            <Link to="/cart" className="hidden md:inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] relative flex-shrink-0 transition-all">
+              <FiShoppingBag className="w-5 h-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-black text-white text-[9px] sm:text-[10px] md:text-xs rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 flex items-center justify-center font-medium">
+                <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-[var(--brand-maroon)] text-white text-[9px] sm:text-[10px] md:text-xs rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 flex items-center justify-center font-medium">
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
             </Link>
 
-            {/* Mobile menu button */}
-            <div className="flex items-center lg:hidden">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="inline-flex items-center justify-center p-1.5 sm:p-2 rounded-md text-gray-700 hover:text-black hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all"
-                aria-expanded={isMobileMenuOpen}
-                aria-label="Toggle menu"
-              >
-                <span className="sr-only">Open main menu</span>
-                {isMobileMenuOpen ? (
-                  <svg className="block h-5 w-5 sm:h-6 sm:w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                ) : (
-                  <svg className="block h-5 w-5 sm:h-6 sm:w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                )}
-              </button>
-            </div>
           </div>
         </div>
         </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div
-            id="mobile-menu"
-            className="lg:hidden py-4 sm:py-6 border-t border-gray-200 bg-white animate-in slide-in-from-top duration-200"
+        {/* Mobile side drawer */}
+        <div
+          id="mobile-menu"
+          className={`lg:hidden fixed inset-0 z-[95] transition-opacity duration-300 ${
+            isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          }`}
+        >
+          <button
+            type="button"
+            aria-label="Close menu overlay"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="absolute inset-0 bg-black/30"
+          />
+          <aside
+            className={`absolute top-0 left-0 h-full w-[84%] max-w-[320px] bg-[var(--brand-cream)] border-r border-[var(--brand-border)] shadow-2xl transition-transform duration-300 ease-out ${
+              isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
           >
-            <nav className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 px-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    scrollToTop();
-                  }}
-                  className="text-gray-700 hover:text-black hover:bg-gray-50 py-2 sm:py-2.5 px-3 sm:px-4 rounded transition-colors text-xs sm:text-sm uppercase text-center"
+            <div className="px-3 py-3 space-y-3 h-full overflow-y-auto">
+              <div className="flex items-center justify-between px-1">
+                <p className="text-[11px] uppercase tracking-wide text-[var(--brand-muted)]">Navigation</p>
+                <button
+                  type="button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-1.5 rounded-md text-[var(--brand-text)] hover:bg-white/70"
+                  aria-label="Close menu"
                 >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-            {isAuthenticated ? (
-              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200 px-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="theme-card p-3">
+                <p className="text-[11px] uppercase tracking-wide text-[var(--brand-muted)] mb-2">Quick Access</p>
+                <nav className="grid grid-cols-1 gap-2">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      to={link.path}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        scrollToTop();
+                      }}
+                      className="flex items-center justify-between rounded-lg border border-[var(--brand-border)] bg-white px-3 py-2.5 text-sm font-medium text-[var(--brand-text)] hover:bg-[var(--brand-cream)]"
+                    >
+                      <span className="uppercase tracking-wide">{link.name}</span>
+                      <span className="text-[var(--brand-muted)]">›</span>
+                    </Link>
+                  ))}
+                </nav>
+              </div>
+
+              <div className="theme-card p-3">
+                <p className="text-[11px] uppercase tracking-wide text-[var(--brand-muted)] mb-2">Your Account</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className="rounded-lg border border-[var(--brand-border)] bg-white px-3 py-2 text-sm text-center font-medium text-[var(--brand-text)] hover:bg-[var(--brand-cream)]">Profile</Link>
+                  <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="rounded-lg border border-[var(--brand-border)] bg-white px-3 py-2 text-sm text-center font-medium text-[var(--brand-text)] hover:bg-[var(--brand-cream)]">Wishlist</Link>
+                  <Link to="/cart" onClick={() => setIsMobileMenuOpen(false)} className="rounded-lg border border-[var(--brand-border)] bg-white px-3 py-2 text-sm text-center font-medium text-[var(--brand-text)] hover:bg-[var(--brand-cream)]">Cart</Link>
+                  <Link to="/profile?tab=track" onClick={() => setIsMobileMenuOpen(false)} className="rounded-lg border border-[var(--brand-border)] bg-white px-3 py-2 text-sm text-center font-medium text-[var(--brand-text)] hover:bg-[var(--brand-cream)]">Track</Link>
+                </div>
+              </div>
+
+              {isAuthenticated ? (
                 <button
                   onClick={() => {
                     handleLogout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="w-full py-2.5 sm:py-3 px-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors text-sm sm:text-base"
+                  className="w-full rounded-xl bg-[var(--brand-maroon)] text-white py-3 text-sm font-semibold hover:bg-[var(--brand-maroon-2)]"
                 >
                   Logout
                 </button>
-              </div>
-            ) : (
-              <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200 px-2">
+              ) : (
                 <button
                   onClick={() => {
                     handleLogin();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="w-full py-2.5 sm:py-3 px-4 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors text-sm sm:text-base"
+                  className="w-full rounded-xl bg-[var(--brand-maroon)] text-white py-3 text-sm font-semibold hover:bg-[var(--brand-maroon-2)]"
                 >
                   Sign In
                 </button>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          </aside>
+        </div>
       </nav>
     </div>
   );

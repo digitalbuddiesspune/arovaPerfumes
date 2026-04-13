@@ -9,16 +9,16 @@ import CacheConsent from '../components/CacheConsent';
 
 const Home = () => {
   const heroBanner =
-    'https://res.cloudinary.com/duc9svg7w/image/upload/v1765299330/Bone_Pink_Luxury_Premium_Isolated_Parfum_Banner_Landscape_2048_x_594_px_jqytrt.png';
+    'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776088569/Untitled_design_8_vfoi7z.svg';
 
   // Mobile-only banner
   const mobileHeroBanner =
-    'https://res.cloudinary.com/dnyp5jknp/image/upload/v1775631628/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_eysrkk.png';
+    'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776088326/a498f118-1d74-43aa-87e9-ca88552e4a4c.png';
 
 
   return (
     // Added a container with padding for visual balance
-    <div className="min-h-screen pt-0 pb-16 md:pb-0 mt-0 bg-gray-50">
+    <div className="min-h-screen pt-0 pb-16 md:pb-0 mt-0 bg-[var(--brand-cream)]">
       
       {/* 1. Hero Slider/Banner - Primary Visual & CTA */}
       <HeroSlider
@@ -34,7 +34,7 @@ const Home = () => {
       
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
-        <hr className="my-8 border-gray-200" />
+        <hr className="my-8 border-[var(--brand-border)]" />
       </main>
 
       {/* Cache Consent Banner - Shows only once */}

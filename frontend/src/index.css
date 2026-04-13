@@ -8,10 +8,41 @@
   --primary-dark: #2a0f0f;
 }
 
+:root {
+  --brand-maroon: #381313;
+  --brand-maroon-2: #371616;
+  --brand-cream: #f8f3f1;
+  --brand-border: #e7d9d4;
+  --brand-text: #2c1919;
+  --brand-muted: #6f5858;
+  --font-heading: "BankGothic Lt BT", "Bank Gothic Medium BT", "Eurostile", "Segoe UI", sans-serif;
+  --font-body: "Baloo 2", "Segoe UI", sans-serif;
+}
+
 /* Prevent horizontal scrolling */
 html, body {
   max-width: 100%;
   overflow-x: hidden;
+}
+
+html {
+  background: var(--brand-cream);
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--brand-text);
+  background: var(--brand-cream);
+  letter-spacing: 0.1px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: 0.4px;
+}
+
+a, button {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Ensure all elements respect their container's width */
@@ -33,7 +64,7 @@ html, body {
 .loader {
   width: 50px;
   aspect-ratio: 1;
-  --_c: no-repeat radial-gradient(farthest-side, #25b09b 92%, #0000);
+  --_c: no-repeat radial-gradient(farthest-side, var(--brand-maroon) 92%, #0000);
   background: 
     var(--_c) top,
     var(--_c) left,
@@ -99,45 +130,18 @@ html, body {
   animation: fade-in 0.3s ease-out forwards;
 }
 
-/* Admin theme */
-.admin-theme {
-  font-family: 'Baloo 2', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-}
-
-.admin-theme h1,
-.admin-theme h2,
-.admin-theme h3,
-.admin-theme .admin-title {
-  font-family: 'BankGothic Lt BT', 'Bank Gothic', 'Baloo 2', sans-serif;
-  letter-spacing: 0.02em;
-}
-
-.admin-theme .admin-primary-btn {
-  background: var(--primary);
-  color: #fff;
-}
-
-.admin-theme .admin-primary-btn:hover {
-  background: var(--primary-dark);
-}
-
-.admin-theme .admin-secondary-btn {
-  border: 1px solid var(--primary);
-  color: var(--primary);
+/* Reusable surface styles for cleaner, less colorful UX */
+.theme-card {
   background: #fff;
+  border: 1px solid var(--brand-border);
+  border-radius: 14px;
 }
 
-.admin-theme input,
-.admin-theme select,
-.admin-theme textarea {
-  border-radius: 0.65rem;
+.theme-title {
+  font-family: var(--font-heading);
+  color: var(--brand-maroon);
 }
 
-.admin-theme input:focus,
-.admin-theme select:focus,
-.admin-theme textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(56, 19, 19, 0.15);
+.theme-muted {
+  color: var(--brand-muted);
 }

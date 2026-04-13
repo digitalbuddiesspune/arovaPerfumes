@@ -20,9 +20,9 @@ const Layout = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen" style={{ '--app-header-height': `${headerHeight}px` }}>
+    <div className="flex flex-col min-h-screen bg-[var(--brand-cream)]" style={{ '--app-header-height': `${headerHeight}px` }}>
       {/* Navbar and Header - Fixed at top */}
-      <div ref={headerWrapRef} className="fixed top-0 left-0 right-0 z-50 bg-white">
+      <div ref={headerWrapRef} className="fixed top-0 left-0 right-0 z-50 bg-[var(--brand-cream)]">
         <div className="border-t-0">
           <Navbar />
         </div>
@@ -31,7 +31,7 @@ const Layout = () => {
       </div>
 
       {/* Spacer equal to header height to avoid overlap */}
-      <div aria-hidden="true" style={{ height: headerHeight }} className="bg-white border-b border-gray-300" />
+      <div aria-hidden="true" style={{ height: headerHeight }} className="bg-[var(--brand-cream)] border-b border-[var(--brand-border)]" />
 
       {/* Main Content Area with responsive padding */}
       <main className="flex-grow">

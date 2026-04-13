@@ -344,37 +344,37 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-[var(--brand-cream)]">
         <div className="text-center">
           <div className="relative inline-block">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-black"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[var(--brand-border)] border-t-[var(--brand-maroon)]"></div>
           </div>
-          <p className="mt-4 text-gray-600">Loading your profile...</p>
+          <p className="mt-4 text-[var(--brand-muted)]">Loading your profile...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white lg:bg-gray-50">
+    <div className="min-h-screen bg-[var(--brand-cream)]">
       <div className="flex flex-col lg:flex-row">
         {/* Mobile Header */}
-        <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30" style={{ top: 'var(--app-header-height, 0px)' }}>
-          <div className="px-4 py-3 flex items-center justify-between bg-white">
+        <div className="lg:hidden bg-[var(--brand-cream)] shadow-sm border-b border-[var(--brand-border)] sticky top-0 z-30" style={{ top: 'var(--app-header-height, 0px)' }}>
+          <div className="px-4 py-3 flex items-center justify-between bg-[var(--brand-cream)]">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-gray-800 text-lg font-bold shadow-sm">
+              <div className="w-12 h-12 rounded-full bg-white border-2 border-[var(--brand-border)] flex items-center justify-center text-[var(--brand-text)] text-lg font-bold shadow-sm">
                 {user.firstName.charAt(0).toUpperCase()}
               </div>
               <div>
-                <div className="text-xs text-gray-500">Hello,</div>
-                <div className="font-semibold text-gray-900">{user.firstName} {user.lastName}</div>
+                <div className="text-xs text-[var(--brand-muted)]">Hello,</div>
+                <div className="font-semibold text-[var(--brand-text)]">{user.firstName} {user.lastName}</div>
               </div>
             </div>
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
+              className="p-2 hover:bg-white rounded-lg transition-colors"
             >
-              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-[var(--brand-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -390,65 +390,65 @@ export default function Profile() {
           fixed lg:static inset-y-0 z-40 lg:z-0
           transform ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0
           transition-transform duration-300 ease-in-out
-          w-72 bg-white border-r border-gray-200 shadow-xl lg:shadow-none
+          w-72 bg-[var(--brand-cream)] border-r border-[var(--brand-border)] shadow-xl lg:shadow-none
           flex flex-col
         `} style={{ top: 'var(--app-header-height, 0px)' }}>
           {/* Overlay for mobile */}
           {mobileMenuOpen && (
             <div 
-              className="lg:hidden fixed inset-0 bg-gray-900 bg-opacity-30 -z-10"
+              className="lg:hidden fixed inset-0 bg-black/30 -z-10"
               onClick={() => setMobileMenuOpen(false)}
             />
           )}
 
           {/* User Profile Header - Desktop */}
-          <div className="hidden lg:block p-6 border-b border-gray-200 bg-white">
+          <div className="hidden lg:block p-6 border-b border-[var(--brand-border)] bg-[var(--brand-cream)]">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center text-gray-800 text-2xl font-bold shadow-sm ring-2 ring-gray-100">
+              <div className="w-16 h-16 rounded-full bg-white border-2 border-[var(--brand-border)] flex items-center justify-center text-[var(--brand-text)] text-2xl font-bold shadow-sm ring-2 ring-[#f2e8e4]">
                 {user.firstName.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs text-gray-500 font-medium mb-1">Welcome back,</div>
-                <div className="font-bold text-gray-900 text-lg truncate">{user.firstName} {user.lastName}</div>
-                <div className="text-xs text-gray-500 truncate">{user.email}</div>
+                <div className="text-xs text-[var(--brand-muted)] font-medium mb-1">Welcome back,</div>
+                <div className="font-bold text-[var(--brand-text)] text-lg truncate">{user.firstName} {user.lastName}</div>
+                <div className="text-xs text-[var(--brand-muted)] truncate">{user.email}</div>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4 bg-white lg:bg-transparent">
+          <nav className="flex-1 overflow-y-auto p-4 bg-[var(--brand-cream)] lg:bg-transparent">
             <div className="space-y-2">
               {/* Quick Actions */}
               <div className="mb-4">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">Quick Actions</div>
+                <div className="text-xs font-semibold text-[var(--brand-muted)] uppercase tracking-wider px-4 mb-2">Quick Actions</div>
                 <Link to="/" className="block">
-                  <div className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300">
-                    <div className="p-2 rounded-lg bg-gray-100">
-                      <FiHome className="w-5 h-5 text-gray-700" />
+                  <div className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white border border-[var(--brand-border)] hover:border-[var(--brand-maroon)]">
+                    <div className="p-2 rounded-lg bg-[#f4ece8]">
+                      <FiHome className="w-5 h-5 text-[var(--brand-text)]" />
                     </div>
                     <span className="font-medium">Back to Home</span>
-                    <span className="ml-auto text-gray-400">›</span>
+                    <span className="ml-auto text-[var(--brand-muted)]">›</span>
                   </div>
                 </Link>
               </div>
 
               {/* Main Menu */}
               <div className="mb-4">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">My Account</div>
+                <div className="text-xs font-semibold text-[var(--brand-muted)] uppercase tracking-wider px-4 mb-2">My Account</div>
                 <button
                   onClick={() => handleSectionChange('profile')}
                   className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 relative ${
                     activeSection === 'profile'
-                      ? 'bg-gray-900 text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300'
+                      ? 'bg-[var(--brand-maroon)] text-white shadow-md'
+                      : 'text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white border border-[var(--brand-border)] hover:border-[var(--brand-maroon)]'
                   }`}
                 >
-                  <div className={`p-2 rounded-lg ${activeSection === 'profile' ? 'bg-white/20' : 'bg-gray-100'}`}>
-                    <FiUser className={`w-5 h-5 ${activeSection === 'profile' ? 'text-white' : 'text-gray-700'}`} />
+                  <div className={`p-2 rounded-lg ${activeSection === 'profile' ? 'bg-white/20' : 'bg-[#f4ece8]'}`}>
+                    <FiUser className={`w-5 h-5 ${activeSection === 'profile' ? 'text-white' : 'text-[var(--brand-text)]'}`} />
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-semibold">Profile</div>
-                    <div className={`text-xs ${activeSection === 'profile' ? 'text-white/80' : 'text-gray-500'}`}>
+                    <div className={`text-xs ${activeSection === 'profile' ? 'text-white/80' : 'text-[var(--brand-muted)]'}`}>
                       Personal information
                     </div>
                   </div>
@@ -461,79 +461,79 @@ export default function Profile() {
                   onClick={() => handleSectionChange('orders')}
                   className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 mt-2 relative ${
                     activeSection === 'orders'
-                      ? 'bg-gray-900 text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300'
+                      ? 'bg-[var(--brand-maroon)] text-white shadow-md'
+                      : 'text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white border border-[var(--brand-border)] hover:border-[var(--brand-maroon)]'
                   }`}
                 >
-                  <div className={`p-2 rounded-lg ${activeSection === 'orders' ? 'bg-white/20' : 'bg-gray-100'}`}>
-                    <FiPackage className={`w-5 h-5 ${activeSection === 'orders' ? 'text-white' : 'text-gray-700'}`} />
+                  <div className={`p-2 rounded-lg ${activeSection === 'orders' ? 'bg-white/20' : 'bg-[#f4ece8]'}`}>
+                    <FiPackage className={`w-5 h-5 ${activeSection === 'orders' ? 'text-white' : 'text-[var(--brand-text)]'}`} />
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-semibold">My Orders</div>
-                    <div className={`text-xs ${activeSection === 'orders' ? 'text-white/80' : 'text-gray-500'}`}>
+                    <div className={`text-xs ${activeSection === 'orders' ? 'text-white/80' : 'text-[var(--brand-muted)]'}`}>
                       View order history
                     </div>
                   </div>
                   {activeSection === 'orders' && (
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full"></div>
                   )}
-                  <span className={`${activeSection === 'orders' ? 'text-white/60' : 'text-gray-400'}`}>›</span>
+                  <span className={`${activeSection === 'orders' ? 'text-white/60' : 'text-[var(--brand-muted)]'}`}>›</span>
                 </button>
 
                 <button
                   onClick={() => handleSectionChange('track')}
                   className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 mt-2 relative ${
                     activeSection === 'track'
-                      ? 'bg-gray-900 text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300'
+                      ? 'bg-[var(--brand-maroon)] text-white shadow-md'
+                      : 'text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white border border-[var(--brand-border)] hover:border-[var(--brand-maroon)]'
                   }`}
                 >
-                  <div className={`p-2 rounded-lg ${activeSection === 'track' ? 'bg-white/20' : 'bg-gray-100'}`}>
-                    <FiSearch className={`w-5 h-5 ${activeSection === 'track' ? 'text-white' : 'text-gray-700'}`} />
+                  <div className={`p-2 rounded-lg ${activeSection === 'track' ? 'bg-white/20' : 'bg-[#f4ece8]'}`}>
+                    <FiSearch className={`w-5 h-5 ${activeSection === 'track' ? 'text-white' : 'text-[var(--brand-text)]'}`} />
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-semibold">Track order</div>
-                    <div className={`text-xs ${activeSection === 'track' ? 'text-white/80' : 'text-gray-500'}`}>
+                    <div className={`text-xs ${activeSection === 'track' ? 'text-white/80' : 'text-[var(--brand-muted)]'}`}>
                       Look up by order ID
                     </div>
                   </div>
                   {activeSection === 'track' && (
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full"></div>
                   )}
-                  <span className={`${activeSection === 'track' ? 'text-white/60' : 'text-gray-400'}`}>›</span>
+                  <span className={`${activeSection === 'track' ? 'text-white/60' : 'text-[var(--brand-muted)]'}`}>›</span>
                 </button>
 
                 <button
                   onClick={() => handleSectionChange('addresses')}
                   className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 mt-2 relative ${
                     activeSection === 'addresses'
-                      ? 'bg-gray-900 text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300'
+                      ? 'bg-[var(--brand-maroon)] text-white shadow-md'
+                      : 'text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white border border-[var(--brand-border)] hover:border-[var(--brand-maroon)]'
                   }`}
                 >
-                  <div className={`p-2 rounded-lg ${activeSection === 'addresses' ? 'bg-white/20' : 'bg-gray-100'}`}>
-                    <FiMapPin className={`w-5 h-5 ${activeSection === 'addresses' ? 'text-white' : 'text-gray-700'}`} />
+                  <div className={`p-2 rounded-lg ${activeSection === 'addresses' ? 'bg-white/20' : 'bg-[#f4ece8]'}`}>
+                    <FiMapPin className={`w-5 h-5 ${activeSection === 'addresses' ? 'text-white' : 'text-[var(--brand-text)]'}`} />
                   </div>
                   <div className="flex-1 text-left">
                     <div className="font-semibold">My Addresses</div>
-                    <div className={`text-xs ${activeSection === 'addresses' ? 'text-white/80' : 'text-gray-500'}`}>
+                    <div className={`text-xs ${activeSection === 'addresses' ? 'text-white/80' : 'text-[var(--brand-muted)]'}`}>
                       Manage delivery addresses
                     </div>
                   </div>
                   {activeSection === 'addresses' && (
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full"></div>
                   )}
-                  <span className={`${activeSection === 'addresses' ? 'text-white/60' : 'text-gray-400'}`}>›</span>
+                  <span className={`${activeSection === 'addresses' ? 'text-white/60' : 'text-[var(--brand-muted)]'}`}>›</span>
                 </button>
 
                 <Link to="/wishlist" className="block mt-2">
-                  <div className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-gray-700 hover:bg-gray-50 bg-white border border-gray-200 hover:border-gray-300 relative">
-                    <div className="p-2 rounded-lg bg-gray-100">
-                      <FiHeart className="w-5 h-5 text-gray-700" />
+                  <div className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white border border-[var(--brand-border)] hover:border-[var(--brand-maroon)] relative">
+                    <div className="p-2 rounded-lg bg-[#f4ece8]">
+                      <FiHeart className="w-5 h-5 text-[var(--brand-text)]" />
                     </div>
                     <div className="flex-1 text-left">
                       <div className="font-semibold">Wishlist</div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-[var(--brand-muted)]">
                         {wishlistCount} {wishlistCount === 1 ? 'item' : 'items'} saved
                       </div>
                     </div>
@@ -542,7 +542,7 @@ export default function Profile() {
                         {wishlistCount > 9 ? '9+' : wishlistCount}
                       </span>
                     )}
-                    <span className="text-gray-400">›</span>
+                    <span className="text-[var(--brand-muted)]">›</span>
                   </div>
                 </Link>
               </div>
@@ -550,36 +550,36 @@ export default function Profile() {
               {/* Admin Section */}
               {isAdmin && (
                 <div className="mb-4">
-                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-2">Administration</div>
+                  <div className="text-xs font-semibold text-[var(--brand-muted)] uppercase tracking-wider px-4 mb-2">Administration</div>
                   <Link to="/admin" className="block">
-                    <div className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-blue-700 hover:bg-blue-50 bg-white border border-blue-200 hover:border-blue-300">
-                      <div className="p-2 rounded-lg bg-blue-100">
-                        <FiSettings className="w-5 h-5 text-blue-700" />
+                    <div className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-[var(--brand-maroon)] hover:bg-[#f6ece8] bg-white border border-[var(--brand-border)] hover:border-[var(--brand-maroon)]">
+                      <div className="p-2 rounded-lg bg-[#f4ece8]">
+                        <FiSettings className="w-5 h-5 text-[var(--brand-maroon)]" />
                       </div>
                       <div className="flex-1 text-left">
                         <div className="font-semibold">Admin Dashboard</div>
-                        <div className="text-xs text-blue-600">Manage store & orders</div>
+                        <div className="text-xs text-[var(--brand-muted)]">Manage store & orders</div>
                       </div>
-                      <span className="text-blue-400">›</span>
+                      <span className="text-[var(--brand-muted)]">›</span>
                     </div>
                   </Link>
                 </div>
               )}
 
               {/* Divider */}
-              <div className="my-4 border-t border-gray-200"></div>
+              <div className="my-4 border-t border-[var(--brand-border)]"></div>
 
               {/* Logout */}
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-red-600 hover:bg-red-50 bg-white border border-red-200 hover:border-red-300"
+                className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-[var(--brand-maroon)] hover:bg-[#f6ece8] bg-white border border-[var(--brand-border)] hover:border-[var(--brand-maroon)]"
               >
-                <div className="p-2 rounded-lg bg-red-100">
-                  <FiLogOut className="w-5 h-5 text-red-600" />
+                <div className="p-2 rounded-lg bg-[#f4ece8]">
+                  <FiLogOut className="w-5 h-5 text-[var(--brand-maroon)]" />
                 </div>
                 <div className="flex-1 text-left">
                   <div className="font-semibold">Logout</div>
-                  <div className="text-xs text-red-500">Sign out of your account</div>
+                  <div className="text-xs text-[var(--brand-muted)]">Sign out of your account</div>
                 </div>
               </button>
             </div>
@@ -587,17 +587,17 @@ export default function Profile() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-white lg:bg-transparent">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-[var(--brand-cream)] lg:bg-transparent">
           <div className="max-w-6xl mx-auto">
             {/* Mobile Tab Navigation */}
             <div className="lg:hidden mb-6">
-              <div className="flex gap-2 bg-white p-1.5 rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+              <div className="flex gap-2 bg-white p-1.5 rounded-xl shadow-sm border border-[var(--brand-border)] overflow-x-auto">
                 <button
                   onClick={() => handleSectionChange('profile')}
                   className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                     activeSection === 'profile'
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
+                      ? 'bg-[var(--brand-maroon)] text-white shadow-sm'
+                      : 'text-[var(--brand-muted)] hover:text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white'
                   }`}
                 >
                   Profile
@@ -606,8 +606,8 @@ export default function Profile() {
                   onClick={() => handleSectionChange('orders')}
                   className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                     activeSection === 'orders'
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
+                      ? 'bg-[var(--brand-maroon)] text-white shadow-sm'
+                      : 'text-[var(--brand-muted)] hover:text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white'
                   }`}
                 >
                   Orders
@@ -616,8 +616,8 @@ export default function Profile() {
                   onClick={() => handleSectionChange('track')}
                   className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                     activeSection === 'track'
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
+                      ? 'bg-[var(--brand-maroon)] text-white shadow-sm'
+                      : 'text-[var(--brand-muted)] hover:text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white'
                   }`}
                 >
                   Track
@@ -626,8 +626,8 @@ export default function Profile() {
                   onClick={() => handleSectionChange('addresses')}
                   className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                     activeSection === 'addresses'
-                      ? 'bg-gray-900 text-white shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 bg-white'
+                      ? 'bg-[var(--brand-maroon)] text-white shadow-sm'
+                      : 'text-[var(--brand-muted)] hover:text-[var(--brand-text)] hover:bg-[#f6ece8] bg-white'
                   }`}
                 >
                   Addresses
@@ -639,24 +639,24 @@ export default function Profile() {
             {activeSection === 'profile' && (
               <div className="space-y-6">
                 {/* Profile Header Card */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                  <div className="bg-gradient-to-r from-black to-gray-800 px-6 py-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-[var(--brand-border)] overflow-hidden">
+                  <div className="bg-gradient-to-r from-[var(--brand-maroon)] to-[var(--brand-maroon-2)] px-6 py-8">
                     <div className="flex items-center gap-4">
                       <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-3xl font-bold ring-4 ring-white/30">
                         {user.firstName.charAt(0).toUpperCase()}
                       </div>
                       <div>
                         <h1 className="text-2xl font-bold text-white mb-1">{user.firstName} {user.lastName}</h1>
-                        <p className="text-gray-300 text-sm">{user.email}</p>
+                        <p className="text-[#eadfdb] text-sm">{user.email}</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Personal Information */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <div className="bg-white rounded-2xl shadow-sm border border-[var(--brand-border)] overflow-hidden">
+                  <div className="px-6 py-4 border-b border-[var(--brand-border)] bg-[var(--brand-cream)]">
+                    <h2 className="text-lg font-bold text-[var(--brand-text)] flex items-center gap-2">
                       <FiUser className="w-5 h-5" />
                       Personal Information
                     </h2>
@@ -664,14 +664,14 @@ export default function Profile() {
                   <div className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                        <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 font-medium">
+                        <label className="block text-sm font-medium text-[var(--brand-muted)] mb-2">First Name</label>
+                        <div className="px-4 py-3 bg-[var(--brand-cream)] border border-[var(--brand-border)] rounded-xl text-[var(--brand-text)] font-medium">
                           {user.firstName || '—'}
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                        <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 font-medium">
+                        <label className="block text-sm font-medium text-[var(--brand-muted)] mb-2">Last Name</label>
+                        <div className="px-4 py-3 bg-[var(--brand-cream)] border border-[var(--brand-border)] rounded-xl text-[var(--brand-text)] font-medium">
                           {user.lastName || '—'}
                         </div>
                       </div>
@@ -680,29 +680,29 @@ export default function Profile() {
                 </div>
 
                 {/* Contact Information */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                    <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <div className="bg-white rounded-2xl shadow-sm border border-[var(--brand-border)] overflow-hidden">
+                  <div className="px-6 py-4 border-b border-[var(--brand-border)] bg-[var(--brand-cream)]">
+                    <h2 className="text-lg font-bold text-[var(--brand-text)] flex items-center gap-2">
                       <FiMail className="w-5 h-5" />
                       Contact Information
                     </h2>
                   </div>
                   <div className="p-6 space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                      <label className="block text-sm font-medium text-[var(--brand-muted)] mb-2 flex items-center gap-2">
                         <FiMail className="w-4 h-4" />
                         Email Address
                       </label>
-                      <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 font-medium">
+                      <div className="px-4 py-3 bg-[var(--brand-cream)] border border-[var(--brand-border)] rounded-xl text-[var(--brand-text)] font-medium">
                         {user.email || '—'}
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                      <label className="block text-sm font-medium text-[var(--brand-muted)] mb-2 flex items-center gap-2">
                         <FiPhone className="w-4 h-4" />
                         Mobile Number
                       </label>
-                      <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 font-medium">
+                      <div className="px-4 py-3 bg-[var(--brand-cream)] border border-[var(--brand-border)] rounded-xl text-[var(--brand-text)] font-medium">
                         {user.mobile || '—'}
                       </div>
                     </div>

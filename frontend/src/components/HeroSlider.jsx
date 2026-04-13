@@ -98,7 +98,7 @@ const HeroSlider = ({
           <img
             src={mobileSrc || slides[0]?.desktop}
             alt="Banner"
-            className="w-full h-auto object-cover block"
+            className="w-full h-auto object-contain block"
             loading="lazy"
           />
 

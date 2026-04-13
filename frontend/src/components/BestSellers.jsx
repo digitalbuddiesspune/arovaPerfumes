@@ -48,15 +48,26 @@ const BestSellers = () => {
   }, []);
 
   return (
-    <section className="py-12 sm:py-16 bg-white">
+    <section className="py-12 sm:py-16 bg-gradient-to-b from-[var(--brand-cream)] to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-wide text-[#1f1a17] mb-3">
-            BEST SELLERS
-          </h2>
-          <p className="text-sm sm:text-base text-[#6a5d52]">
-            Most loved picks from our premium collection
-          </p>
+        <div className="mb-8 sm:mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="text-center sm:text-left">
+            <p className="text-[11px] sm:text-xs uppercase tracking-[0.22em] text-[var(--brand-maroon)] mb-2">
+              Curated For You
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-wide text-[#1f1a17] mb-2">
+              BEST SELLERS
+            </h2>
+            <p className="text-sm sm:text-base text-[#6a5d52]">
+              Most loved picks from our premium collection
+            </p>
+          </div>
+          <Link
+            to="/products"
+            className="mx-auto sm:mx-0 inline-flex items-center justify-center rounded-full border border-[var(--brand-border)] bg-white px-5 py-2 text-xs sm:text-sm font-medium uppercase tracking-wide text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:border-[var(--brand-maroon)] transition-all duration-300"
+          >
+            Explore Collection
+          </Link>
         </div>
 
         {loading ? (
@@ -74,10 +85,11 @@ const BestSellers = () => {
             const image = product.images?.image1 || product.image || FALLBACK_IMAGE;
             const rating = Number(product.rating || 0);
             const reviews = Number(product.totalReviews || 0);
+            const discountPercent = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
 
             return (
-              <Link key={id} to={`/product/${id}`} className="group">
-                <div className="rounded-2xl border border-[#eee7e1] bg-[#fcfaf8] overflow-hidden hover:shadow-xl transition-all duration-300">
+              <Link key={id} to={`/product/${id}`} className="group block">
+                <div className="rounded-2xl border border-[#eee7e1] bg-[#fcfaf8] overflow-hidden shadow-[0_6px_20px_rgba(64,35,24,0.06)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_16px_30px_rgba(64,35,24,0.14)]">
                   <div className="relative aspect-[3/4] bg-[#f2ebe6] overflow-hidden">
                     <img
                       src={image}
@@ -87,6 +99,16 @@ const BestSellers = () => {
                     <span className="absolute top-3 left-3 bg-white/90 text-[#6f5039] text-[10px] px-2 py-1 rounded-full font-semibold tracking-wide">
                       BEST SELLER
                     </span>
+                    {discountPercent > 0 && (
+                      <span className="absolute top-3 right-3 bg-[var(--brand-maroon)] text-white text-[10px] px-2 py-1 rounded-full font-semibold tracking-wide">
+                        {discountPercent}% OFF
+                      </span>
+                    )}
+                    <div className="absolute inset-x-3 bottom-3 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                      <div className="rounded-lg bg-white/90 backdrop-blur-sm border border-white px-3 py-2 text-[11px] font-medium text-[var(--brand-text)] text-center">
+                        View Details
+                      </div>
+                    </div>
                   </div>
                   <div className="p-4">
                     <h3 className="text-sm sm:text-base font-semibold text-[#2b231d] line-clamp-1">
@@ -100,7 +122,7 @@ const BestSellers = () => {
                         <span className="text-[#4a3023] font-bold">Rs.{price.toLocaleString('en-IN')}</span>
                         {mrp > price && <span className="text-xs text-gray-400 line-through">Rs.{mrp.toLocaleString('en-IN')}</span>}
                       </div>
-                      <span className="text-[11px] text-[#5f554d]">{rating.toFixed(1)} ({reviews})</span>
+                      <span className="text-[11px] text-[#5f554d]">★ {rating.toFixed(1)} ({reviews})</span>
                     </div>
                   </div>
                 </div>
