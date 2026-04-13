@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FiGrid, FiBox, FiShoppingBag, FiLogOut, FiSearch, FiUser, FiBookOpen, FiImage, FiSliders, FiTag, FiTruck } from 'react-icons/fi';
+import { FiGrid, FiBox, FiShoppingBag, FiLogOut, FiSearch, FiUser, FiBookOpen, FiSliders, FiTag, FiTruck } from 'react-icons/fi';
 
 const Title = () => {
   const { pathname } = useLocation();
@@ -8,7 +8,6 @@ const Title = () => {
   if (pathname.startsWith('/admin/products')) return 'Products';
   if (pathname.startsWith('/admin/orders')) return 'Orders';
   if (pathname.startsWith('/admin/policies')) return 'Policies';
-  if (pathname.startsWith('/admin/logo')) return 'Logo Settings';
   if (pathname.startsWith('/admin/hero-slider')) return 'Hero Slider';
   if (pathname.startsWith('/admin/coupons')) return 'Coupons';
   if (pathname.startsWith('/admin/shipping-pricing')) return 'Shipping & pricing';
@@ -54,7 +53,6 @@ const AdminLayout = () => {
           {navItem('/admin/products', 'Products', FiBox)}
           {navItem('/admin/orders', 'Orders', FiShoppingBag)}
           {navItem('/admin/policies', 'Policies', FiBookOpen)}
-          {navItem('/admin/logo', 'Logo Settings', FiImage)}
           {navItem('/admin/hero-slider', 'Hero Slider', FiSliders)}
           {navItem('/admin/coupons', 'Coupons', FiTag)}
           {navItem('/admin/shipping-pricing', 'Shipping & pricing', FiTruck)}
@@ -76,7 +74,6 @@ const AdminLayout = () => {
               {navItem('/admin/products', 'Products', FiBox)}
               {navItem('/admin/orders', 'Orders', FiShoppingBag)}
               {navItem('/admin/policies', 'Policies', FiBookOpen)}
-              {navItem('/admin/logo', 'Logo Settings', FiImage)}
               {navItem('/admin/hero-slider', 'Hero Slider', FiSliders)}
               {navItem('/admin/coupons', 'Coupons', FiTag)}
               {navItem('/admin/shipping-pricing', 'Shipping & pricing', FiTruck)}
