@@ -34,7 +34,7 @@ const Layout = () => {
       <div aria-hidden="true" style={{ height: headerHeight }} className="bg-[var(--brand-cream)] border-b border-[var(--brand-border)]" />
 
       {/* Main Content Area with responsive padding */}
-      <main className="flex-grow">
+      <main className="flex-grow pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
         <Outlet />
       </main>
 

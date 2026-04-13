@@ -368,6 +368,16 @@ export default function Profile() {
               <div>
                 <div className="text-xs text-[var(--brand-muted)]">Hello,</div>
                 <div className="font-semibold text-[var(--brand-text)]">{user.firstName} {user.lastName}</div>
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="mt-1 inline-flex items-center gap-1 rounded-md border border-[var(--brand-border)] bg-white px-2 py-1 text-[10px] font-semibold text-[var(--brand-maroon)]"
+                  >
+                    <FiSettings className="w-3.5 h-3.5" />
+                    Admin Dashboard
+                  </Link>
+                )}
               </div>
             </div>
             <button 
@@ -411,12 +421,21 @@ export default function Profile() {
                 <div className="text-xs text-[var(--brand-muted)] font-medium mb-1">Welcome back,</div>
                 <div className="font-bold text-[var(--brand-text)] text-lg truncate">{user.firstName} {user.lastName}</div>
                 <div className="text-xs text-[var(--brand-muted)] truncate">{user.email}</div>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="mt-2 inline-flex items-center gap-1 rounded-md border border-[var(--brand-border)] bg-white px-2.5 py-1.5 text-xs font-semibold text-[var(--brand-maroon)] hover:bg-[var(--brand-cream)]"
+                    >
+                      <FiSettings className="w-3.5 h-3.5" />
+                      Admin Dashboard
+                    </Link>
+                  )}
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto p-4 bg-[var(--brand-cream)] lg:bg-transparent">
+          <nav className="flex-1 overflow-y-auto p-4 pb-28 lg:pb-6 bg-[var(--brand-cream)] lg:bg-transparent">
             <div className="space-y-2">
               {/* Quick Actions */}
               <div className="mb-4">
@@ -547,25 +566,6 @@ export default function Profile() {
                 </Link>
               </div>
 
-              {/* Admin Section */}
-              {isAdmin && (
-                <div className="mb-4">
-                  <div className="text-xs font-semibold text-[var(--brand-muted)] uppercase tracking-wider px-4 mb-2">Administration</div>
-                  <Link to="/admin" className="block">
-                    <div className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 text-[var(--brand-maroon)] hover:bg-[#f6ece8] bg-white border border-[var(--brand-border)] hover:border-[var(--brand-maroon)]">
-                      <div className="p-2 rounded-lg bg-[#f4ece8]">
-                        <FiSettings className="w-5 h-5 text-[var(--brand-maroon)]" />
-                      </div>
-                      <div className="flex-1 text-left">
-                        <div className="font-semibold">Admin Dashboard</div>
-                        <div className="text-xs text-[var(--brand-muted)]">Manage store & orders</div>
-                      </div>
-                      <span className="text-[var(--brand-muted)]">›</span>
-                    </div>
-                  </Link>
-                </div>
-              )}
-
               {/* Divider */}
               <div className="my-4 border-t border-[var(--brand-border)]"></div>
 
@@ -645,8 +645,19 @@ export default function Profile() {
                       <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white text-3xl font-bold ring-4 ring-white/30">
                         {user.firstName.charAt(0).toUpperCase()}
                       </div>
-                      <div>
-                        <h1 className="text-2xl font-bold text-white mb-1">{user.firstName} {user.lastName}</h1>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-3">
+                          <h1 className="text-xl sm:text-2xl font-bold text-white mb-0 sm:mb-1 break-words">{user.firstName} {user.lastName}</h1>
+                          {isAdmin && (
+                            <Link
+                              to="/admin"
+                              className="w-fit shrink-0 inline-flex items-center gap-1 rounded-md border border-white/30 bg-white/15 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/25 transition-colors"
+                            >
+                              <FiSettings className="w-3.5 h-3.5" />
+                              Admin Dashboard
+                            </Link>
+                          )}
+                        </div>
                         <p className="text-[#eadfdb] text-sm">{user.email}</p>
                       </div>
                     </div>

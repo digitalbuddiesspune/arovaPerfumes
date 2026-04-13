@@ -143,13 +143,13 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200">
+    <div className="min-h-screen bg-gradient-to-b from-[var(--brand-cream)] via-[#f6eeea] to-[#efe2dd]">
       <div className="flex h-screen">
         {/* Left Side - Logo */}
-        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 items-center justify-center">
+        <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[var(--brand-cream)] via-[#efe1dc] to-[#e4cfca] items-center justify-center">
           <div className="text-center">
             <Link to="/" className="inline-block mb-8">
-              <h1 className="text-5xl font-serif font-bold text-black">
+              <h1 className="text-5xl font-serif font-bold text-[var(--brand-maroon)]">
                 ArovaPerfume
               </h1>
             </Link>
@@ -162,7 +162,7 @@ const SignIn = () => {
             {/* Mobile Logo */}
             <div className="lg:hidden text-center mb-6">
               <Link to="/" className="inline-block mb-6">
-                <h1 className="text-2xl font-serif font-bold text-black">
+                <h1 className="text-2xl font-serif font-bold text-[var(--brand-maroon)]">
                   ArovaPerfume
                 </h1>
               </Link>
@@ -170,18 +170,18 @@ const SignIn = () => {
 
             {/* Form Header */}
             <div className="text-center mb-6">
-              <h2 className="text-xl font-serif font-semibold text-neutral-800 mb-1">
+              <h2 className="text-xl font-serif font-semibold text-[var(--brand-text)] mb-1">
                 Welcome Back
               </h2>
-              <p className="text-gray-600">
+              <p className="text-[var(--brand-muted)]">
                 Sign in to your account to continue shopping
               </p>
             </div>
 
             {/* Sign In Form */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-neutral-100">
+            <div className="bg-white rounded-2xl shadow-[0_14px_40px_rgba(56,19,19,0.12)] p-6 border border-[var(--brand-border)]">
               {/* Login Method Toggle */}
-              <div className="flex gap-2 mb-6 bg-gray-100 p-1 rounded-lg">
+              <div className="flex gap-2 mb-6 bg-[var(--brand-cream)] p-1 rounded-lg border border-[var(--brand-border)]">
                 <button
                   type="button"
                   onClick={() => {
@@ -193,8 +193,8 @@ const SignIn = () => {
                   }}
                   className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
                     loginMethod === 'email'
-                      ? 'bg-white text-rose-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-white text-[var(--brand-maroon)] shadow-sm'
+                      : 'text-[var(--brand-muted)] hover:text-[var(--brand-text)]'
                   }`}
                 >
                   Email & Password
@@ -210,8 +210,8 @@ const SignIn = () => {
                   }}
                   className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
                     loginMethod === 'otp'
-                      ? 'bg-white text-rose-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-white text-[var(--brand-maroon)] shadow-sm'
+                      : 'text-[var(--brand-muted)] hover:text-[var(--brand-text)]'
                   }`}
                 >
                   Login with OTP
@@ -225,7 +225,7 @@ const SignIn = () => {
               {loginMethod === 'email' && (
                 <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-[var(--brand-text)] mb-2">
                     Email Address
                   </label>
                   <input
@@ -235,13 +235,13 @@ const SignIn = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all"
+                    className="w-full px-3 py-2 border border-[var(--brand-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-maroon)]/20 focus:border-[var(--brand-maroon)] transition-all"
                     placeholder="Enter your email"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-[var(--brand-text)] mb-2">
                     Password
                   </label>
                   <input
@@ -251,7 +251,7 @@ const SignIn = () => {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all"
+                    className="w-full px-3 py-2 border border-[var(--brand-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-maroon)]/20 focus:border-[var(--brand-maroon)] transition-all"
                     placeholder="Enter your password"
                   />
                 </div>
@@ -260,25 +260,18 @@ const SignIn = () => {
                   <label className="flex items-center">
                     <input
                       type="checkbox"
-                      className="h-4 w-4 text-rose-500 focus:ring-rose-400 border-neutral-300 rounded"
+                      className="h-4 w-4 text-[var(--brand-maroon)] focus:ring-[var(--brand-maroon)]/30 border-[var(--brand-border)] rounded"
                     />
-                    <span className="ml-2 text-sm text-gray-600">Remember me</span>
+                    <span className="ml-2 text-sm text-[var(--brand-muted)]">Remember me</span>
                   </label>
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-rose-500 to-rose-600 text-white py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60"
+                  className="w-full bg-gradient-to-r from-[var(--brand-maroon)] to-[var(--brand-maroon-2)] text-white py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60"
                 >
                   {loading ? 'Signing In...' : 'Sign In'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate('/')}
-                  className="w-full mt-2 border border-neutral-200 text-neutral-700 py-2 rounded-lg font-semibold hover:bg-neutral-50 transition-all duration-300"
-                >
-                  Continue as Guest
                 </button>
               </form>
               )}
@@ -289,7 +282,7 @@ const SignIn = () => {
                   {!otpSent ? (
                     <form onSubmit={handleSendOTP} className="space-y-4">
                       <div>
-                        <label htmlFor="mobile" className="block text-sm font-medium text-neutral-700 mb-2 flex items-center gap-2">
+                        <label htmlFor="mobile" className="block text-sm font-medium text-[var(--brand-text)] mb-2 flex items-center gap-2">
                           <FiPhone className="w-4 h-4" />
                           Mobile Number
                         </label>
@@ -301,16 +294,16 @@ const SignIn = () => {
                           onChange={handleOtpChange}
                           required
                           maxLength="10"
-                          className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all"
+                          className="w-full px-3 py-2 border border-[var(--brand-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-maroon)]/20 focus:border-[var(--brand-maroon)] transition-all"
                           placeholder="Enter 10-digit mobile number"
                         />
-                        <p className="mt-1 text-xs text-gray-500">We'll send you a 6-digit OTP</p>
+                        <p className="mt-1 text-xs text-[var(--brand-muted)]">We'll send you a 6-digit OTP</p>
                       </div>
 
                       <button
                         type="submit"
                         disabled={sendingOTP}
-                        className="w-full bg-gradient-to-r from-rose-500 to-rose-600 text-white py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60"
+                        className="w-full bg-gradient-to-r from-[var(--brand-maroon)] to-[var(--brand-maroon-2)] text-white py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60"
                       >
                         {sendingOTP ? 'Sending OTP...' : 'Send OTP'}
                       </button>
@@ -318,10 +311,10 @@ const SignIn = () => {
                   ) : (
                     <form onSubmit={handleVerifyOTP} className="space-y-4">
                       <div>
-                        <label htmlFor="mobile-display" className="block text-sm font-medium text-neutral-700 mb-2">
+                        <label htmlFor="mobile-display" className="block text-sm font-medium text-[var(--brand-text)] mb-2">
                           Mobile Number
                         </label>
-                        <div className="w-full px-3 py-2 border border-neutral-200 rounded-lg bg-gray-50 text-gray-600">
+                        <div className="w-full px-3 py-2 border border-[var(--brand-border)] rounded-lg bg-[var(--brand-cream)] text-[var(--brand-muted)]">
                           +91 {otpData.mobile}
                         </div>
                         <button
@@ -332,14 +325,14 @@ const SignIn = () => {
                             setError('');
                             setSuccess('');
                           }}
-                          className="mt-1 text-xs text-rose-500 hover:text-rose-600"
+                          className="mt-1 text-xs text-[var(--brand-maroon)] hover:text-[var(--brand-maroon-2)]"
                         >
                           Change number
                         </button>
                       </div>
 
                       <div>
-                        <label htmlFor="otp" className="block text-sm font-medium text-neutral-700 mb-2">
+                        <label htmlFor="otp" className="block text-sm font-medium text-[var(--brand-text)] mb-2">
                           Enter OTP
                         </label>
                         <input
@@ -350,19 +343,19 @@ const SignIn = () => {
                           onChange={handleOtpChange}
                           required
                           maxLength="6"
-                          className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all text-center text-2xl tracking-widest"
+                          className="w-full px-3 py-2 border border-[var(--brand-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-maroon)]/20 focus:border-[var(--brand-maroon)] transition-all text-center text-2xl tracking-widest"
                           placeholder="000000"
                         />
                         {otpTimer > 0 && (
-                          <p className="mt-2 text-xs text-gray-500 text-center">
-                            OTP expires in: <span className="font-semibold text-rose-600">{formatTimer(otpTimer)}</span>
+                          <p className="mt-2 text-xs text-[var(--brand-muted)] text-center">
+                            OTP expires in: <span className="font-semibold text-[var(--brand-maroon)]">{formatTimer(otpTimer)}</span>
                           </p>
                         )}
                         {otpTimer === 0 && otpSent && (
                           <button
                             type="button"
                             onClick={handleSendOTP}
-                            className="mt-2 text-xs text-rose-500 hover:text-rose-600 font-medium"
+                            className="mt-2 text-xs text-[var(--brand-maroon)] hover:text-[var(--brand-maroon-2)] font-medium"
                           >
                             Resend OTP
                           </button>
@@ -372,7 +365,7 @@ const SignIn = () => {
                       <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-gradient-to-r from-rose-500 to-rose-600 text-white py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60"
+                        className="w-full bg-gradient-to-r from-[var(--brand-maroon)] to-[var(--brand-maroon-2)] text-white py-2 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-60"
                       >
                         {loading ? 'Verifying...' : 'Verify & Login'}
                       </button>
@@ -383,21 +376,21 @@ const SignIn = () => {
 
               {/* Sign Up Link */}
               <div className="mt-8 text-center">
-                <p className="text-gray-600">
+                <p className="text-[var(--brand-muted)]">
                   Don't have an account?{' '}
                   <Link
                     to="/signup"
-                    className="text-rose-500 hover:text-rose-600 font-semibold transition-colors"
+                    className="text-[var(--brand-maroon)] hover:text-[var(--brand-maroon-2)] font-semibold transition-colors"
                   >
                     Sign up here
                   </Link>
                 </p>
               </div>
 
-              <div className="mt-4">
+              <div className="mt-4 hidden md:block">
                 <a
                   href={googleAuthUrl}
-                  className="w-full inline-flex items-center justify-center gap-2 border border-gray-300 bg-white text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 border border-[var(--brand-border)] bg-white text-[var(--brand-text)] py-2 rounded-lg font-semibold hover:bg-[var(--brand-cream)] transition-colors"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
                     <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.2-1.4 3.5-5.5 3.5-3.3 0-6-2.7-6-6s2.7-6 6-6c1.9 0 3.2.8 3.9 1.5l2.7-2.6C17 2.9 14.7 2 12 2 6.9 2 2.8 6.1 2.8 11.2S6.9 20.4 12 20.4c6.9 0 9.1-4.8 9.1-7.3 0-.5 0-.9-.1-1.3H12z" />
