@@ -120,7 +120,7 @@ const AdminOrders = () => {
         </div>
       )}
       <div className="rounded-xl border bg-white p-4 shadow-sm">
-        <h1 className="text-2xl font-semibold text-gray-900">Orders</h1>
+        <h1 className="admin-title text-2xl font-semibold text-gray-900">Orders</h1>
         <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
           <input
             value={search}

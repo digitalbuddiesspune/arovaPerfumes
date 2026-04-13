@@ -93,7 +93,7 @@ export default function AdminPriceSettings() {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-        <h1 className="text-xl font-bold text-gray-900">Shipping &amp; pricing</h1>
+        <h1 className="admin-title text-xl font-bold text-gray-900">Shipping &amp; pricing</h1>
         <p className="text-sm text-gray-600 mt-1 mb-6">
           Shipping charge, free-shipping threshold, tax, header marquee, and low-stock badge threshold for the storefront.
         </p>
@@ -198,7 +198,7 @@ export default function AdminPriceSettings() {
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-60"
+              className="admin-primary-btn px-5 py-2.5 text-sm font-semibold rounded-lg disabled:opacity-60"
             >
               {saving ? 'Saving…' : 'Save'}
             </button>

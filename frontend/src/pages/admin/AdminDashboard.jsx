@@ -5,6 +5,8 @@ import { formatDisplayOrderId } from '../../utils/orderId';
 import DashboardCards from './DashboardCards';
 import OrdersTable from './OrdersTable';
 import ActivityFeed from './ActivityFeed';
+import AdminButton from './ui/AdminButton';
+import AdminCard from './ui/AdminCard';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -85,22 +87,18 @@ const AdminDashboard = () => {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <div className="rounded-xl border bg-white p-4 shadow-sm sm:p-5">
+      <AdminCard className="sm:p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+            <h1 className="admin-title text-2xl font-semibold text-gray-900">Dashboard</h1>
             <p className="text-sm text-gray-600">Welcome, Admin 👋</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link to="/admin/products" className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white hover:bg-rose-700">
-              Manage Products
-            </Link>
-            <Link to="/admin/orders" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-              View Orders
-            </Link>
+            <Link to="/admin/products"><AdminButton>Manage Products</AdminButton></Link>
+            <Link to="/admin/orders"><AdminButton variant="secondary">View Orders</AdminButton></Link>
           </div>
         </div>
-      </div>
+      </AdminCard>
 
       {loading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">

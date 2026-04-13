@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiEye } from 'react-icons/fi';
+import { Eye } from 'lucide-react';
 import { formatDisplayOrderId } from '../../utils/orderId';
 
 const ORDER_STATUS_OPTIONS = [
@@ -116,7 +116,7 @@ const OrderTable = ({
                         onClick={() => onView(order)}
                         className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1.5 text-xs font-medium hover:bg-gray-50"
                       >
-                        <FiEye /> View
+                        <Eye className="h-4 w-4" /> View
                       </button>
                     </td>
                   </tr>

@@ -396,10 +396,10 @@ const ProductPage = () => {
       ) : null}
 
       <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white px-5 py-4 shadow-sm">
-        <h1 className="text-2xl font-semibold text-gray-900">Products</h1>
+        <h1 className="admin-title text-2xl font-semibold text-gray-900">Products</h1>
         <button
           onClick={() => setShowForm(true)}
-          className="rounded-lg bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-700"
+          className="admin-primary-btn rounded-lg px-4 py-2 text-sm font-medium transition"
         >
           + Add Product
         </button>
@@ -608,7 +608,7 @@ const ProductPage = () => {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                  className="admin-primary-btn rounded-lg px-4 py-2 text-sm font-medium"
                   disabled={saving}
                 >
                   {saving ? 'Saving...' : 'Save Changes'}

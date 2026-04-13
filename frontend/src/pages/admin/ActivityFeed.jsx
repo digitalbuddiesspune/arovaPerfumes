@@ -1,10 +1,10 @@
 import React from 'react';
-import { FiGift, FiPackage, FiShoppingCart } from 'react-icons/fi';
+import { Gift, Package, ShoppingCart } from 'lucide-react';
 
 const iconForType = (type) => {
-  if (type === 'order') return FiShoppingCart;
-  if (type === 'product') return FiPackage;
-  return FiGift;
+  if (type === 'order') return ShoppingCart;
+  if (type === 'product') return Package;
+  return Gift;
 };
 
 const ActivityFeed = ({ activities }) => {
