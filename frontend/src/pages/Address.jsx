@@ -14,6 +14,9 @@ const indianStates = [
   'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'
 ].sort();
 
+const INDIAN_MOBILE_REGEX = /^[6-9]\d{9}$/;
+const FULL_NAME_REGEX = /^[A-Za-z]+(?:\s+[A-Za-z]+)+$/;
+
 export default function AddressForm() {
   const navigate = useNavigate();
   const [showStateDropdown, setShowStateDropdown] = useState(false);
@@ -269,10 +272,13 @@ export default function AddressForm() {
 
   const validateForm = () => {
     const errors = [];
+    const trimmedName = formData.name.trim();
+    const trimmedMobile = formData.mobile.trim();
+    const trimmedAlternatePhone = formData.alternatePhone.trim();
     
     // Required fields validation
-    if (!formData.name.trim()) errors.push('Name is required');
-    if (!formData.mobile.trim()) errors.push('Mobile number is required');
+    if (!trimmedName) errors.push('Name is required');
+    if (!trimmedMobile) errors.push('Mobile number is required');
     if (!formData.pincode.trim()) errors.push('Pincode is required');
     if (!formData.locality.trim()) errors.push('Locality is required');
     if (!formData.address.trim()) errors.push('Address is required');
@@ -280,16 +286,20 @@ export default function AddressForm() {
     if (!formData.state.trim()) errors.push('State is required');
     
     // Format validations
-    if (formData.mobile.trim() && !/^\d{10}$/.test(formData.mobile.trim())) {
-      errors.push('Mobile number must be 10 digits');
+    if (trimmedName && !FULL_NAME_REGEX.test(trimmedName)) {
+      errors.push('Name must include at least first name and last name');
+    }
+
+    if (trimmedMobile && !INDIAN_MOBILE_REGEX.test(trimmedMobile)) {
+      errors.push('Mobile number must be a valid 10-digit Indian number starting with 6, 7, 8, or 9');
     }
     
     if (formData.pincode.trim() && !/^\d{6}$/.test(formData.pincode.trim())) {
       errors.push('Pincode must be 6 digits');
     }
     
-    if (formData.alternatePhone.trim() && !/^\d{10}$/.test(formData.alternatePhone.trim())) {
-      errors.push('Alternate phone must be 10 digits if provided');
+    if (trimmedAlternatePhone && !INDIAN_MOBILE_REGEX.test(trimmedAlternatePhone)) {
+      errors.push('Alternate phone must be a valid 10-digit Indian number starting with 6, 7, 8, or 9');
     }
     
     return errors;

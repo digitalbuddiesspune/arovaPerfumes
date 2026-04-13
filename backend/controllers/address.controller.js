@@ -16,6 +16,12 @@ export const createOrUpdateAddress = async (req, res) => {
     );
     return res.json(doc);
   } catch (err) {
+    if (err?.name === 'ValidationError') {
+      const message = Object.values(err.errors || {})
+        .map((e) => e.message)
+        .join(', ');
+      return res.status(400).json({ message: message || 'Invalid address data' });
+    }
     return res.status(500).json({ message: 'Failed to save address', error: err.message });
   }
 };
@@ -50,6 +56,12 @@ export const updateAddress = async (req, res) => {
     if (!doc) return res.status(404).json({ message: 'Address not found' });
     return res.json(doc);
   } catch (err) {
+    if (err?.name === 'ValidationError') {
+      const message = Object.values(err.errors || {})
+        .map((e) => e.message)
+        .join(', ');
+      return res.status(400).json({ message: message || 'Invalid address data' });
+    }
     return res.status(500).json({ message: 'Failed to update address', error: err.message });
   }
 };
