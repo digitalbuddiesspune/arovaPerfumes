@@ -47,6 +47,7 @@ function Cart() {
     removeCoupon,
     eligibleCoupons,
     fetchEligibleCoupons,
+    revalidatingCoupon,
     addToCart,
   } = useCart();
 
@@ -355,19 +356,19 @@ function Cart() {
         </div>
       ) : (
         <div className="px-4 py-4 max-w-7xl mx-auto space-y-4">
-          {Array.isArray(eligibleCoupons) && eligibleCoupons.length > 0 && (
-            <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-              <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
-                <FaTicketAlt className="text-gray-600" />
-                Available coupons
-              </h3>
-              <p className="text-xs text-gray-500 mb-3">
-                Codes you can use right now are highlighted. Others are shown so you can see the offer, but they cannot be applied until the requirement is met.
-              </p>
+          <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+            <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
+              <FaTicketAlt className="text-gray-600" />
+              Available coupons
+            </h3>
+            <p className="text-xs text-gray-500 mb-3">
+              Showing only coupons that are currently applicable to this cart.
+            </p>
+            {Array.isArray(eligibleCoupons) && eligibleCoupons.length > 0 ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {eligibleCoupons.map((c) => {
                   const id = c._id || c.code;
-                  const applicable = c.applicableForUser !== false;
+                  const applicable = true;
                   const isApplied = appliedCoupon?.code === c.code;
                   const off =
                     c.discountType === 'percentage'
@@ -388,9 +389,6 @@ function Cart() {
                             <span className="inline-block mt-1 text-[10px] uppercase tracking-wide text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
                               First order
                             </span>
-                          )}
-                          {!applicable && c.unavailableReason && (
-                            <p className="text-xs text-amber-900 mt-1.5 leading-snug">{c.unavailableReason}</p>
                           )}
                         </div>
                         {isApplied ? (
@@ -418,8 +416,12 @@ function Cart() {
                   );
                 })}
               </div>
-            </section>
-          )}
+            ) : (
+              <div className="rounded-md border border-dashed border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+                No applicable coupons for the current cart value.
+              </div>
+            )}
+          </section>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Product Listings - Left Side */}  
@@ -670,6 +672,9 @@ function Cart() {
                       <p className={`text-xs mt-2 ${couponMessage.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
                         {couponMessage.text}
                       </p>
+                    )}
+                    {revalidatingCoupon && appliedCoupon && (
+                      <p className="text-xs mt-2 text-gray-500">Updating coupon amount for current cart...</p>
                     )}
                     
                     {!appliedCoupon && !couponMessage && (!eligibleCoupons || eligibleCoupons.length === 0) && (

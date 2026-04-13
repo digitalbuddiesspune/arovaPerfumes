@@ -30,6 +30,7 @@ export const CartProvider = ({ children }) => {
     }
   });
   const [eligibleCoupons, setEligibleCoupons] = useState([]);
+  const [revalidatingCoupon, setRevalidatingCoupon] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -283,9 +284,12 @@ export const CartProvider = ({ children }) => {
       const result = await api.getCoupons({ cartTotal });
       if (result.success) {
         setEligibleCoupons(result.data || []);
+      } else {
+        setEligibleCoupons([]);
       }
     } catch (error) {
       console.warn('Failed to fetch eligible coupons:', error);
+      setEligibleCoupons([]);
     }
   }, [cartTotal]);
 
@@ -373,6 +377,77 @@ export const CartProvider = ({ children }) => {
   // Final amount after coupon discount
   const finalTotal = Math.max(0, cartTotal - couponDiscount);
 
+  // Keep coupon discount accurate when cart amount changes.
+  useEffect(() => {
+    const code = appliedCoupon?.code;
+    if (!code || !hasToken()) return;
+    if (!cartTotal || cartTotal <= 0) {
+      setAppliedCoupon(null);
+      setCouponDiscount(0);
+      localStorage.removeItem('appliedCoupon');
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        setRevalidatingCoupon(true);
+        const result = await api.applyCoupon({ code, orderAmount: cartTotal });
+        if (cancelled) return;
+        if (result?.success) {
+          const nextDiscount = Number(result.data?.discountAmount || 0);
+          const nextCoupon = {
+            code: result.data.couponCode,
+            discountType: result.data.discountType,
+            discountValue: result.data.discountValue,
+            discountAmount: nextDiscount,
+            finalAmount: result.data.finalAmount,
+            originalAmount: result.data.originalAmount,
+          };
+          setAppliedCoupon(nextCoupon);
+          setCouponDiscount(nextDiscount);
+          localStorage.setItem('appliedCoupon', JSON.stringify(nextCoupon));
+          try {
+            await api.applyCouponToCart({
+              code: nextCoupon.code,
+              discountType: nextCoupon.discountType,
+              discountValue: nextCoupon.discountValue,
+              discountAmount: nextCoupon.discountAmount,
+              minOrderAmount: result.data.minOrderAmount || 0,
+            });
+          } catch {
+            // Ignore sync errors and keep UI state consistent.
+          }
+        } else {
+          setAppliedCoupon(null);
+          setCouponDiscount(0);
+          localStorage.removeItem('appliedCoupon');
+          try {
+            await api.removeCouponFromCart();
+          } catch {
+            // no-op
+          }
+        }
+      } catch {
+        if (!cancelled) {
+          setAppliedCoupon(null);
+          setCouponDiscount(0);
+          localStorage.removeItem('appliedCoupon');
+        }
+      } finally {
+        if (!cancelled) setRevalidatingCoupon(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [cartTotal, appliedCoupon?.code]);
+
+  const visibleEligibleCoupons = eligibleCoupons.filter(
+    (c) => c?.applicableForUser !== false && c?.code !== appliedCoupon?.code
+  );
+
   useEffect(() => {
     loadCart();
     fetchEligibleCoupons();
@@ -414,9 +489,10 @@ export const CartProvider = ({ children }) => {
       appliedCoupon,
       couponDiscount,
       finalTotal,
+      revalidatingCoupon,
       applyCouponCode,
       removeCoupon,
-      eligibleCoupons,
+      eligibleCoupons: visibleEligibleCoupons,
       fetchEligibleCoupons,
     }}>
       {children}

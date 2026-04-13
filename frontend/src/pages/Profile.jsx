@@ -975,14 +975,7 @@ export default function Profile() {
                         </span>
                       </div>
                     )}
-                    <ul className="text-sm border-t border-gray-200 pt-3 space-y-2">
-                      {(trackedOrder.items || []).map((it, idx) => (
-                        <li key={`${it.productId || idx}-${idx}`} className="flex justify-between gap-2 text-gray-800">
-                          <span className="truncate">{it.name}</span>
-                          <span className="text-gray-500 shrink-0">×{it.quantity || 1}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    
                     <button
                       type="button"
                       onClick={() => setSelectedOrder(trackedOrder)}

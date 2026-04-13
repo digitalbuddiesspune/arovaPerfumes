@@ -130,9 +130,6 @@ export const verifyPayment = async (req, res) => {
     // Calculate price breakdown
     const itemsPrice = orderItems.reduce((sum, it) => sum + (it.price * it.quantity), 0);
     
-    // Dynamic tax calculation
-    const taxPrice = Math.round(itemsPrice * (pricingSettings.taxPercentage / 100));
-    
     // Dynamic shipping calculation (free shipping uses subtotal after coupon, same as storefront cart)
     let shippingPrice = pricingSettings.shippingCharge;
 
@@ -150,8 +147,12 @@ export const verifyPayment = async (req, res) => {
       shippingPrice = 0;
     }
 
+    // Tax applies after coupon (and includes shipping in taxable base, same as storefront).
+    const taxableAmount = subtotalAfterCoupon + shippingPrice;
+    const taxPrice = Math.round(taxableAmount * (pricingSettings.taxPercentage / 100));
+
     // Calculate total price
-    const totalPrice = itemsPrice + taxPrice + shippingPrice - discount;
+    const totalPrice = subtotalAfterCoupon + shippingPrice + taxPrice;
 
     // Load user's current address to snapshot into the order
     let shippingAddress = null;
@@ -243,9 +244,6 @@ export const createCODOrder = async (req, res) => {
     // Calculate price breakdown
     const itemsPrice = orderItems.reduce((sum, it) => sum + (it.price * it.quantity), 0);
     
-    // Dynamic tax calculation
-    const taxPrice = Math.round(itemsPrice * (pricingSettings.taxPercentage / 100));
-
     let shippingPrice = pricingSettings.shippingCharge;
 
     // Apply coupon discount if available
@@ -262,8 +260,12 @@ export const createCODOrder = async (req, res) => {
       shippingPrice = 0;
     }
 
+    // Tax applies after coupon (and includes shipping in taxable base, same as storefront).
+    const taxableAmountCod = subtotalAfterCouponCod + shippingPrice;
+    const taxPrice = Math.round(taxableAmountCod * (pricingSettings.taxPercentage / 100));
+
     // Calculate total price
-    const totalPrice = itemsPrice + taxPrice + shippingPrice - discount;
+    const totalPrice = subtotalAfterCouponCod + shippingPrice + taxPrice;
 
     // Load user's current address to snapshot into the order
     let shippingAddress = null;

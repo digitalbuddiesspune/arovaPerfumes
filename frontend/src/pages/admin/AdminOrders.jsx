@@ -41,6 +41,24 @@ const orderStatusClass = (status) => {
 };
 
 const formatINR = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
+const getOrderTotal = (order = {}) => {
+  const candidates = [
+    order.totalPrice,
+    order.priceDetails?.totalPrice,
+    order.amount,
+  ];
+  for (const value of candidates) {
+    const n = Number(value);
+    if (!Number.isNaN(n) && n > 0) return n;
+  }
+  const items = Array.isArray(order.items) ? order.items : [];
+  return items.reduce((sum, item) => sum + (Number(item?.price || 0) * Number(item?.quantity || 1)), 0);
+};
+const formatDateTime = (value) => {
+  if (!value) return '-';
+  const d = new Date(value);
+  return `${d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} ${d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
+};
 
 const AdminOrders = () => {
   const navigate = useNavigate();
@@ -106,6 +124,14 @@ const AdminOrders = () => {
     });
   }, [orders, search, orderStatus, paymentStatus, dateFrom, dateTo]);
 
+  const metrics = useMemo(() => {
+    const total = filtered.length;
+    const pending = filtered.filter((o) => normalizedStatus(o) === 'pending').length;
+    const shipped = filtered.filter((o) => ['shipped', 'delivered'].includes(normalizedStatus(o))).length;
+    const paid = filtered.filter((o) => normalizedPaymentStatus(o) === 'paid').length;
+    return { total, pending, shipped, paid };
+  }, [filtered]);
+
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const pageItems = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -167,7 +193,7 @@ const AdminOrders = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 space-y-3">
+    <div className="max-w-7xl mx-auto p-4">
       {toast.show && (
         <div className={`${toast.type==='error' ? 'bg-rose-600' : 'bg-amber-600'} fixed bottom-4 right-4 z-50 text-white px-4 py-2 rounded shadow-lg`}>
           {toast.text}
@@ -178,47 +204,93 @@ const AdminOrders = () => {
       ) : error ? (
         <div className="p-4 text-red-600">{error}</div>
       ) : (
-        <div className="bg-white border rounded-xl shadow-sm ring-1 ring-rose-50">
-          <div className="px-4 py-3 border-b font-semibold">Admin Orders</div>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="rounded-2xl bg-white border border-gray-200 px-4 py-3">
+              <div className="text-[11px] text-gray-500 uppercase tracking-wide">Orders</div>
+              <div className="text-xl font-semibold text-gray-900 mt-1">{metrics.total}</div>
+            </div>
+            <div className="rounded-2xl bg-white border border-gray-200 px-4 py-3">
+              <div className="text-[11px] text-gray-500 uppercase tracking-wide">Pending</div>
+              <div className="text-xl font-semibold text-amber-600 mt-1">{metrics.pending}</div>
+            </div>
+            <div className="rounded-2xl bg-white border border-gray-200 px-4 py-3">
+              <div className="text-[11px] text-gray-500 uppercase tracking-wide">Shipped</div>
+              <div className="text-xl font-semibold text-cyan-600 mt-1">{metrics.shipped}</div>
+            </div>
+            <div className="rounded-2xl bg-white border border-gray-200 px-4 py-3">
+              <div className="text-[11px] text-gray-500 uppercase tracking-wide">Paid</div>
+              <div className="text-xl font-semibold text-emerald-600 mt-1">{metrics.paid}</div>
+            </div>
+          </div>
 
-          <div className="p-4 space-y-3">
-            <div className="flex flex-col lg:flex-row gap-3">
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+            <div className="px-4 py-3 border-b bg-gray-50/70">
+              <div className="flex flex-col xl:flex-row xl:items-center gap-2 xl:gap-3">
+                <select className="h-9 px-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 min-w-[145px]">
+                  <option>Order number</option>
+                </select>
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by Order ID or Customer Name/Email"
-                className="border rounded px-3 py-2 w-full lg:max-w-sm"
+                placeholder="Search by order number"
+                className="h-9 border border-gray-200 rounded-lg px-3 w-full xl:max-w-[240px] text-sm"
               />
-              <div className="flex flex-wrap gap-3">
-                <select className="border rounded px-3 py-2" value={orderStatus} onChange={(e) => setOrderStatus(e.target.value)}>
+                <input
+                  type="date"
+                  className="h-9 border border-gray-200 rounded-lg px-3 text-sm"
+                  value={dateFrom}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                />
+                <input
+                  type="date"
+                  className="h-9 border border-gray-200 rounded-lg px-3 text-sm"
+                  value={dateTo}
+                  onChange={(e) => setDateTo(e.target.value)}
+                />
+                <select className="h-9 border border-gray-200 rounded-lg px-3 text-sm" value={orderStatus} onChange={(e) => setOrderStatus(e.target.value)}>
                   <option value="all">All Order Status</option>
                   {ORDER_STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
-                <select className="border rounded px-3 py-2" value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)}>
-                  <option value="all">All Payment Status</option>
+                <select className="h-9 border border-gray-200 rounded-lg px-3 text-sm" value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)}>
+                  <option value="all">Payment: All</option>
                   {PAYMENT_STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
-                <input type="date" className="border rounded px-3 py-2" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} />
-                <input type="date" className="border rounded px-3 py-2" value={dateTo} onChange={(e) => setDateTo(e.target.value)} />
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Rows</span>
-                  <select className="border rounded px-2 py-2" value={pageSize} onChange={(e)=>setPageSize(Number(e.target.value))}>
+                  <span className="text-xs text-gray-500">Rows</span>
+                  <select className="h-9 border border-gray-200 rounded-lg px-2 text-sm" value={pageSize} onChange={(e)=>setPageSize(Number(e.target.value))}>
                     <option value={5}>5</option>
                     <option value={10}>10</option>
                     <option value={20}>20</option>
                   </select>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch('');
+                    setOrderStatus('all');
+                    setPaymentStatus('all');
+                    setDateFrom('');
+                    setDateTo('');
+                  }}
+                  className="h-9 px-3 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Reset
+                </button>
               </div>
             </div>
           </div>
 
           {/* Mobile cards */}
           <div className="sm:hidden divide-y">
+            {pageItems.length === 0 && (
+              <div className="p-6 text-center text-gray-500 text-sm">No orders found for selected filters.</div>
+            )}
             {pageItems.map((o) => (
-              <div key={o._id} className="p-3 space-y-2">
+              <div key={o._id} className="p-3 space-y-2 bg-white">
                 <div className="flex items-center justify-between">
                   <div className="font-semibold">#{formatDisplayOrderId(o)}</div>
-                  <div className="text-sm">{formatINR(o.amount)}</div>
+                  <div className="text-sm font-semibold">{formatINR(getOrderTotal(o))}</div>
                 </div>
                 <div className="text-sm text-gray-800">{o.user?.name}</div>
                 <div className="text-xs text-gray-500">{o.user?.email}</div>
@@ -236,7 +308,7 @@ const AdminOrders = () => {
                   <span className="text-xs text-gray-600 border rounded px-2 py-0.5">{normalizedPaymentMethod(o)}</span>
                 </div>
                 <select
-                  className="border rounded px-2 py-1 text-sm w-full"
+                  className="border rounded-lg px-2 py-2 text-sm w-full"
                   value={draftStatus(o._id, o)}
                   onChange={(e) => setStatusDrafts((prev) => ({ ...prev, [o._id]: e.target.value }))}
                 >
@@ -247,14 +319,14 @@ const AdminOrders = () => {
                 <div className="flex gap-2 justify-end">
                   <button
                     onClick={() => navigate(`/admin/orders/${o._id}`)}
-                    className="px-3 py-1 rounded border text-sm"
+                    className="px-3 py-1.5 rounded border text-sm"
                   >
                     View
                   </button>
                   <button
                     onClick={() => saveStatus(o._id)}
                     disabled={updatingId === o._id || draftStatus(o._id, o) === normalizedStatus(o)}
-                    className={`px-3 py-1 rounded text-white text-sm ${updatingId===o._id ? 'bg-gray-400' : 'bg-rose-600 hover:bg-rose-700'} disabled:opacity-60`}
+                    className={`px-3 py-1.5 rounded text-white text-sm ${updatingId===o._id ? 'bg-gray-400' : 'bg-rose-600 hover:bg-rose-700'} disabled:opacity-60`}
                   >
                     {updatingId === o._id ? 'Saving...' : 'Save'}
                   </button>
@@ -264,47 +336,60 @@ const AdminOrders = () => {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden sm:block overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-rose-50/60 text-rose-700">
-                <tr className="text-left border-b border-rose-100">
-                  <th className="p-2 whitespace-nowrap">Order ID</th>
-                  <th className="p-2">Customer</th>
-                  <th className="p-2">Order Date</th>
-                  <th className="p-2 whitespace-nowrap">Total Amount</th>
-                  <th className="p-2">Payment Method</th>
-                  <th className="p-2">Payment Status</th>
-                  <th className="p-2">Order Status</th>
-                  <th className="p-2">Actions</th>
+          <div className="hidden sm:block">
+            <table className="w-full table-fixed text-[13px]">
+              <colgroup>
+                <col className="w-[10%]" />
+                <col className="w-[6%]" />
+                <col className="w-[10%]" />
+                <col className="w-[16%]" />
+                <col className="w-[10%]" />
+                <col className="w-[11%]" />
+                <col className="w-[10%]" />
+                <col className="w-[12%]" />
+                <col className="w-[18%]" />
+              </colgroup>
+              <thead className="bg-slate-50 text-slate-500">
+                <tr className="text-left border-b border-gray-200">
+                  <th className="px-3 py-2.5 font-semibold truncate">Order ID</th>
+                  <th className="px-2 py-2.5 font-semibold truncate">From</th>
+                  <th className="px-2 py-2.5 font-semibold truncate">To</th>
+                  <th className="px-2 py-2.5 font-semibold truncate">Full Name</th>
+                  <th className="px-2 py-2.5 font-semibold truncate">Status</th>
+                  <th className="px-2 py-2.5 font-semibold truncate">Total Price</th>
+                  <th className="px-2 py-2.5 font-semibold truncate">Payment Method</th>
+                  <th className="px-2 py-2.5 font-semibold truncate">Creation Date</th>
+                  <th className="px-2 py-2.5 font-semibold truncate">Action</th>
                 </tr>
               </thead>
               <tbody>
+                {pageItems.length === 0 && (
+                  <tr>
+                    <td colSpan={9} className="p-8 text-center text-gray-500">
+                      No orders found for selected filters.
+                    </td>
+                  </tr>
+                )}
                 {pageItems.map((o) => (
-                  <tr key={o._id} className="border-b hover:bg-rose-50/40">
-                    <td className="p-2 whitespace-nowrap font-medium">#{formatDisplayOrderId(o)}</td>
-                    <td className="p-2 max-w-[220px]">
-                      <div className="truncate font-medium">{o.user?.name || 'Customer'}</div>
-                      <div className="text-gray-500 text-xs truncate">{renderAddress(o.address)}</div>
+                  <tr key={o._id} className="border-b border-slate-100 hover:bg-slate-50/70 transition-colors">
+                    <td className="px-3 py-2.5 whitespace-nowrap font-semibold text-slate-800 truncate">#{formatDisplayOrderId(o)}</td>
+                    <td className="px-2 py-2.5 text-slate-500 truncate">WH</td>
+                    <td className="px-2 py-2.5 text-slate-700 truncate">{o.address?.city || o.shippingAddress?.city || '-'}</td>
+                    <td className="px-2 py-2.5">
+                      <div className="truncate text-slate-800">{o.user?.name || o.address?.fullName || 'Customer'}</div>
                     </td>
-                    <td className="p-2 text-gray-700">
-                      <div className="text-sm">{new Date(o.createdAt).toLocaleDateString('en-GB')}</div>
-                      <div className="text-xs text-gray-500">{new Date(o.createdAt).toLocaleTimeString('en-GB')}</div>
-                    </td>
-                    <td className="p-2 whitespace-nowrap">{formatINR(o.amount)}</td>
-                    <td className="p-2">
-                      <span className="px-2 py-0.5 rounded-full border text-xs font-medium text-gray-700">
-                        {normalizedPaymentMethod(o)}
+                    <td className="px-2 py-2.5">
+                      <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-medium truncate max-w-full ${orderStatusClass(normalizedStatus(o))}`}>
+                        {String(normalizedStatus(o)).replace(/_/g, ' ')}
                       </span>
                     </td>
-                    <td className="p-2">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${paymentStatusClass(normalizedPaymentStatus(o))}`}>
-                        {String(normalizedPaymentStatus(o)).replace(/_/g, ' ')}
-                      </span>
-                    </td>
-                    <td className="p-2">
+                    <td className="px-2 py-2.5 whitespace-nowrap text-slate-800 font-medium truncate">{formatINR(getOrderTotal(o))}</td>
+                    <td className="px-2 py-2.5 text-slate-700 truncate">{normalizedPaymentMethod(o)}</td>
+                    <td className="px-2 py-2.5 whitespace-nowrap text-slate-500 truncate">{formatDateTime(o.createdAt)}</td>
+                    <td className="px-2 py-2.5">
                       <div className="flex items-center gap-2">
                         <select
-                          className="border rounded px-2 py-1 text-sm"
+                          className="h-8 min-w-[86px] flex-1 border border-slate-200 rounded-md px-2 text-[11px] bg-white"
                           value={draftStatus(o._id, o)}
                           onChange={(e) => setStatusDrafts((prev) => ({ ...prev, [o._id]: e.target.value }))}
                         >
@@ -312,39 +397,18 @@ const AdminOrders = () => {
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                           ))}
                         </select>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${orderStatusClass(draftStatus(o._id, o))}`}>
-                          {String(draftStatus(o._id, o)).replace(/_/g, ' ')}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="p-2">
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          onClick={() => navigate(`/admin/orders/${o._id}`)}
-                          className="px-3 py-1 rounded border text-sm"
-                        >
-                          View
-                        </button>
                         <button
                           onClick={() => saveStatus(o._id)}
                           disabled={updatingId===o._id || draftStatus(o._id, o)===normalizedStatus(o)}
-                          className={`px-3 py-1 rounded text-white text-sm ${updatingId===o._id ? 'bg-gray-400' : 'bg-rose-600 hover:bg-rose-700'} disabled:opacity-60`}
+                          className={`h-8 min-w-[52px] px-2.5 rounded-md text-white text-[11px] font-medium ${updatingId===o._id ? 'bg-slate-400' : 'bg-slate-700 hover:bg-slate-800'} disabled:opacity-60`}
                         >
-                          {updatingId===o._id ? 'Saving...' : 'Save'}
+                          {updatingId===o._id ? '...' : 'Save'}
                         </button>
                         <button
-                          onClick={() => quickAction(o._id, 'cancel')}
-                          disabled={updatingId === o._id}
-                          className="px-3 py-1 rounded border text-sm text-rose-600 border-rose-200 hover:bg-rose-50 disabled:opacity-60"
+                          onClick={() => navigate(`/admin/orders/${o._id}`)}
+                          className="h-8 min-w-[52px] px-2.5 rounded-md border border-slate-200 text-[11px] font-medium text-slate-700 hover:bg-slate-100"
                         >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={() => quickAction(o._id, 'refund')}
-                          disabled={updatingId === o._id}
-                          className="px-3 py-1 rounded border text-sm text-blue-600 border-blue-200 hover:bg-blue-50 disabled:opacity-60"
-                        >
-                          Refund
+                          View
                         </button>
                       </div>
                     </td>
@@ -354,11 +418,25 @@ const AdminOrders = () => {
             </table>
           </div>
 
-          <div className="p-4 flex items-center justify-between">
-            <div className="text-sm text-gray-600">Page {page} of {totalPages}</div>
+          <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between">
+            <div className="text-xs text-gray-500">
+              Showing {pageItems.length} of {filtered.length} filtered orders
+            </div>
             <div className="flex gap-2">
-              <button disabled={page<=1} onClick={()=>setPage(p=>Math.max(1,p-1))} className={`px-3 py-1 rounded border ${page<=1? 'text-gray-400 bg-gray-50' : 'hover:bg-gray-50'}`}>Prev</button>
-              <button disabled={page>=totalPages} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className={`px-3 py-1 rounded border ${page>=totalPages? 'text-gray-400 bg-gray-50' : 'hover:bg-gray-50'}`}>Next</button>
+              <button
+                disabled={page<=1}
+                onClick={()=>setPage(p=>Math.max(1,p-1))}
+                className={`h-8 px-3 rounded-lg border text-sm ${page<=1? 'text-gray-400 bg-gray-50 border-gray-200' : 'hover:bg-gray-100 border-gray-200 text-gray-700'}`}
+              >
+                Prev
+              </button>
+              <button
+                disabled={page>=totalPages}
+                onClick={()=>setPage(p=>Math.min(totalPages,p+1))}
+                className={`h-8 px-3 rounded-lg border text-sm ${page>=totalPages? 'text-gray-400 bg-gray-50 border-gray-200' : 'hover:bg-gray-100 border-gray-200 text-gray-700'}`}
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>
@@ -368,8 +446,3 @@ const AdminOrders = () => {
 };
 
 export default AdminOrders;
-
-
-
-
-
