@@ -78,6 +78,7 @@ export async function createProduct(req, res) {
       subcategory = '',
       pricing = {},
       stock = {},
+      reviews = {},
       notes = {},
       description = '',
       images = [],
@@ -106,6 +107,10 @@ export async function createProduct(req, res) {
         mrp: Number(mrp) || 0,
         discountPercent: 0, // Will be auto-computed by pre-save hook
         taxIncluded: true,
+      },
+      reviews: {
+        totalReviews: Math.max(0, Number(reviews.totalReviews) || 0),
+        rating: Math.max(0, Math.min(5, Number(reviews.rating) || 0)),
       },
       stock: {
         quantity: Math.max(0, Number(stock.quantity) || 0),

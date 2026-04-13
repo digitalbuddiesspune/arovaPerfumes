@@ -24,7 +24,6 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminProducts from '../pages/admin/AdminProducts';
 import AdminOrders from '../pages/admin/AdminOrders';
 import AdminLayout from '../pages/admin/AdminLayout';
-import AdminAddresses from '../pages/admin/AdminAddresses';
 import AdminOrderDetails from '../pages/admin/AdminOrderDetails';
 import AdminPolicies from '../pages/admin/AdminPolicies';
 import AdminLogoSettings from '../pages/admin/AdminLogoSettings';
@@ -141,7 +140,6 @@ const Router = () => {
           <Route path="products" element={<AdminProducts />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="orders/:id" element={<AdminOrderDetails />} />
-          <Route path="addresses" element={<AdminAddresses />} />
           <Route path="policies" element={<AdminPolicies />} />
           <Route path="logo" element={<AdminLogoSettings />} />
           <Route path="hero-slider" element={<AdminHeroSlider />} />

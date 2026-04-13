@@ -77,6 +77,7 @@ const ProductDetail = () => {
 
   const rating = Number(product?.rating || 0);
   const reviews = Number(product?.totalReviews || 0);
+  const showReviews = reviews > 0 && rating > 0;
   const mrp = Number(product?.mrp || 0);
   const sellingPrice = Number(product?.price || product?.salePrice || Math.round(mrp - (mrp * Number(product?.discountPercent || 0)) / 100) || 0);
   const discountPercent = Number(product?.discountPercent || 0);
@@ -110,7 +111,7 @@ const ProductDetail = () => {
     { label: "Free Delivery", value: product?.freeDelivery ? "Yes" : "No" },
     {
       label: "Returns",
-      value: product?.isReturnable !== false ? "Eligible" : "Not eligible",
+      value: product?.isReturnable !== false ? "Yes" : "No",
     },
   ].filter((f) => f.value !== null && f.value !== undefined && f.value !== "");
 
@@ -234,10 +235,12 @@ const ProductDetail = () => {
               <p className="text-xs tracking-[0.2em] mt-1 text-gray-700">EAU DE PARFUM</p>
             </div>
 
-            <div className="flex items-center gap-2 mt-3">
-              <div className="text-sm">{"★".repeat(Math.round(rating || 4))}{"☆".repeat(5 - Math.round(rating || 4))}</div>
-              <span className="text-xs text-gray-600">{reviews || 12} reviews</span>
-            </div>
+            {showReviews ? (
+              <div className="mt-3 flex items-center gap-2">
+                <div className="text-sm">{"★".repeat(Math.round(rating))}{"☆".repeat(5 - Math.round(rating))}</div>
+                <span className="text-xs text-gray-600">{reviews} reviews</span>
+              </div>
+            ) : null}
 
             {notes.length > 0 && (
               <div className="mt-4">

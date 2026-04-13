@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FiGrid, FiBox, FiShoppingBag, FiLogOut, FiSearch, FiUser, FiHome, FiBookOpen, FiImage, FiSliders, FiTag, FiTruck } from 'react-icons/fi';
+import { FiGrid, FiBox, FiShoppingBag, FiLogOut, FiSearch, FiUser, FiBookOpen, FiImage, FiSliders, FiTag, FiTruck } from 'react-icons/fi';
 
 const Title = () => {
   const { pathname } = useLocation();
   if (pathname === '/admin') return 'Dashboard';
   if (pathname.startsWith('/admin/products')) return 'Products';
   if (pathname.startsWith('/admin/orders')) return 'Orders';
-  if (pathname.startsWith('/admin/addresses')) return 'Addresses';
   if (pathname.startsWith('/admin/policies')) return 'Policies';
   if (pathname.startsWith('/admin/logo')) return 'Logo Settings';
   if (pathname.startsWith('/admin/hero-slider')) return 'Hero Slider';
@@ -54,7 +53,6 @@ const AdminLayout = () => {
           {navItem('/admin', 'Dashboard', FiGrid)}
           {navItem('/admin/products', 'Products', FiBox)}
           {navItem('/admin/orders', 'Orders', FiShoppingBag)}
-          {navItem('/admin/addresses', 'Addresses', FiHome)}
           {navItem('/admin/policies', 'Policies', FiBookOpen)}
           {navItem('/admin/logo', 'Logo Settings', FiImage)}
           {navItem('/admin/hero-slider', 'Hero Slider', FiSliders)}
@@ -77,7 +75,6 @@ const AdminLayout = () => {
               {navItem('/admin', 'Dashboard', FiGrid)}
               {navItem('/admin/products', 'Products', FiBox)}
               {navItem('/admin/orders', 'Orders', FiShoppingBag)}
-              {navItem('/admin/addresses', 'Addresses', FiHome)}
               {navItem('/admin/policies', 'Policies', FiBookOpen)}
               {navItem('/admin/logo', 'Logo Settings', FiImage)}
               {navItem('/admin/hero-slider', 'Hero Slider', FiSliders)}
