@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { FiGrid, FiBox, FiShoppingBag, FiLogOut, FiSearch, FiUser, FiBookOpen, FiSliders, FiTag, FiTruck } from 'react-icons/fi';
+import { FiGrid, FiBox, FiShoppingBag, FiLogOut, FiSearch, FiUser, FiBookOpen, FiSliders, FiTag, FiTruck, FiArrowLeft } from 'react-icons/fi';
 
 const Title = () => {
   const { pathname } = useLocation();
@@ -57,8 +57,15 @@ const AdminLayout = () => {
           {navItem('/admin/coupons', 'Coupons', FiTag)}
           {navItem('/admin/shipping-pricing', 'Shipping & pricing', FiTruck)}
           <button
+            onClick={() => navigate('/')}
+            className="mt-auto flex items-center gap-3 rounded-md border border-white/20 bg-white/10 px-4 py-2 text-blue-50 hover:bg-white/20 hover:text-white"
+          >
+            <FiArrowLeft className="h-4 w-4" />
+            <span className="text-sm font-medium">Back to Home</span>
+          </button>
+          <button
             onClick={logout}
-            className="mt-auto flex items-center gap-3 px-4 py-2 rounded-md text-blue-100 hover:bg-white/10 hover:text-white"
+            className="flex items-center gap-3 px-4 py-2 rounded-md text-blue-100 hover:bg-white/10 hover:text-white"
           >
             <FiLogOut className="w-4 h-4" />
             <span className="text-sm">Logout</span>
@@ -78,8 +85,18 @@ const AdminLayout = () => {
               {navItem('/admin/coupons', 'Coupons', FiTag)}
               {navItem('/admin/shipping-pricing', 'Shipping & pricing', FiTruck)}
               <button
+                onClick={() => {
+                  setOpen(false);
+                  navigate('/');
+                }}
+                className="mt-auto flex items-center gap-3 rounded-md border border-white/20 bg-white/10 px-4 py-2 text-blue-50 hover:bg-white/20 hover:text-white"
+              >
+                <FiArrowLeft className="h-4 w-4" />
+                <span className="text-sm font-medium">Back to Home</span>
+              </button>
+              <button
                 onClick={logout}
-                className="mt-auto flex items-center gap-3 px-4 py-2 rounded-md text-blue-100 hover:bg-white/10 hover:text-white"
+                className="flex items-center gap-3 px-4 py-2 rounded-md text-blue-100 hover:bg-white/10 hover:text-white"
               >
                 <FiLogOut className="w-4 h-4" />
                 <span className="text-sm">Logout</span>
