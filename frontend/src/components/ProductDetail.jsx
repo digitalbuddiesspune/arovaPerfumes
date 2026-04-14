@@ -7,6 +7,26 @@ import { getProductPromoBadges } from "../utils/productBadges";
 import ProductSuggestions from "./ProductSuggestions";
 
 const FALLBACK_IMAGE = "/no-image.png";
+const normalizeImageEntries = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value
+      .flatMap((item) => normalizeImageEntries(item))
+      .filter(Boolean);
+  }
+  if (typeof value === "object") {
+    return Object.values(value)
+      .flatMap((item) => normalizeImageEntries(item))
+      .filter(Boolean);
+  }
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return [];
+};
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -59,16 +79,32 @@ const ProductDetail = () => {
   }, [id, navigate]);
 
   const images = useMemo(() => {
-    const list = [
-      product?.images?.image1,
-      product?.images?.image2,
-      product?.images?.image3,
-      ...(Array.isArray(product?.imageGallery) ? product.imageGallery : []),
-    ]
-      .filter(Boolean)
-      .map((u) => String(u));
-    const unique = [...new Set(list)];
-    return unique.length ? unique.slice(0, 6) : [FALLBACK_IMAGE];
+    const directImageSlots = [
+      product?.image1,
+      product?.image2,
+      product?.image3,
+      product?.image4,
+      product?.image5,
+      product?.image6,
+      product?.image7,
+      product?.image8,
+    ];
+    const imageGallery = normalizeImageEntries(product?.imageGallery);
+    const imagesArray = normalizeImageEntries(product?.images);
+    const imageUrls = normalizeImageEntries(product?.imageUrls);
+    const slots = normalizeImageEntries(directImageSlots);
+
+    // Use the first non-empty source to avoid duplicate/extra thumbnails.
+    // This keeps UI count aligned with exactly what was added in admin.
+    const selectedSource = imageGallery.length
+      ? imageGallery
+      : imagesArray.length
+      ? imagesArray
+      : imageUrls.length
+      ? imageUrls
+      : slots;
+
+    return selectedSource.length ? selectedSource.slice(0, 8) : [FALLBACK_IMAGE];
   }, [product]);
 
   useEffect(() => {

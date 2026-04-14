@@ -92,7 +92,7 @@ const mapPayload = (body = {}) => {
 
 const toClientShape = (product) => {
   const doc = product.toObject ? product.toObject() : product;
-  const gallery = Array.isArray(doc.images) ? doc.images : [];
+  const gallery = toImageArray(doc.images);
   const pricing = doc.pricing || {};
   const reviews = doc.reviews || {};
   const stock = doc.stock || {};
