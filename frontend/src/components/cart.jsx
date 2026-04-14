@@ -209,7 +209,7 @@ function Cart() {
                   return (
                     <div
                       key={id}
-                      className={`rounded-md border p-2.5 flex flex-col gap-1.5 ${
+                      className={`rounded-md border p-2 md:p-2.5 flex flex-col gap-1 md:gap-1.5 ${
                         applicable ? 'border-gray-200 bg-white' : 'border-amber-200 bg-amber-50/60'
                       }`}
                     >
@@ -217,13 +217,11 @@ function Cart() {
                         <div className="min-w-0">
                           <p className="font-mono text-[12px] font-bold text-gray-900">{c.code}</p>
                           <p className="text-xs text-gray-700">{off}</p>
-                          {c.isFirstOrderOnly && (
-                            <span className="inline-block mt-1 text-[9px] uppercase tracking-wide text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                          {c.isFirstOrderOnly ? (
+                            <p className="mt-1 text-[10px] text-blue-700 leading-tight truncate">
                               First order
-                            </span>
-                          )}
-                          {!applicable && c?.unavailableReason ? (
-                            <p className="mt-1 text-[10px] text-amber-700">{c.unavailableReason}</p>
+                              {!applicable && c?.unavailableReason ? ` • ${c.unavailableReason}` : ''}
+                            </p>
                           ) : null}
                         </div>
                         {isApplied ? (

@@ -6,6 +6,7 @@ import BestSellers from '../components/BestSellers';
 import MensSection from '../components/MensSection';
 import WomenSection from '../components/WomenSection';
 import CacheConsent from '../components/CacheConsent';
+import ArovaPromise from '../components/ArovaPromise';
 
 const Home = () => {
   const [openFaq, setOpenFaq] = useState(0);
@@ -57,6 +58,8 @@ const Home = () => {
       <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         <hr className="my-8 border-[var(--brand-border)]" />
       </main>
+
+      <ArovaPromise />
 
       {/* FAQ Section */}
       <section className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-12 md:pb-16">

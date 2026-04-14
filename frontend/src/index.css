@@ -144,3 +144,47 @@ a, button {
 .theme-muted {
   color: var(--brand-muted);
 }
+
+@keyframes promise-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes promise-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.promise-shell {
+  animation: promise-fade-up 0.6s ease-out both;
+}
+
+.promise-intro {
+  animation: promise-fade-up 0.7s ease-out both;
+}
+
+.promise-card {
+  animation: promise-fade-up 0.6s ease-out both;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.promise-card:hover {
+  transform: translateY(-3px);
+  border-color: #d3bbb1;
+  box-shadow: 0 10px 24px rgba(56, 19, 19, 0.08);
+}
+
+.promise-blob {
+  animation: promise-float 7s ease-in-out infinite;
+}

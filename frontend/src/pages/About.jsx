@@ -19,7 +19,7 @@ const About = () => {
               Built on the belief that fragrance should be both luxurious and wearable every day, Arova bridges the gap between premium quality and daily lifestyle. We are not just a luxury perfume brand, we are luxury made accessible, designed for those who want to feel confident, elegant, and expressive, every single day.
             </p>
             <p className="text-lg text-gray-700 leading-relaxed">
-              From Earth to Essence - this is not just our tagline, it is our philosophy. We focus on creating clean, thoughtfully crafted fragrances that are rooted in purity, inspired by nature, and elevated into refined, modern scents.
+              From Earth to Essence - this is not just our tagline, it&apos;s our philosophy. We focus on creating clean, thoughtfully crafted fragrances that are rooted in purity, inspired by nature, and elevated into refined, modern scents.
             </p>
           </div>
         </div>
@@ -29,7 +29,7 @@ const About = () => {
             OUR PHILOSOPHY
           </h2>
           <p className="text-lg text-gray-700 leading-relaxed">
-            At Arova, perfume is more than a product, it is a personal signature. Whether it is your daily routine or a special moment, our fragrances are designed to stay with you, leaving a lasting impression without being overwhelming.
+            At Arova, perfume is more than a product, it&apos;s a personal signature. Whether it&apos;s your daily routine or a special moment, our fragrances are designed to stay with you, leaving a lasting impression without being overwhelming.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ const About = () => {
             EVERYDAY LUXURY, EVERYDAY YOU
           </h2>
           <p className="text-lg text-gray-700 leading-relaxed mb-6">
-            We are building more than a brand - we are creating an experience where everyday luxury becomes a habit, not an occasion.
+            We are building more than a brand- we are creating an experience where everyday luxury becomes a habit, not an occasion.
           </p>
           <p className="text-xl font-light text-amber-700 italic tracking-wide">
             Arova

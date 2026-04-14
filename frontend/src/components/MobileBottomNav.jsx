@@ -140,8 +140,8 @@ const MobileBottomNav = () => {
 
   return (
     <div className="fixed bottom-2 left-3 right-3 md:hidden z-40">
-      <div className="relative h-16 rounded-[24px] border border-[var(--brand-border)] bg-white/95 backdrop-blur-lg shadow-[0_10px_24px_rgba(56,19,19,0.14)] px-2 pt-3">
-        <div className="grid grid-cols-5 items-start">
+      <div className="relative h-16 rounded-[24px] border border-[var(--brand-border)] bg-white/95 backdrop-blur-lg shadow-[0_10px_24px_rgba(56,19,19,0.14)] px-2">
+        <div className="grid h-full grid-cols-5 items-center">
           <Link
             to="/products"
             className={`flex flex-col items-center justify-center rounded-xl py-0.5 ${isShopActive ? 'text-[var(--brand-maroon)]' : 'text-[var(--brand-muted)]'} transition-all duration-300 group`}
@@ -202,7 +202,7 @@ const MobileBottomNav = () => {
         <a
           href="/"
           onClick={handleHomeClick}
-          className="absolute left-1/2 -translate-x-1/2 -top-4 flex flex-col items-center"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
           aria-label="Home"
           title="Home"
         >
