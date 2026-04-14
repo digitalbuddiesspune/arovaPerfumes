@@ -446,9 +446,7 @@ export const CartProvider = ({ children }) => {
     };
   }, [cartTotal, appliedCoupon?.code]);
 
-  const visibleEligibleCoupons = eligibleCoupons.filter(
-    (c) => c?.applicableForUser !== false && c?.code !== appliedCoupon?.code
-  );
+  const visibleEligibleCoupons = eligibleCoupons.filter((c) => c?.code !== appliedCoupon?.code);
 
   useEffect(() => {
     loadCart();

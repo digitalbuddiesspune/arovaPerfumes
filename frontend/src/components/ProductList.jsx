@@ -40,6 +40,24 @@ const writeWishlist = (items) => {
   } catch {}
 };
 
+const getProductImages = (product) => {
+  const fromArray = Array.isArray(product?.imageGallery)
+    ? product.imageGallery
+    : Array.isArray(product?.images)
+    ? product.images
+    : [];
+  const fromObject =
+    product?.images && !Array.isArray(product.images) && typeof product.images === 'object'
+      ? Object.values(product.images)
+      : [];
+  const directSlots = [product?.image1, product?.image2, product?.image3, product?.image4];
+
+  return [...fromArray, ...fromObject, ...directSlots]
+    .filter(Boolean)
+    .map((img) => String(img).trim())
+    .filter(Boolean);
+};
+
 const ProductList = ({ defaultCategory } = {}) => {
     const { categoryName, subCategoryName } = useParams();
     const navigate = useNavigate();
@@ -565,6 +583,9 @@ const ProductList = ({ defaultCategory } = {}) => {
                                 {filteredProducts.map((p, idx) => {
                                     const pid = p._id || p.id || p.productId;
                                     const finalPrice = Math.round(p.price || (p.mrp * (1 - (p.discountPercent || 0) / 100)) || p.mrp || 0);
+                                    const productImages = getProductImages(p);
+                                    const primaryImage = productImages[0] || p.images?.image1 || p.image;
+                                    const hoverImage = productImages[1];
                                     return (
                                         <Link
                                             key={pid || p.title}
@@ -597,10 +618,17 @@ const ProductList = ({ defaultCategory } = {}) => {
                                                                 )}
                                                             </div>
                                                             <ProductImage
-                                                                src={p.images?.image1 || p.image}
+                                                                src={primaryImage}
                                                                 alt={p.title}
                                                                 className="w-full aspect-[3/4] object-cover transition-transform duration-500 group-hover:scale-105"
                                                             />
+                                                            {hoverImage ? (
+                                                                <ProductImage
+                                                                    src={hoverImage}
+                                                                    alt={`${p.title} preview`}
+                                                                    className="absolute inset-0 w-full aspect-[3/4] object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+                                                                />
+                                                            ) : null}
                                                         </div>
 
                                                         <div className="pt-2 pb-2 px-2 text-center">

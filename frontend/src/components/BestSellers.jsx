@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchSarees } from '../services/api';
+import ProductImage from './ProductImage';
+
+const getProductImages = (item) => {
+  const fromGallery = Array.isArray(item?.imageGallery) ? item.imageGallery : [];
+  const fromArray = Array.isArray(item?.images) ? item.images : [];
+  const fromObject =
+    item?.images && !Array.isArray(item.images) && typeof item.images === 'object'
+      ? Object.values(item.images)
+      : [];
+  return [...fromGallery, ...fromArray, ...fromObject]
+    .filter(Boolean)
+    .map((img) => String(img).trim())
+    .filter(Boolean);
+};
 
 const BestSellers = () => {
   const FALLBACK_IMAGE = 'https://res.cloudinary.com/dnyp5jknp/image/upload/v1775567474/d3b4e9cd-feaf-4362-9a38-20c30bbb5db9.png';
@@ -82,7 +96,9 @@ const BestSellers = () => {
             const id = product._id || product.id;
             const price = Number(product.price || product.salePrice || product.mrp || 0);
             const mrp = Number(product.mrp || 0);
-            const image = product.images?.image1 || product.image || FALLBACK_IMAGE;
+            const productImages = getProductImages(product);
+            const image = productImages[0] || product.images?.image1 || product.image || FALLBACK_IMAGE;
+            const hoverImage = productImages[1];
             const rating = Number(product.rating || 0);
             const reviews = Number(product.totalReviews || 0);
             const discountPercent = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
@@ -91,11 +107,18 @@ const BestSellers = () => {
               <Link key={id} to={`/product/${id}`} className="group block">
                 <div className="rounded-2xl border border-[#eee7e1] bg-[#fcfaf8] overflow-hidden shadow-[0_6px_20px_rgba(64,35,24,0.06)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_16px_30px_rgba(64,35,24,0.14)]">
                   <div className="relative aspect-[3/4] bg-[#f2ebe6] overflow-hidden">
-                    <img
+                    <ProductImage
                       src={image}
                       alt={product.title || 'Best seller perfume'}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
+                    {hoverImage ? (
+                      <ProductImage
+                        src={hoverImage}
+                        alt={`${product.title || 'Best seller perfume'} preview`}
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+                      />
+                    ) : null}
                     <span className="absolute top-3 left-3 bg-white/90 text-[#6f5039] text-[10px] px-2 py-1 rounded-full font-semibold tracking-wide">
                       BEST SELLER
                     </span>

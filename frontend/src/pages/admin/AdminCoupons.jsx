@@ -3,30 +3,12 @@ import { api } from '../../utils/api';
 
 const emptyForm = {
   code: '',
-  discountPlan: 'P10',
   discountType: 'percentage',
   discountValue: '10',
   expiryDate: '',
   usageLimit: '',
   isActive: true,
-};
-
-const DISCOUNT_PLANS = [
-  { id: 'P10', label: '10% OFF', discountType: 'percentage', discountValue: 10 },
-  { id: 'P20', label: '20% OFF', discountType: 'percentage', discountValue: 20 },
-  { id: 'P30', label: '30% OFF', discountType: 'percentage', discountValue: 30 },
-  { id: 'F100', label: 'Flat Rs100 OFF', discountType: 'fixed', discountValue: 100 },
-  { id: 'F200', label: 'Flat Rs200 OFF', discountType: 'fixed', discountValue: 200 },
-  { id: 'F500', label: 'Flat Rs500 OFF', discountType: 'fixed', discountValue: 500 },
-];
-
-const getPlanIdFromCoupon = (coupon) => {
-  const found = DISCOUNT_PLANS.find(
-    (plan) =>
-      plan.discountType === coupon.discountType &&
-      Number(plan.discountValue) === Number(coupon.discountValue)
-  );
-  return found?.id || 'P10';
+  isFirstOrderOnly: false,
 };
 
 const AdminCoupons = () => {
@@ -66,13 +48,6 @@ const AdminCoupons = () => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => {
       const next = { ...prev, [name]: type === 'checkbox' ? checked : value };
-      if (name === 'discountPlan') {
-        const selected = DISCOUNT_PLANS.find((plan) => plan.id === value);
-        if (selected) {
-          next.discountType = selected.discountType;
-          next.discountValue = String(selected.discountValue);
-        }
-      }
       return next;
     });
   };
@@ -83,7 +58,7 @@ const AdminCoupons = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.code || !formData.discountPlan || !formData.expiryDate) {
+    if (!formData.code || !formData.discountType || !formData.discountValue || !formData.expiryDate) {
       showMessage('Please fill all required fields', 'error');
       return;
     }
@@ -96,7 +71,7 @@ const AdminCoupons = () => {
       expiryDate: formData.expiryDate,
       usageLimit: formData.usageLimit ? Number(formData.usageLimit) : null,
       isActive: formData.isActive,
-      isFirstOrderOnly: false,
+      isFirstOrderOnly: Boolean(formData.isFirstOrderOnly),
     };
     try {
       await api.admin.couponCreate(payload);
@@ -142,12 +117,12 @@ const AdminCoupons = () => {
     setEditingCoupon(coupon);
     setFormData({
       code: coupon.code,
-      discountPlan: getPlanIdFromCoupon(coupon),
       discountType: coupon.discountType,
       discountValue: String(coupon.discountValue),
       expiryDate: coupon.expiryDate ? new Date(coupon.expiryDate).toISOString().split('T')[0] : '',
       usageLimit: coupon.usageLimit != null ? String(coupon.usageLimit) : '',
       isActive: coupon.isActive,
+      isFirstOrderOnly: Boolean(coupon.isFirstOrderOnly),
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -164,7 +139,7 @@ const AdminCoupons = () => {
       expiryDate: formData.expiryDate,
       usageLimit: formData.usageLimit ? Number(formData.usageLimit) : null,
       isActive: formData.isActive,
-      isFirstOrderOnly: false,
+      isFirstOrderOnly: Boolean(formData.isFirstOrderOnly),
     };
     try {
       await api.admin.couponUpdate(editingCoupon._id, payload);
@@ -262,17 +237,33 @@ const AdminCoupons = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">How should discount work? *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Discount type *</label>
               <select
-                name="discountPlan"
-                value={formData.discountPlan}
+                name="discountType"
+                value={formData.discountType}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                required
               >
-                {DISCOUNT_PLANS.map((plan) => (
-                  <option key={plan.id} value={plan.id}>{plan.label}</option>
-                ))}
+                <option value="percentage">Percentage (%)</option>
+                <option value="fixed">Rupees (₹)</option>
               </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Discount value * {formData.discountType === 'percentage' ? '(%)' : '(₹)'}
+              </label>
+              <input
+                type="number"
+                name="discountValue"
+                value={formData.discountValue}
+                onChange={handleInputChange}
+                min="1"
+                max={formData.discountType === 'percentage' ? '100' : undefined}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                placeholder={formData.discountType === 'percentage' ? 'e.g. 10' : 'e.g. 100'}
+                required
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Expiry date *</label>
@@ -318,6 +309,29 @@ const AdminCoupons = () => {
                     onChange={() => setFormData((prev) => ({ ...prev, isActive: false }))}
                   />
                   Deactive
+                </label>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">First order only?</label>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="radio"
+                    name="isFirstOrderOnly"
+                    checked={formData.isFirstOrderOnly === true}
+                    onChange={() => setFormData((prev) => ({ ...prev, isFirstOrderOnly: true }))}
+                  />
+                  Yes
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="radio"
+                    name="isFirstOrderOnly"
+                    checked={formData.isFirstOrderOnly === false}
+                    onChange={() => setFormData((prev) => ({ ...prev, isFirstOrderOnly: false }))}
+                  />
+                  No
                 </label>
               </div>
             </div>

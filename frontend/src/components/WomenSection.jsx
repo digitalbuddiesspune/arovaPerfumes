@@ -4,6 +4,19 @@ import { fetchSarees, fetchPricingSettings } from '../services/api';
 import ProductImage from './ProductImage';
 import { getProductPromoBadges } from '../utils/productBadges';
 
+const getProductImages = (item) => {
+  const fromGallery = Array.isArray(item?.imageGallery) ? item.imageGallery : [];
+  const fromArray = Array.isArray(item?.images) ? item.images : [];
+  const fromObject =
+    item?.images && !Array.isArray(item.images) && typeof item.images === 'object'
+      ? Object.values(item.images)
+      : [];
+  return [...fromGallery, ...fromArray, ...fromObject]
+    .filter(Boolean)
+    .map((img) => String(img).trim())
+    .filter(Boolean);
+};
+
 const WomenSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,7 +74,9 @@ const WomenSection = () => {
             const notes = item.type || item.subcategory || item.category || '';
             const price = Number(item.price || item.salePrice || item.mrp || 0);
             const mrp = Number(item.mrp || 0);
-            const img = item.images?.image1 || item.image;
+            const productImages = getProductImages(item);
+            const img = productImages[0] || item.images?.image1 || item.image;
+            const hoverImg = productImages[1];
             const { showBestSeller, showFewLeft } = getProductPromoBadges(item, lowStockThreshold);
             const highly = Array.isArray(item.tags) && item.tags.includes('Highly Recommended');
 
@@ -69,6 +84,13 @@ const WomenSection = () => {
               <Link key={id} to={`/product/${id}`} className="group block">
                 <div className="relative bg-white border border-gray-200 overflow-hidden">
                   <ProductImage src={img} alt={name} className="w-full aspect-[4/5] object-cover group-hover:scale-105 transition-transform duration-500" />
+                  {hoverImg ? (
+                    <ProductImage
+                      src={hoverImg}
+                      alt={`${name} preview`}
+                      className="absolute inset-0 w-full aspect-[4/5] object-cover opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100"
+                    />
+                  ) : null}
                   <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start max-w-[88%] pointer-events-none">
                     {showBestSeller && (
                       <span className="bg-amber-500 text-white text-[9px] px-2 py-1 rounded-full font-semibold shadow-sm">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Box, LayoutGrid, LogOut, Search, ShoppingBag, SlidersHorizontal, Tag, Truck, User } from 'lucide-react';
+import { ArrowLeft, BookOpen, Box, LayoutGrid, LogOut, Search, ShoppingBag, Tag, Truck, User } from 'lucide-react';
 
 const Title = () => {
   const { pathname } = useLocation();
@@ -8,7 +8,6 @@ const Title = () => {
   if (pathname.startsWith('/admin/products')) return 'Products';
   if (pathname.startsWith('/admin/orders')) return 'Orders';
   if (pathname.startsWith('/admin/policies')) return 'Policies';
-  if (pathname.startsWith('/admin/hero-slider')) return 'Hero Slider';
   if (pathname.startsWith('/admin/coupons')) return 'Coupons';
   if (pathname.startsWith('/admin/shipping-pricing')) return 'Shipping & pricing';
   return 'Admin';
@@ -56,7 +55,6 @@ const AdminLayout = () => {
           {navItem('/admin/products', 'Products', Box)}
           {navItem('/admin/orders', 'Orders', ShoppingBag)}
           {navItem('/admin/policies', 'Policies', BookOpen)}
-          {navItem('/admin/hero-slider', 'Hero Slider', SlidersHorizontal)}
           {navItem('/admin/coupons', 'Coupons', Tag)}
           {navItem('/admin/shipping-pricing', 'Shipping & pricing', Truck)}
           <button
@@ -86,7 +84,6 @@ const AdminLayout = () => {
               {navItem('/admin/products', 'Products', Box)}
               {navItem('/admin/orders', 'Orders', ShoppingBag)}
               {navItem('/admin/policies', 'Policies', BookOpen)}
-              {navItem('/admin/hero-slider', 'Hero Slider', SlidersHorizontal)}
               {navItem('/admin/coupons', 'Coupons', Tag)}
               {navItem('/admin/shipping-pricing', 'Shipping & pricing', Truck)}
               <button

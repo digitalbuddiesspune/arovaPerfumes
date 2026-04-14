@@ -193,14 +193,14 @@ function Cart() {
               <FaTicketAlt className="text-gray-600" />
               Available coupons
             </h3>
-            <p className="text-xs text-gray-500 mb-3">
-              Showing only coupons that are currently applicable to this cart.
+            <p className="text-[11px] text-gray-500 mb-2">
+              Showing all active coupons created by admin.
             </p>
             {Array.isArray(eligibleCoupons) && eligibleCoupons.length > 0 ? (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1.5">
                 {eligibleCoupons.map((c) => {
                   const id = c._id || c.code;
-                  const applicable = true;
+                  const applicable = c?.applicableForUser !== false;
                   const isApplied = appliedCoupon?.code === c.code;
                   const off =
                     c.discountType === 'percentage'
@@ -209,22 +209,25 @@ function Cart() {
                   return (
                     <div
                       key={id}
-                      className={`rounded-lg border p-3 flex flex-col gap-2 ${
+                      className={`rounded-md border p-2.5 flex flex-col gap-1.5 ${
                         applicable ? 'border-gray-200 bg-white' : 'border-amber-200 bg-amber-50/60'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="font-mono font-bold text-gray-900">{c.code}</p>
-                          <p className="text-sm text-gray-700">{off}</p>
+                          <p className="font-mono text-[12px] font-bold text-gray-900">{c.code}</p>
+                          <p className="text-xs text-gray-700">{off}</p>
                           {c.isFirstOrderOnly && (
-                            <span className="inline-block mt-1 text-[10px] uppercase tracking-wide text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                            <span className="inline-block mt-1 text-[9px] uppercase tracking-wide text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
                               First order
                             </span>
                           )}
+                          {!applicable && c?.unavailableReason ? (
+                            <p className="mt-1 text-[10px] text-amber-700">{c.unavailableReason}</p>
+                          ) : null}
                         </div>
                         {isApplied ? (
-                          <span className="shrink-0 text-xs font-semibold text-green-700 flex items-center gap-1">
+                          <span className="shrink-0 text-[11px] font-semibold text-green-700 flex items-center gap-1">
                             <FaCheck className="w-3 h-3" /> Applied
                           </span>
                         ) : (
@@ -238,7 +241,7 @@ function Cart() {
                               setCouponMessage({ type: r.success ? 'success' : 'error', text: r.message });
                               if (r.success) fetchEligibleCoupons();
                             }}
-                            className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-md bg-black text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800"
+                            className="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded bg-black text-white disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-800"
                           >
                             Apply
                           </button>
