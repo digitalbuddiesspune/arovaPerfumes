@@ -14,6 +14,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdminUser, setIsAdminUser] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchUiOpen, setSearchUiOpen] = useState(false);
@@ -78,9 +79,12 @@ const Navbar = () => {
     const checkAuth = () => {
       try {
         const token = localStorage.getItem('auth_token');
+        const adminFlag = localStorage.getItem('auth_is_admin') === 'true';
         setIsAuthenticated(Boolean(token));
+        setIsAdminUser(Boolean(token) && adminFlag);
       } catch {
         setIsAuthenticated(false);
+        setIsAdminUser(false);
       }
     };
 
@@ -97,8 +101,10 @@ const Navbar = () => {
   const handleLogout = () => {
     try {
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_is_admin');
     } catch {}
     setIsAuthenticated(false);
+    setIsAdminUser(false);
     navigate('/signin');
   };
 
@@ -419,6 +425,16 @@ const Navbar = () => {
               )}
             </div>
 
+            {isAuthenticated && isAdminUser ? (
+              <Link
+                to="/admin"
+                className="hidden md:inline-flex items-center justify-center rounded-xl border border-[var(--brand-border)] bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wide text-[var(--brand-maroon)] hover:bg-[var(--brand-cream)] transition-all"
+                title="Admin Dashboard"
+              >
+                Admin Dashboard
+              </Link>
+            ) : null}
+
             {/* User Icon - Hidden on mobile */}
             <div className="hidden md:block">
               {isAuthenticated ? (
@@ -523,6 +539,15 @@ const Navbar = () => {
                   <Link to="/wishlist" onClick={() => setIsMobileMenuOpen(false)} className="rounded-lg border border-[var(--brand-border)] bg-white px-3 py-2 text-sm text-center font-medium text-[var(--brand-text)] hover:bg-[var(--brand-cream)]">Wishlist</Link>
                   <Link to="/cart" onClick={() => setIsMobileMenuOpen(false)} className="rounded-lg border border-[var(--brand-border)] bg-white px-3 py-2 text-sm text-center font-medium text-[var(--brand-text)] hover:bg-[var(--brand-cream)]">Cart</Link>
                   <Link to="/profile?tab=track" onClick={() => setIsMobileMenuOpen(false)} className="rounded-lg border border-[var(--brand-border)] bg-white px-3 py-2 text-sm text-center font-medium text-[var(--brand-text)] hover:bg-[var(--brand-cream)]">Track</Link>
+                  {isAuthenticated && isAdminUser ? (
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="col-span-2 rounded-lg border border-[var(--brand-border)] bg-white px-3 py-2 text-sm text-center font-semibold text-[var(--brand-maroon)] hover:bg-[var(--brand-cream)]"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  ) : null}
                 </div>
               </div>
 
