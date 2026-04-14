@@ -7,6 +7,7 @@ import MensSection from '../components/MensSection';
 import WomenSection from '../components/WomenSection';
 import CacheConsent from '../components/CacheConsent';
 import ArovaPromise from '../components/ArovaPromise';
+import BrandStatement from '../components/BrandStatement';
 
 const Home = () => {
   const [openFaq, setOpenFaq] = useState(0);
@@ -59,6 +60,7 @@ const Home = () => {
         <hr className="my-8 border-[var(--brand-border)]" />
       </main>
 
+      <BrandStatement />
       <ArovaPromise />
 
       {/* FAQ Section */}
