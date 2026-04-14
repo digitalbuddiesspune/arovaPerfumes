@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 
 // SVG Icons with dynamic color based on active state
 const HomeIcon = ({ isActive }) => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" 
       stroke={isActive ? 'var(--brand-maroon)' : 'var(--brand-muted)'} 
       strokeWidth="2" 
@@ -23,7 +23,7 @@ const HomeIcon = ({ isActive }) => (
 );
 
 const WishlistIcon = ({ isActive }) => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M20.84 4.60999C20.3292 4.099 19.7228 3.69364 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69364 13.5708 4.099 13.06 4.60999L12 5.66999L10.94 4.60999C9.9083 3.5783 8.50903 2.9987 7.05 2.9987C5.59096 2.9987 4.19169 3.5783 3.16 4.60999C2.1283 5.64169 1.54871 7.04096 1.54871 8.49999C1.54871 9.95903 2.1283 11.3583 3.16 12.39L4.22 13.45L12 21.23L19.78 13.45L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6053C22.3095 9.93789 22.4518 9.22248 22.4518 8.49999C22.4518 7.77751 22.3095 7.0621 22.0329 6.39464C21.7563 5.72718 21.351 5.12087 20.84 4.60999V4.60999Z" 
       stroke={isActive ? 'var(--brand-maroon)' : 'var(--brand-muted)'} 
       strokeWidth="2" 
@@ -35,7 +35,7 @@ const WishlistIcon = ({ isActive }) => (
 );
 
 const CartIcon = ({ isActive }) => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M9 22C9.55228 22 10 21.5523 10 21C10 20.4477 9.55228 20 9 20C8.44772 20 8 20.4477 8 21C8 21.5523 8.44772 22 9 22Z" 
       stroke={isActive ? 'var(--brand-maroon)' : 'var(--brand-muted)'} 
       strokeWidth="2" 
@@ -61,7 +61,7 @@ const CartIcon = ({ isActive }) => (
 );
 
 const AccountIcon = ({ isActive }) => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" 
       stroke={isActive ? 'var(--brand-maroon)' : 'var(--brand-muted)'} 
       strokeWidth="2" 
@@ -74,6 +74,27 @@ const AccountIcon = ({ isActive }) => (
       strokeWidth="2" 
       strokeLinecap="round" 
       strokeLinejoin="round" 
+      fill="none"
+    />
+  </svg>
+);
+
+const ShopIcon = ({ isActive }) => (
+  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M3 9.5L4.5 4.5H19.5L21 9.5M3 9.5V18C3 19.1046 3.89543 20 5 20H19C20.1046 20 21 19.1046 21 18V9.5M3 9.5H21"
+      stroke={isActive ? 'var(--brand-maroon)' : 'var(--brand-muted)'}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+    <path
+      d="M9 20V14H15V20"
+      stroke={isActive ? 'var(--brand-maroon)' : 'var(--brand-muted)'}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       fill="none"
     />
   </svg>
@@ -112,63 +133,85 @@ const MobileBottomNav = () => {
     navigate('/');
   };
 
-  const isActive = (path) => {
-    return location.pathname === path;
-  };
+  const isActive = (path) => location.pathname === path;
+  const isShopActive =
+    location.pathname === '/products' ||
+    location.pathname.startsWith('/category/');
 
   return (
     <div className="fixed bottom-2 left-3 right-3 md:hidden z-40">
-      <div className="flex justify-around items-center h-14 rounded-2xl border border-[var(--brand-border)] bg-white/95 backdrop-blur-lg shadow-[0_10px_30px_rgba(56,19,19,0.18)] px-1">
-        <a 
-          href="/" 
+      <div className="relative h-16 rounded-[24px] border border-[var(--brand-border)] bg-white/95 backdrop-blur-lg shadow-[0_10px_24px_rgba(56,19,19,0.14)] px-2 pt-3">
+        <div className="grid grid-cols-5 items-start">
+          <Link
+            to="/products"
+            className={`flex flex-col items-center justify-center rounded-xl py-0.5 ${isShopActive ? 'text-[var(--brand-maroon)]' : 'text-[var(--brand-muted)]'} transition-all duration-300 group`}
+            aria-label="Shop now"
+            title="Shop now"
+          >
+            <div className={`p-1.5 rounded-full ${isShopActive ? 'bg-[#f5e9e4]' : 'group-hover:bg-[#f8f1ee]'} transition-all duration-300`}>
+              <ShopIcon isActive={isShopActive} />
+            </div>
+          </Link>
+
+          <Link
+            to="/wishlist"
+            className={`flex flex-col items-center justify-center rounded-xl py-0.5 ${isActive('/wishlist') ? 'text-[var(--brand-maroon)]' : 'text-[var(--brand-muted)]'} transition-all duration-300 group`}
+            aria-label="Wishlist"
+            title="Wishlist"
+          >
+            <div className={`p-1.5 rounded-full ${isActive('/wishlist') ? 'bg-[#f5e9e4]' : 'group-hover:bg-[#f8f1ee]'} transition-all duration-300 relative`}>
+              <WishlistIcon isActive={isActive('/wishlist')} />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[var(--brand-maroon)] text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                  {wishlistCount > 9 ? '9+' : wishlistCount}
+                </span>
+              )}
+            </div>
+          </Link>
+
+          <div />
+
+          <Link
+            to="/cart"
+            className={`flex flex-col items-center justify-center rounded-xl py-0.5 ${isActive('/cart') ? 'text-[var(--brand-maroon)]' : 'text-[var(--brand-muted)]'} transition-all duration-300 relative group`}
+            aria-label="Cart"
+            title="Cart"
+          >
+            <div className={`p-1.5 rounded-full ${isActive('/cart') ? 'bg-[#f5e9e4]' : 'group-hover:bg-[#f8f1ee]'} transition-all duration-300 relative`}>
+              <CartIcon isActive={isActive('/cart')} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[var(--brand-maroon)] text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              )}
+            </div>
+          </Link>
+
+          <Link
+            to="/profile"
+            className={`flex flex-col items-center justify-center rounded-xl py-0.5 ${isActive('/profile') ? 'text-[var(--brand-maroon)]' : 'text-[var(--brand-muted)]'} transition-all duration-300 group`}
+            aria-label="Account"
+            title="Account"
+          >
+            <div className={`p-1.5 rounded-full ${isActive('/profile') ? 'bg-[#f5e9e4]' : 'group-hover:bg-[#f8f1ee]'} transition-all duration-300`}>
+              <AccountIcon isActive={isActive('/profile')} />
+            </div>
+          </Link>
+        </div>
+
+        <a
+          href="/"
           onClick={handleHomeClick}
-          className={`flex flex-col items-center justify-center rounded-xl py-1.5 ${isActive('/') ? 'text-[var(--brand-maroon)]' : 'text-[var(--brand-muted)]'} transition-all duration-300 flex-1 group`}
+          className="absolute left-1/2 -translate-x-1/2 -top-4 flex flex-col items-center"
+          aria-label="Home"
+          title="Home"
         >
-          <div className={`p-1.5 rounded-full ${isActive('/') ? 'bg-[#f5e9e4]' : 'group-hover:bg-[#f8f1ee]'} transition-all duration-300`}>
-            <HomeIcon isActive={isActive('/')} />
+          <div className={`h-12 w-12 rounded-full border-[3px] border-white shadow-[0_6px_14px_rgba(56,19,19,0.18)] flex items-center justify-center ${isActive('/') ? 'bg-[#f5e9e4]' : 'bg-white'}`}>
+            <span className="scale-110">
+              <HomeIcon isActive={isActive('/')} />
+            </span>
           </div>
-          <span className="text-[10px] mt-0.5 font-semibold tracking-wide">HOME</span>
         </a>
-        
-        <Link 
-          to="/wishlist" 
-          className={`flex flex-col items-center justify-center rounded-xl py-1.5 ${isActive('/wishlist') ? 'text-[var(--brand-maroon)]' : 'text-[var(--brand-muted)]'} transition-all duration-300 flex-1 group`}
-        >
-          <div className={`p-1.5 rounded-full ${isActive('/wishlist') ? 'bg-[#f5e9e4]' : 'group-hover:bg-[#f8f1ee]'} transition-all duration-300 relative`}>
-            <WishlistIcon isActive={isActive('/wishlist')} />
-            {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[var(--brand-maroon)] text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                {wishlistCount > 9 ? '9+' : wishlistCount}
-              </span>
-            )}
-          </div>
-          <span className="text-[10px] mt-0.5 font-semibold tracking-wide">WISHLIST</span>
-        </Link>
-        
-        <Link 
-          to="/cart" 
-          className={`flex flex-col items-center justify-center rounded-xl py-1.5 ${isActive('/cart') ? 'text-[var(--brand-maroon)]' : 'text-[var(--brand-muted)]'} transition-all duration-300 flex-1 relative group`}
-        >
-          <div className={`p-1.5 rounded-full ${isActive('/cart') ? 'bg-[#f5e9e4]' : 'group-hover:bg-[#f8f1ee]'} transition-all duration-300 relative`}>
-            <CartIcon isActive={isActive('/cart')} />
-            {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[var(--brand-maroon)] text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                {cartCount > 9 ? '9+' : cartCount}
-              </span>
-            )}
-          </div>
-          <span className="text-[10px] mt-0.5 font-semibold tracking-wide">CART</span>
-        </Link>
-        
-        <Link 
-          to="/profile" 
-          className={`flex flex-col items-center justify-center rounded-xl py-1.5 ${isActive('/profile') ? 'text-[var(--brand-maroon)]' : 'text-[var(--brand-muted)]'} transition-all duration-300 flex-1 group`}
-        >
-          <div className={`p-1.5 rounded-full ${isActive('/profile') ? 'bg-[#f5e9e4]' : 'group-hover:bg-[#f8f1ee]'} transition-all duration-300`}>
-            <AccountIcon isActive={isActive('/profile')} />
-          </div>
-          <span className="text-[10px] mt-0.5 font-semibold tracking-wide">ACCOUNT</span>
-        </Link>
       </div>
     </div>
   );

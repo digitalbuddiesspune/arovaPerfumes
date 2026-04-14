@@ -35,6 +35,7 @@ import ShippingPolicy from '../pages/ShippingPolicy';
 import ReturnPolicy from '../pages/ReturnPolicy';
 import LegalPages from '../pages/LegalPages';
 import SocialProofs from '../pages/SocialProofs';
+import Reorders from '../pages/Reorders';
 
 const isAuthenticated = () => {
   try {
@@ -122,6 +123,7 @@ const Router = () => {
 
           {/* Private route(s) */}
           <Route path="cart" element={<RequireAuth><Cart /></RequireAuth>} />
+          <Route path="reorders" element={<RequireAuth><Reorders /></RequireAuth>} />
           <Route path="checkout/address" element={<RequireAuth><Address /></RequireAuth>} />
           <Route path="profile" element={<RequireAuth><Profile /></RequireAuth>} />
           <Route path="search" element={<Search />} />

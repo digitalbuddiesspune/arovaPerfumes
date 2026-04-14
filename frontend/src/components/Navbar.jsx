@@ -193,6 +193,11 @@ const Navbar = () => {
     { name: 'MEN', path: '/category/men' },
     { name: 'WOMEN', path: '/category/women' },
   ];
+  const mobileQuickLinks = [
+    ...navLinks,
+    { name: 'About Us', path: '/about' },
+    { name: 'Contact Us', path: '/contact' },
+  ];
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -494,7 +499,7 @@ const Navbar = () => {
               <div className="theme-card p-3">
                 <p className="text-[11px] uppercase tracking-wide text-[var(--brand-muted)] mb-2">Quick Access</p>
                 <nav className="grid grid-cols-1 gap-2">
-                  {navLinks.map((link) => (
+                  {mobileQuickLinks.map((link) => (
                     <Link
                       key={link.name}
                       to={link.path}
