@@ -12,6 +12,7 @@ const INITIAL_FORM = {
   price: '',
   mrp: '',
   category: '',
+  shortDescription: '',
   description: '',
   imageUrls: Array(MIN_IMAGES).fill(''),
   brand: '',
@@ -19,6 +20,9 @@ const INITIAL_FORM = {
   discountPercent: 0,
   freeDelivery: true,
   isReturnable: true,
+  topNotes: '',
+  middleNotes: '',
+  baseNotes: '',
   enableReviews: false,
   rating: '',
   totalReviews: '',
@@ -44,6 +48,7 @@ const ProductPage = () => {
     price: '',
     mrp: '',
     category: '',
+    shortDescription: '',
     description: '',
     imageUrls: [''],
     brand: '',
@@ -51,6 +56,9 @@ const ProductPage = () => {
     discountPercent: 0,
     freeDelivery: true,
     isReturnable: true,
+    topNotes: '',
+    middleNotes: '',
+    baseNotes: '',
     enableReviews: false,
     rating: '',
     totalReviews: '',
@@ -165,6 +173,7 @@ const ProductPage = () => {
       discountPercent: Number(inferredDiscount),
       description: form.description.trim(),
       category: form.category.trim(),
+      shortDescription: form.shortDescription.trim(),
       stock: {
         quantity: stockQty,
       },
@@ -177,6 +186,20 @@ const ProductPage = () => {
       reviews: {
         rating: form.enableReviews ? Number(form.rating || 0) : 0,
         totalReviews: form.enableReviews ? Number(form.totalReviews || 0) : 0,
+      },
+      notes: {
+        topNotes: String(form.topNotes || '')
+          .split(',')
+          .map((v) => v.trim())
+          .filter(Boolean),
+        middleNotes: String(form.middleNotes || '')
+          .split(',')
+          .map((v) => v.trim())
+          .filter(Boolean),
+        baseNotes: String(form.baseNotes || '')
+          .split(',')
+          .map((v) => v.trim())
+          .filter(Boolean),
       },
       product_info: {
         brand: form.brand.trim(),
@@ -230,6 +253,7 @@ const ProductPage = () => {
       price: Number(product.price ?? product.salePrice ?? 0) || '',
       mrp: Number(product.mrp) || '',
       category: product.category || '',
+      shortDescription: product.shortDescription || '',
       description: product.description || '',
       imageUrls: normalizedImages,
       brand: product.product_info?.brand || product.brand || '',
@@ -237,6 +261,9 @@ const ProductPage = () => {
       discountPercent: Number(product.discountPercent) || 0,
       freeDelivery: Boolean(product.freeDelivery),
       isReturnable: product.isReturnable !== false,
+      topNotes: (product.topNotes || product.notes?.topNotes || []).join(', '),
+      middleNotes: (product.middleNotes || product.notes?.middleNotes || []).join(', '),
+      baseNotes: (product.baseNotes || product.notes?.baseNotes || []).join(', '),
       enableReviews: Number(product.rating || 0) > 0 || Number(product.totalReviews || 0) > 0,
       rating: Number(product.rating || 0) || '',
       totalReviews: Number(product.totalReviews || 0) || '',
@@ -252,6 +279,7 @@ const ProductPage = () => {
       price: '',
       mrp: '',
       category: '',
+      shortDescription: '',
       description: '',
       imageUrls: [''],
       brand: '',
@@ -259,6 +287,9 @@ const ProductPage = () => {
       discountPercent: 0,
       freeDelivery: true,
       isReturnable: true,
+      topNotes: '',
+      middleNotes: '',
+      baseNotes: '',
       enableReviews: false,
       rating: '',
       totalReviews: '',
@@ -317,6 +348,7 @@ const ProductPage = () => {
         title: editForm.title.trim(),
         brand: editForm.brand.trim(),
         category: editForm.category.trim(),
+        shortDescription: editForm.shortDescription.trim(),
         description: editForm.description.trim(),
         salePrice,
         mrp,
@@ -338,6 +370,20 @@ const ProductPage = () => {
         reviews: {
           rating: editForm.enableReviews ? Number(editForm.rating || 0) : 0,
           totalReviews: editForm.enableReviews ? Number(editForm.totalReviews || 0) : 0,
+        },
+        notes: {
+          topNotes: String(editForm.topNotes || '')
+            .split(',')
+            .map((v) => v.trim())
+            .filter(Boolean),
+          middleNotes: String(editForm.middleNotes || '')
+            .split(',')
+            .map((v) => v.trim())
+            .filter(Boolean),
+          baseNotes: String(editForm.baseNotes || '')
+            .split(',')
+            .map((v) => v.trim())
+            .filter(Boolean),
         },
         isBestSeller: Boolean(editForm.isBestSeller),
       });
@@ -590,6 +636,47 @@ const ProductPage = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Top Notes (comma separated)</label>
+                  <input
+                    name="topNotes"
+                    value={editForm.topNotes}
+                    onChange={onEditChange}
+                    className="w-full rounded-lg border px-3 py-2"
+                    placeholder="Citrus, Fresh"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Middle Notes (comma separated)</label>
+                  <input
+                    name="middleNotes"
+                    value={editForm.middleNotes}
+                    onChange={onEditChange}
+                    className="w-full rounded-lg border px-3 py-2"
+                    placeholder="Floral, Spicy"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Base Notes (comma separated)</label>
+                  <input
+                    name="baseNotes"
+                    value={editForm.baseNotes}
+                    onChange={onEditChange}
+                    className="w-full rounded-lg border px-3 py-2"
+                    placeholder="Woody, Musk"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Short Description</label>
+                  <textarea
+                    name="shortDescription"
+                    rows="2"
+                    value={editForm.shortDescription}
+                    onChange={onEditChange}
+                    className="w-full rounded-lg border px-3 py-2"
+                    placeholder="Short summary for product details"
+                  />
                 </div>
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium text-gray-700">Description</label>

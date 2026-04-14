@@ -80,6 +80,7 @@ export async function createProduct(req, res) {
       stock = {},
       reviews = {},
       notes = {},
+      shortDescription = '',
       description = '',
       images = [],
       services = {},
@@ -121,6 +122,7 @@ export async function createProduct(req, res) {
         middleNotes: notes.middleNotes || [],
         baseNotes: notes.baseNotes || [],
       },
+      shortDescription,
       description,
       images: imageArray,
       services: {
@@ -395,6 +397,7 @@ export async function updateProduct(req, res) {
       pricing = {},
       stock = {},
       notes = {},
+      shortDescription,
       description,
       images,
       services = {},
@@ -411,6 +414,7 @@ export async function updateProduct(req, res) {
     if (category !== undefined) updates.category = category;
     if (subcategory !== undefined) updates.subcategory = subcategory;
     if (description !== undefined) updates.description = description;
+    if (shortDescription !== undefined) updates.shortDescription = shortDescription;
 
     // Pricing - support both old and new format
     const mrp = pricing.mrp || req.body.mrp;

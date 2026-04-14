@@ -86,6 +86,7 @@ const productSchema = new mongoose.Schema(
     stock: { type: stockSchema, default: () => ({}) },
     notes: { type: notesSchema, default: () => ({}) },
 
+    shortDescription: { type: String, trim: true, default: '' },
     description: { type: String, trim: true, default: '' },
     offers: { type: offersSchema, default: () => ({}) },
     services: { type: servicesSchema, default: () => ({}) },

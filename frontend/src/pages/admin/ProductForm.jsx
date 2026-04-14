@@ -81,6 +81,39 @@ const ProductForm = ({
               {errors.stock ? <p className="mt-1 text-xs text-rose-600">{errors.stock}</p> : null}
             </div>
 
+            <div className="md:col-span-2 grid grid-cols-1 gap-3 md:grid-cols-3">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Top Notes (comma separated)</label>
+                <input
+                  name="topNotes"
+                  value={form.topNotes}
+                  onChange={onChange}
+                  className="w-full rounded-lg border px-3 py-2"
+                  placeholder="Citrus, Fresh"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Middle Notes (comma separated)</label>
+                <input
+                  name="middleNotes"
+                  value={form.middleNotes}
+                  onChange={onChange}
+                  className="w-full rounded-lg border px-3 py-2"
+                  placeholder="Floral, Spicy"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">Base Notes (comma separated)</label>
+                <input
+                  name="baseNotes"
+                  value={form.baseNotes}
+                  onChange={onChange}
+                  className="w-full rounded-lg border px-3 py-2"
+                  placeholder="Woody, Musk"
+                />
+              </div>
+            </div>
+
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Free Delivery</label>
               <select
@@ -189,6 +222,18 @@ const ProductForm = ({
               </div>
               {errors.imageUrls ? <p className="mt-1 text-xs text-rose-600">{errors.imageUrls}</p> : null}
             </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">Short Description</label>
+              <textarea
+                name="shortDescription"
+                rows="2"
+                value={form.shortDescription}
+                onChange={onChange}
+                className="w-full rounded-lg border px-3 py-2"
+                placeholder="Short summary for product details"
+              />
             </div>
 
             <div>

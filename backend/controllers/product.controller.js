@@ -65,6 +65,7 @@ const mapPayload = (body = {}) => {
       middleNotes: body?.notes?.middleNotes ?? body.middleNotes ?? [],
       baseNotes: body?.notes?.baseNotes ?? body.baseNotes ?? [],
     },
+    shortDescription: body.shortDescription,
     description: body.description,
     offers: {
       couponCode: body?.offers?.couponCode ?? body.couponCode ?? '',
@@ -112,6 +113,7 @@ const toClientShape = (product) => {
     topNotes: notes.topNotes || [],
     middleNotes: notes.middleNotes || [],
     baseNotes: notes.baseNotes || [],
+    shortDescription: doc.shortDescription || '',
     couponCode: offers.couponCode || '',
     discount: offers.discount || 0,
     applicableOn: offers.applicableOn || '',

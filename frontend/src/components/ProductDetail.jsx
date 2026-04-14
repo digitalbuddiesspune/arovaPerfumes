@@ -100,6 +100,9 @@ const ProductDetail = () => {
     ...(product?.middleNotes || []),
     ...(product?.baseNotes || []),
   ].filter(Boolean);
+  const topNotesText = (product?.topNotes || []).filter(Boolean).join(' / ') || 'Citrus / Fresh';
+  const middleNotesText = (product?.middleNotes || []).filter(Boolean).join(' / ') || 'Floral / Spicy';
+  const baseNotesText = (product?.baseNotes || []).filter(Boolean).join(' / ') || 'Woody / Musk';
 
   const infoFields = [
     { label: "Brand", value: product?.product_info?.brand || product?.brand },
@@ -244,10 +247,13 @@ const ProductDetail = () => {
 
             {notes.length > 0 && (
               <div className="mt-4">
-                <h3 className="text-xs font-semibold tracking-wider text-gray-800 mb-2">NOTES</h3>
-                <div className="flex flex-wrap gap-2">
+                <h3 className="mb-3 text-sm font-semibold tracking-[0.14em] text-gray-900">NOTES</h3>
+                <div className="flex flex-wrap gap-3">
                   {notes.slice(0, 8).map((note, idx) => (
-                    <span key={`${note}-${idx}`} className="text-xs px-3 py-1.5 border border-gray-300 rounded-full bg-white">
+                    <span
+                      key={`${note}-${idx}`}
+                      className="rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm"
+                    >
                       {note}
                     </span>
                   ))}
@@ -265,6 +271,12 @@ const ProductDetail = () => {
               )}
             </div>
             <p className="text-xs text-gray-500 mt-1">{product.taxIncluded ? "Tax included." : "Tax extra."}</p>
+
+            <div className="mt-4">
+              <p className="mt-1 text-sm text-gray-700 leading-relaxed">
+                {product.shortDescription || product.description || 'A refined everyday fragrance designed to feel clean, elegant, and long lasting.'}
+              </p>
+            </div>
 
             <div className="mt-5">
               <label className="block text-xs font-semibold tracking-wide mb-2 text-gray-800">QUANTITY</label>
@@ -325,12 +337,16 @@ const ProductDetail = () => {
               )}
             </p>
 
-            {product.description && (
-              <div className="mt-5">
-                <h3 className="text-sm font-semibold text-gray-900 tracking-wide">DESCRIPTION</h3>
-                <p className="mt-1 text-sm text-gray-700 leading-relaxed">{product.description}</p>
+            <div className="mt-5 space-y-4 border-t pt-4">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 tracking-wide">WHY YOU&apos;LL LOVE IT</h3>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-700">
+                  <li>Long-lasting formula</li>
+                  <li>Clean fragrance profile</li>
+                  <li>Perfect for everyday use</li>
+                </ul>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
