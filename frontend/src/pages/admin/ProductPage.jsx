@@ -259,7 +259,7 @@ const ProductPage = () => {
       description: product.description || '',
       imageUrls: normalizedImages,
       brand: product.product_info?.brand || product.brand || '',
-      stock: Number(product.stock ?? product.quantity ?? 0) || 0,
+      stock: Number(product.stock?.quantity ?? product.quantity ?? product.stock ?? 0) || 0,
       discountPercent: Number(product.discountPercent) || 0,
       freeDelivery: Boolean(product.freeDelivery),
       isReturnable: product.isReturnable !== false,
