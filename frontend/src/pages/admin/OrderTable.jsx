@@ -10,6 +10,11 @@ const ORDER_STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled' },
 ];
 
+const PAYMENT_STATUS_OPTIONS = [
+  { value: 'paid', label: 'Paid' },
+  { value: 'unpaid', label: 'Unpaid' },
+];
+
 const paymentBadgeClass = (status) => {
   const value = String(status || '').toLowerCase();
   return value === 'paid'
@@ -36,6 +41,7 @@ const OrderTable = ({
   orders,
   statusSavingId,
   onStatusChange,
+  onPaymentStatusChange,
   onView,
   page,
   totalPages,
@@ -92,9 +98,23 @@ const OrderTable = ({
                     <td className="px-4 py-3">{Array.isArray(order.items) ? order.items.length : 0}</td>
                     <td className="px-4 py-3 font-semibold">₹{total.toLocaleString('en-IN')}</td>
                     <td className="px-4 py-3">
-                      <span className={`rounded-full px-2 py-1 text-xs font-medium ${paymentBadgeClass(paymentStatus)}`}>
-                        {paymentStatus === 'paid' ? 'Paid' : 'Unpaid'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`rounded-full px-2 py-1 text-xs font-medium ${paymentBadgeClass(paymentStatus)}`}>
+                          {paymentStatus === 'paid' ? 'Paid' : 'Unpaid'}
+                        </span>
+                        <select
+                          className="rounded-md border px-2 py-1 text-xs"
+                          value={paymentStatus}
+                          onChange={(e) => onPaymentStatusChange(order, e.target.value)}
+                          disabled={statusSavingId === order._id}
+                        >
+                          {PAYMENT_STATUS_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <select

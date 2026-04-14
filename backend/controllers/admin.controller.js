@@ -194,6 +194,13 @@ export async function updateOrderStatus(req, res) {
         return res.status(400).json({ message: 'Invalid payment status', allowed: Array.from(PAYMENT_STATUS_ALLOWED) });
       }
       updates.paymentStatus = normalized;
+      if (normalized === 'paid') {
+        updates.isPaid = true;
+        updates.paidAt = new Date();
+      } else {
+        updates.isPaid = false;
+        updates.paidAt = null;
+      }
       // Reflect into legacy status when possible
       if (!updates.status && (normalized === 'paid' || normalized === 'failed')) {
         updates.status = normalized === 'paid' ? 'paid' : 'failed';

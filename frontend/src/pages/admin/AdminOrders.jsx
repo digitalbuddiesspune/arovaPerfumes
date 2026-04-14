@@ -97,6 +97,33 @@ const AdminOrders = () => {
     }
   };
 
+  const updatePaymentStatus = async (order, nextPaymentStatus) => {
+    if (!order?._id) return;
+    const currentPaymentStatus = normalizedPaymentStatus(order);
+    if (currentPaymentStatus === nextPaymentStatus) return;
+
+    const backup = { ...order };
+    const backendPaymentStatus = nextPaymentStatus === 'paid' ? 'paid' : 'pending';
+
+    setUpdatingId(order._id);
+    setOrders((prev) =>
+      prev.map((item) =>
+        item._id === order._id ? { ...item, paymentStatus: backendPaymentStatus, isPaid: nextPaymentStatus === 'paid' } : item
+      )
+    );
+
+    try {
+      const updated = await api.admin.updateOrder(order._id, { paymentStatus: backendPaymentStatus });
+      setOrders((prev) => prev.map((item) => (item._id === order._id ? updated : item)));
+      showToast('Payment status updated.');
+    } catch (e) {
+      setOrders((prev) => prev.map((item) => (item._id === order._id ? backup : item)));
+      showToast(e.message || 'Failed to update payment status', 'error');
+    } finally {
+      setUpdatingId('');
+    }
+  };
+
   const openDetails = async (order) => {
     if (!order?._id) return;
     setSelectedOrder(order);
@@ -158,6 +185,7 @@ const AdminOrders = () => {
         orders={pageItems}
         statusSavingId={updatingId}
         onStatusChange={updateStatus}
+        onPaymentStatusChange={updatePaymentStatus}
         onView={openDetails}
         page={page}
         totalPages={totalPages}
