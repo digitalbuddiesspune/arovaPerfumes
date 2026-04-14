@@ -194,9 +194,17 @@ function Cart() {
     const couponDiscountAmount = couponDiscount || 0;
     const subtotalAfterCoupon = Math.max(0, totalSalePrice - couponDiscountAmount);
     
+    // Product-level free delivery override:
+    // if all cart products have freeDelivery enabled, shipping is always free.
+    const allItemsFreeDelivery =
+      cart.length > 0 &&
+      cart.every((item) => Boolean(item?.freeDelivery));
+
     // Dynamic shipping calculation
     let shippingCharge = pricingSettings.shippingCharge;
-    if (pricingSettings.isFreeShippingEnabled && subtotalAfterCoupon >= pricingSettings.freeShippingMinAmount) {
+    if (allItemsFreeDelivery) {
+      shippingCharge = 0;
+    } else if (pricingSettings.isFreeShippingEnabled && subtotalAfterCoupon >= pricingSettings.freeShippingMinAmount) {
       shippingCharge = 0;
     }
     

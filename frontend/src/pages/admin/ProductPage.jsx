@@ -245,6 +245,8 @@ const ProductPage = () => {
       ? product.images
       : Object.values(product?.images || {}).filter(Boolean);
     const normalizedImages = imageList.length ? imageList.slice(0, MAX_IMAGES) : [''];
+    const productRating = Number(product?.reviews?.rating ?? product?.rating ?? 0);
+    const productTotalReviews = Number(product?.reviews?.totalReviews ?? product?.totalReviews ?? 0);
 
     setEditingProduct(product);
     setEditForm({
@@ -264,9 +266,9 @@ const ProductPage = () => {
       topNotes: (product.topNotes || product.notes?.topNotes || []).join(', '),
       middleNotes: (product.middleNotes || product.notes?.middleNotes || []).join(', '),
       baseNotes: (product.baseNotes || product.notes?.baseNotes || []).join(', '),
-      enableReviews: Number(product.rating || 0) > 0 || Number(product.totalReviews || 0) > 0,
-      rating: Number(product.rating || 0) || '',
-      totalReviews: Number(product.totalReviews || 0) || '',
+      enableReviews: productRating > 0 || productTotalReviews > 0,
+      rating: productRating || '',
+      totalReviews: productTotalReviews || '',
       isBestSeller: Boolean(product.isBestSeller),
     });
   };

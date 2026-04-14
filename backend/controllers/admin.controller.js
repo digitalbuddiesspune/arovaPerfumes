@@ -396,6 +396,7 @@ export async function updateProduct(req, res) {
       subcategory,
       pricing = {},
       stock = {},
+      reviews = {},
       notes = {},
       shortDescription,
       description,
@@ -439,6 +440,17 @@ export async function updateProduct(req, res) {
       if (notes.topNotes !== undefined) updates.notes.topNotes = notes.topNotes;
       if (notes.middleNotes !== undefined) updates.notes.middleNotes = notes.middleNotes;
       if (notes.baseNotes !== undefined) updates.notes.baseNotes = notes.baseNotes;
+    }
+
+    // Reviews
+    if (reviews.rating !== undefined || reviews.totalReviews !== undefined) {
+      updates.reviews = updates.reviews || {};
+      if (reviews.rating !== undefined) {
+        updates.reviews.rating = Math.max(0, Math.min(5, Number(reviews.rating) || 0));
+      }
+      if (reviews.totalReviews !== undefined) {
+        updates.reviews.totalReviews = Math.max(0, Number(reviews.totalReviews) || 0);
+      }
     }
 
     // Images - support both array and object format

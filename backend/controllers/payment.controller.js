@@ -130,6 +130,13 @@ export const verifyPayment = async (req, res) => {
     // Calculate price breakdown
     const itemsPrice = orderItems.reduce((sum, it) => sum + (it.price * it.quantity), 0);
     
+    // Product-level free delivery override:
+    // if all products in cart are freeDelivery=true, shipping is always free.
+    const allItemsFreeDelivery =
+      Array.isArray(cart.items) &&
+      cart.items.length > 0 &&
+      cart.items.every((i) => Boolean(i?.product?.services?.freeDelivery ?? i?.product?.freeDelivery ?? false));
+
     // Dynamic shipping calculation (free shipping uses subtotal after coupon, same as storefront cart)
     let shippingPrice = pricingSettings.shippingCharge;
 
@@ -143,7 +150,9 @@ export const verifyPayment = async (req, res) => {
     }
 
     const subtotalAfterCoupon = Math.max(0, itemsPrice - discount);
-    if (pricingSettings.isFreeShippingEnabled && subtotalAfterCoupon >= pricingSettings.freeShippingMinAmount) {
+    if (allItemsFreeDelivery) {
+      shippingPrice = 0;
+    } else if (pricingSettings.isFreeShippingEnabled && subtotalAfterCoupon >= pricingSettings.freeShippingMinAmount) {
       shippingPrice = 0;
     }
 
@@ -244,6 +253,11 @@ export const createCODOrder = async (req, res) => {
     // Calculate price breakdown
     const itemsPrice = orderItems.reduce((sum, it) => sum + (it.price * it.quantity), 0);
     
+    const allItemsFreeDeliveryCod =
+      Array.isArray(cart.items) &&
+      cart.items.length > 0 &&
+      cart.items.every((i) => Boolean(i?.product?.services?.freeDelivery ?? i?.product?.freeDelivery ?? false));
+
     let shippingPrice = pricingSettings.shippingCharge;
 
     // Apply coupon discount if available
@@ -256,7 +270,9 @@ export const createCODOrder = async (req, res) => {
     }
 
     const subtotalAfterCouponCod = Math.max(0, itemsPrice - discount);
-    if (pricingSettings.isFreeShippingEnabled && subtotalAfterCouponCod >= pricingSettings.freeShippingMinAmount) {
+    if (allItemsFreeDeliveryCod) {
+      shippingPrice = 0;
+    } else if (pricingSettings.isFreeShippingEnabled && subtotalAfterCouponCod >= pricingSettings.freeShippingMinAmount) {
       shippingPrice = 0;
     }
 

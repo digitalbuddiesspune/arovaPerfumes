@@ -78,6 +78,7 @@ export const CartProvider = ({ children }) => {
         stock: p.stock?.quantity || p.stock || 0,
         description: p.description || '',
         notes: p.notes || {},
+        freeDelivery: Boolean(p.services?.freeDelivery ?? p.freeDelivery ?? false),
         pricing: p.pricing || {
           salePrice: price,
           mrp: p.pricing?.mrp || p.mrp || price,
@@ -147,6 +148,7 @@ export const CartProvider = ({ children }) => {
           stock: p.stock?.quantity || p.stock || 0,
           description: p.description || '',
           notes: p.notes || {},
+          freeDelivery: Boolean(p.services?.freeDelivery ?? p.freeDelivery ?? false),
           pricing: p.pricing || {
             salePrice: price,
             mrp: p.pricing?.mrp || p.mrp || price,

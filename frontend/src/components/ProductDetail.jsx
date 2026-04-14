@@ -100,9 +100,6 @@ const ProductDetail = () => {
     ...(product?.middleNotes || []),
     ...(product?.baseNotes || []),
   ].filter(Boolean);
-  const topNotesText = (product?.topNotes || []).filter(Boolean).join(' / ') || 'Citrus / Fresh';
-  const middleNotesText = (product?.middleNotes || []).filter(Boolean).join(' / ') || 'Floral / Spicy';
-  const baseNotesText = (product?.baseNotes || []).filter(Boolean).join(' / ') || 'Woody / Musk';
 
   const infoFields = [
     { label: "Brand", value: product?.product_info?.brand || product?.brand },
@@ -245,6 +242,15 @@ const ProductDetail = () => {
               </div>
             ) : null}
 
+            <div className="mt-5 flex items-end gap-2">
+              <span className="text-3xl font-semibold text-gray-900">₹ {sellingPrice.toLocaleString("en-IN")}</span>
+              {mrp > sellingPrice && (
+                <span className="text-sm text-gray-400 line-through">MRP ₹ {mrp.toLocaleString("en-IN")}</span>
+              )}
+              {discountPercent > 0 && (
+                <span className="text-[10px] px-2 py-1 bg-emerald-100 text-emerald-700 font-semibold">SAVE {Math.round(discountPercent)}%</span>
+              )}
+            </div>
             {notes.length > 0 && (
               <div className="mt-4">
                 <h3 className="mb-3 text-sm font-semibold tracking-[0.14em] text-gray-900">NOTES</h3>
@@ -260,23 +266,11 @@ const ProductDetail = () => {
                 </div>
               </div>
             )}
-
-            <div className="mt-5 flex items-end gap-2">
-              <span className="text-3xl font-semibold text-gray-900">₹ {sellingPrice.toLocaleString("en-IN")}</span>
-              {mrp > sellingPrice && (
-                <span className="text-sm text-gray-400 line-through">MRP ₹ {mrp.toLocaleString("en-IN")}</span>
-              )}
-              {discountPercent > 0 && (
-                <span className="text-[10px] px-2 py-1 bg-emerald-100 text-emerald-700 font-semibold">SAVE {Math.round(discountPercent)}%</span>
-              )}
-            </div>
-            <p className="text-xs text-gray-500 mt-1">{product.taxIncluded ? "Tax included." : "Tax extra."}</p>
-
-            <div className="mt-4">
-              <p className="mt-1 text-sm text-gray-700 leading-relaxed">
-                {product.shortDescription || product.description || 'A refined everyday fragrance designed to feel clean, elegant, and long lasting.'}
-              </p>
-            </div>
+            {product.shortDescription ? (
+              <div className="mt-4">
+                <p className="mt-1 text-sm text-gray-700 leading-relaxed">{product.shortDescription}</p>
+              </div>
+            ) : null}
 
             <div className="mt-5">
               <label className="block text-xs font-semibold tracking-wide mb-2 text-gray-800">QUANTITY</label>
@@ -338,6 +332,13 @@ const ProductDetail = () => {
             </p>
 
             <div className="mt-5 space-y-4 border-t pt-4">
+              {product.description ? (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 tracking-wide">DESCRIPTION</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-700">{product.description}</p>
+                </div>
+              ) : null}
+
               <div>
                 <h3 className="text-sm font-semibold text-gray-900 tracking-wide">WHY YOU&apos;LL LOVE IT</h3>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-700">
