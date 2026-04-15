@@ -17,7 +17,7 @@ const Home = () => {
 
   // Mobile-only banner
   const mobileHeroBanner =
-    'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776236508/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_1_bi8bth.png';
+    'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776237003/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_s9auqi.svg';
 
   const faqItems = [
     {
