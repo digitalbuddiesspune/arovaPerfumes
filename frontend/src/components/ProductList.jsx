@@ -631,37 +631,39 @@ const ProductList = ({ defaultCategory } = {}) => {
                                                             ) : null}
                                                         </div>
 
-                                                        <div className="pt-2 pb-2 px-2 text-center">
-                                                            <p className="text-xs sm:text-sm font-semibold text-black line-clamp-1 uppercase">
+                                                        <div className="flex min-h-[160px] flex-col px-2 pb-2 pt-2 sm:min-h-[172px]">
+                                                            <p className="line-clamp-2 min-h-[2.5rem] text-center text-[11px] font-semibold uppercase leading-5 text-black sm:min-h-[2.75rem] sm:text-sm">
                                                                 {p.title || 'Perfume'}
                                                             </p>
                                                             {notes ? (
-                                                                <p className="text-[11px] sm:text-xs text-gray-600 mt-0.5 line-clamp-1">
+                                                                <p className="mt-0.5 line-clamp-1 min-h-[1rem] text-center text-[10px] text-gray-600 sm:text-xs">
                                                                     {notes}
                                                                 </p>
                                                             ) : (
-                                                                <div className="h-4" />
+                                                                <div className="mt-0.5 min-h-[1rem]" />
                                                             )}
 
-                                                            <p className="mt-1 text-sm font-bold text-black">
-                                                                ₹{finalPrice.toLocaleString('en-IN')}
-                                                            </p>
-                                                            {mrpValue > finalPrice && (
-                                                                <div className="flex items-center gap-2">
-                                                                    <p className="text-xs text-gray-400 line-through">
-                                                                        ₹{mrpValue.toLocaleString('en-IN')}
-                                                                    </p>
-                                                                    <span className="text-xs font-medium text-green-600">
-                                                                        {Math.round(((mrpValue - finalPrice) / mrpValue) * 100)}% off
-                                                                    </span>
-                                                                </div>
-                                                            )}
+                                                            <div className="mt-2 flex min-h-[1.25rem] items-baseline justify-center gap-2 text-center">
+                                                                <p className="text-sm font-bold text-black sm:text-base">
+                                                                    ₹{finalPrice.toLocaleString('en-IN')}
+                                                                </p>
+                                                                {mrpValue > finalPrice && (
+                                                                    <>
+                                                                        <p className="text-[11px] text-gray-400 line-through sm:text-xs">
+                                                                            ₹{mrpValue.toLocaleString('en-IN')}
+                                                                        </p>
+                                                                        <span className="text-[11px] font-medium text-green-600 sm:text-xs">
+                                                                            {Math.round(((mrpValue - finalPrice) / mrpValue) * 100)}% off
+                                                                        </span>
+                                                                    </>
+                                                                )}
+                                                            </div>
 
                                                             <button
                                                                 type="button"
                                                                 onClick={(e) => handleAddToCartFromCard(p, e)}
                                                                 disabled={addingToCartId === pid}
-                                                                className="mt-2 block w-full border border-black text-xs sm:text-sm py-2 hover:bg-gray-50 transition-colors disabled:opacity-60"
+                                                                className="mt-auto block w-full border border-black px-2 py-2 text-xs transition-colors hover:bg-gray-50 disabled:opacity-60 sm:text-sm"
                                                             >
                                                                 {addingToCartId === pid ? 'Adding...' : 'Add to cart'}
                                                             </button>
