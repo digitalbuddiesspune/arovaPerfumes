@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const promisePoints = [
   'Clean & conscious formulations',
@@ -8,29 +8,61 @@ const promisePoints = [
 ];
 
 const ArovaPromise = () => {
-  return (
-    <section className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-8">
-      <div className="promise-shell relative overflow-hidden rounded-2xl border border-[var(--brand-border)] bg-white p-5 sm:p-7 md:p-8 shadow-sm">
-        <div className="promise-blob pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(201,169,110,0.24),transparent_70%)]" />
-        <div className="promise-blob pointer-events-none absolute -bottom-8 -left-8 h-28 w-28 rounded-full bg-[radial-gradient(circle,rgba(56,19,19,0.12),transparent_70%)]" />
-        <div className="relative">
-          <p className="promise-intro text-xs font-semibold tracking-[0.2em] uppercase text-[var(--brand-muted)]">Why Arova</p>
-          <h2 className="promise-intro mt-2 text-2xl sm:text-3xl font-semibold text-[var(--brand-maroon)]">✦ The Arova Promise</h2>
-          <p className="promise-intro mt-2 text-sm sm:text-base text-[var(--brand-muted)]">
-            Built for modern fragrance lovers who want clean luxury every day.
-          </p>
+  const sectionRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
 
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {promisePoints.map((point, index) => (
-              <div
-                key={point}
-                className="promise-card flex items-start gap-3 rounded-xl border border-[var(--brand-border)] bg-[#fffdfa] px-4 py-3"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <span className="mt-[2px] text-[var(--brand-maroon)]">•</span>
-                <p className="text-sm sm:text-base font-medium text-[var(--brand-text)] leading-relaxed">{point}</p>
-              </div>
-            ))}
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className={`w-full transform transition-all duration-700 ease-out ${
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+      }`}
+    >
+      <div className="overflow-hidden bg-gradient-to-br from-[#2b0d0d] via-[#3a1212] to-[#1e0808] py-10 sm:py-12">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-[10px] sm:text-xs uppercase tracking-[0.35em] text-[#d9beb3]">The Arova Promise</p>
+            <h2 className="mt-3 text-4xl sm:text-5xl font-medium text-[#fff3ed] [font-family:Georgia,serif]">Why Arova</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-[#e3cbc2]">
+              Crafted for modern fragrance lovers who want clean luxury every day.
+            </p>
+          </div>
+
+          <div className="mt-8 border-y border-white/15">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              {promisePoints.map((point, index) => (
+                <div
+                  key={point}
+                  className="group flex items-center gap-3 border-b border-white/10 px-4 py-5 sm:px-5 lg:border-b-0 lg:border-r lg:border-white/10 last:lg:border-r-0"
+                >
+                  <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#c8a397]/70 bg-white/5 text-xs font-semibold text-[#f7e2da]">
+                    {index + 1}
+                  </span>
+                  <p className="text-sm sm:text-[15px] font-medium leading-relaxed text-[#f0d8cf] transition-colors duration-200 group-hover:text-white">
+                    {point}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -31,9 +31,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative overflow-hidden border-t border-[#d8c6bf] bg-gradient-to-b from-[#3b1515] via-[var(--brand-maroon)] to-[#2a0f0f] text-white">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.12),transparent_48%)]" />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(to_top,rgba(0,0,0,0.25),transparent)]" />
+    <footer className="relative overflow-hidden bg-[#2b0d0d] text-white">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-12 pb-20 sm:pb-10">
         <div className="mb-8 sm:mb-10 rounded-2xl border border-white/20 bg-white/10 px-4 sm:px-6 py-5 sm:py-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between backdrop-blur-md shadow-[0_16px_40px_rgba(0,0,0,0.18)]">
           <div className="flex items-center gap-4">

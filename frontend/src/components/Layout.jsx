@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import EssenceJoinSection from './EssenceJoinSection';
 
 const Layout = () => {
   const headerWrapRef = useRef(null);
@@ -37,6 +38,8 @@ const Layout = () => {
       <main className="flex-grow pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
         <Outlet />
       </main>
+
+      <EssenceJoinSection />
 
       {/* Footer */}
       <Footer />
