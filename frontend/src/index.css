@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;500;600&family=Jost:wght@300;400;500;600&display=swap');
+
 @import "tailwindcss";
 
 :root {
@@ -16,6 +18,16 @@
   --brand-muted: #6f5858;
   --font-heading: "BankGothic Lt BT", "Bank Gothic Medium BT", "Eurostile", "Segoe UI", sans-serif;
   --font-body: "Baloo 2", "Segoe UI", sans-serif;
+  --font-cinzel: "Cinzel", serif;
+  --font-cormorant: "Cormorant Garamond", serif;
+  --font-jost: "Jost", sans-serif;
+  --luxury-brown: #2c1008;
+  --luxury-brown-mid: #5c2e0e;
+  --luxury-brown-light: #9b5e3a;
+  --luxury-cream: #f5f0e8;
+  --luxury-cream-deep: #ede5d4;
+  --luxury-gold: #c9a96e;
+  --luxury-gold-dark: #b68947;
 }
 
 /* Prevent horizontal scrolling */
@@ -29,14 +41,14 @@ html {
 }
 
 body {
-  font-family: var(--font-body);
-  color: var(--brand-text);
-  background: var(--brand-cream);
+  font-family: var(--font-jost);
+  color: var(--luxury-brown);
+  background: var(--luxury-cream);
   letter-spacing: 0.1px;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
+  font-family: var(--font-cormorant);
   letter-spacing: 0.4px;
 }
 
@@ -95,6 +107,24 @@ a, button {
 
 .animate-scroll:hover {
   animation-play-state: paused;
+}
+
+@keyframes luxury-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.luxury-marquee-track {
+  animation: luxury-marquee 26s linear infinite;
+}
+
+.luxury-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.18;
 }
 
 /* Slide-up animation for cache consent banner */

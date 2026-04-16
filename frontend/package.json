@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.1.16",
     "cloudinary": "^2.8.0",
     "express-session": "^1.19.0",
+    "framer-motion": "^12.38.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.556.0",
     "passport": "^0.7.0",

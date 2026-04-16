@@ -212,20 +212,31 @@ const Navbar = () => {
     });
   };
 
+  const toggleMobileMenu = () => {
+    setSearchOpen(false);
+    setSearchUiOpen(false);
+    setIsMobileMenuOpen((prev) => !prev);
+  };
+
   return (
     <div className="relative z-[70]">
-      <div className="bg-[var(--brand-maroon)] text-white text-[10px] sm:text-xs md:text-sm font-medium tracking-wide py-1.5 overflow-hidden whitespace-nowrap">
+      <div className="bg-[var(--luxury-brown)] py-3 text-white overflow-hidden whitespace-nowrap">
         <div className="animate-scroll inline-flex min-w-max">
           {[0, 1, 2, 3].map((i) => (
-            <span key={i} className="px-4 sm:px-6">
+            <span
+              key={i}
+              className="px-6 font-[var(--font-cormorant)] text-base italic tracking-[0.06em] text-[var(--luxury-gold)]/90"
+            >
               {announcementMarquee}
             </span>
           ))}
         </div>
       </div>
       <nav
-        className={`bg-[var(--brand-cream)] border-b border-[var(--brand-border)] border-t-0 transition-shadow ${
-          isScrolled ? 'shadow-sm' : ''
+        className={`border-b border-[rgba(44,16,8,0.08)] border-t-0 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-[rgba(245,240,232,0.92)] shadow-[0_14px_40px_rgba(44,16,8,0.08)] backdrop-blur-xl'
+            : 'bg-[var(--luxury-cream)]'
         }`}
       >
         <div className="w-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12">
@@ -233,7 +244,7 @@ const Navbar = () => {
           {/* Mobile left: menu button */}
           <div className="flex items-center lg:hidden">
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={toggleMobileMenu}
               className="inline-flex items-center justify-center p-2.5 rounded-xl text-gray-700 hover:text-black hover:bg-white active:bg-gray-100 border border-transparent hover:border-[var(--brand-border)] focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all"
               aria-expanded={isMobileMenuOpen}
               aria-label="Toggle menu"
@@ -329,10 +340,10 @@ const Navbar = () => {
                 key={link.name}
                 to={link.path}
                 onClick={scrollToTop}
-                className="group relative inline-flex items-center text-gray-700 hover:text-[var(--brand-maroon)] transition-all duration-300 text-xs xl:text-sm uppercase tracking-wide whitespace-nowrap px-2.5 py-2"
+                className="group relative inline-flex items-center px-2.5 py-2 font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.28em] text-[var(--luxury-brown)] transition-all duration-300 hover:text-[var(--luxury-gold-dark)] xl:text-[11px] whitespace-nowrap"
               >
                 <span className="transition-transform duration-300 group-hover:-translate-y-[1px]">{link.name}</span>
-                <span className="pointer-events-none absolute left-2.5 right-2.5 -bottom-[1px] h-[2px] rounded-full bg-[var(--brand-maroon)] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100" />
+                <span className="pointer-events-none absolute left-2.5 right-2.5 -bottom-[1px] h-px rounded-full bg-[var(--luxury-gold)] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100" />
               </Link>
             ))}
           </div>
@@ -393,7 +404,7 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={() => setSearchOpen(true)}
-                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all"
+                  className="inline-flex items-center justify-center align-middle rounded-full border border-transparent p-2.5 text-[var(--luxury-brown)] transition-all hover:border-[rgba(44,16,8,0.1)] hover:bg-white/70 hover:text-[var(--luxury-gold-dark)]"
                   type="button"
                   aria-label="Search"
                 >
@@ -407,7 +418,7 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <Link
                   to="/profile"
-                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all"
+                  className="inline-flex items-center justify-center align-middle rounded-full border border-transparent p-2.5 text-[var(--luxury-brown)] transition-all hover:border-[rgba(44,16,8,0.1)] hover:bg-white/70 hover:text-[var(--luxury-gold-dark)]"
                   title="Profile"
                   aria-label="Profile"
                 >
@@ -416,7 +427,7 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all"
+                  className="inline-flex items-center justify-center align-middle rounded-full border border-transparent p-2.5 text-[var(--luxury-brown)] transition-all hover:border-[rgba(44,16,8,0.1)] hover:bg-white/70 hover:text-[var(--luxury-gold-dark)]"
                   title="Sign In"
                   aria-label="Sign In"
                 >
@@ -440,7 +451,7 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <Link
                   to="/profile"
-                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all flex-shrink-0"
+                  className="inline-flex items-center justify-center align-middle rounded-full border border-transparent p-2.5 text-[var(--luxury-brown)] transition-all hover:border-[rgba(44,16,8,0.1)] hover:bg-white/70 hover:text-[var(--luxury-gold-dark)] flex-shrink-0"
                   title="Profile"
                 >
                   <FiUser className="w-5 h-5" />
@@ -448,7 +459,7 @@ const Navbar = () => {
               ) : (
                 <button
                   onClick={handleLogin}
-                  className="inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] transition-all flex-shrink-0"
+                  className="inline-flex items-center justify-center align-middle rounded-full border border-transparent p-2.5 text-[var(--luxury-brown)] transition-all hover:border-[rgba(44,16,8,0.1)] hover:bg-white/70 hover:text-[var(--luxury-gold-dark)] flex-shrink-0"
                   title="Sign In"
                 >
                   <FiUser className="w-5 h-5" />
@@ -457,7 +468,7 @@ const Navbar = () => {
             </div>
 
             {/* Wishlist Icon - Hidden on mobile */}
-            <Link to="/wishlist" className="hidden md:inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] relative flex-shrink-0 transition-all" title="Wishlist">
+            <Link to="/wishlist" className="hidden md:inline-flex items-center justify-center align-middle rounded-full border border-transparent p-2.5 text-[var(--luxury-brown)] transition-all hover:border-[rgba(44,16,8,0.1)] hover:bg-white/70 hover:text-[var(--luxury-gold-dark)] relative flex-shrink-0" title="Wishlist">
               <FiHeart className="w-5 h-5" />
               {wishlistCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-[var(--brand-maroon)] text-white text-[9px] sm:text-[10px] md:text-xs rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 flex items-center justify-center font-medium">
@@ -467,7 +478,7 @@ const Navbar = () => {
             </Link>
 
             {/* Cart Icon - Hidden on mobile */}
-            <Link to="/cart" className="hidden md:inline-flex items-center justify-center align-middle p-2.5 rounded-xl text-[var(--brand-text)] hover:text-[var(--brand-maroon)] hover:bg-white border border-transparent hover:border-[var(--brand-border)] relative flex-shrink-0 transition-all">
+            <Link to="/cart" className="hidden md:inline-flex items-center justify-center align-middle rounded-full border border-transparent p-2.5 text-[var(--luxury-brown)] transition-all hover:border-[rgba(44,16,8,0.1)] hover:bg-white/70 hover:text-[var(--luxury-gold-dark)] relative flex-shrink-0">
               <FiShoppingBag className="w-5 h-5" />
               {cartCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-[var(--brand-maroon)] text-white text-[9px] sm:text-[10px] md:text-xs rounded-full h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 flex items-center justify-center font-medium">
@@ -482,7 +493,7 @@ const Navbar = () => {
         {/* Mobile side drawer */}
         <div
           id="mobile-menu"
-          className={`lg:hidden fixed inset-0 z-[95] transition-opacity duration-300 ${
+          className={`lg:hidden fixed inset-0 z-[120] transition-opacity duration-300 ${
             isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           }`}
         >
@@ -490,10 +501,10 @@ const Navbar = () => {
             type="button"
             aria-label="Close menu overlay"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="absolute inset-0 bg-black/30"
+            className="absolute inset-0 z-[121] bg-black/40 backdrop-blur-[2px]"
           />
           <aside
-            className={`absolute top-0 left-0 h-full w-[84%] max-w-[320px] bg-[var(--brand-cream)] border-r border-[var(--brand-border)] shadow-2xl transition-transform duration-300 ease-out ${
+            className={`absolute left-0 top-0 z-[122] h-full w-[86%] max-w-[340px] bg-[var(--brand-cream)] border-r border-[var(--brand-border)] shadow-[0_24px_60px_rgba(0,0,0,0.22)] transition-transform duration-300 ease-out ${
               isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
           >

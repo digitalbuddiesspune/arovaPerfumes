@@ -1,157 +1,190 @@
-import React, { useEffect, useRef, useState } from 'react';
-import HeroSlider from '../components/HeroSlider';
-
-// Import new components you'd need to create for a full landing page
-import BestSellers from '../components/BestSellers';
-import MensSection from '../components/MensSection';
-import WomenSection from '../components/WomenSection';
+import { useEffect, useMemo, useState } from 'react';
+import { fetchPricingSettings, fetchSarees } from '../services/api';
+import { useCart } from '../context/CartContext';
 import CacheConsent from '../components/CacheConsent';
-import ArovaPromise from '../components/ArovaPromise';
+import LuxuryGenderSection from '../components/luxury/LuxuryGenderSection';
+import LuxuryHeroSection from '../components/luxury/LuxuryHeroSection';
+import LuxuryMarqueeSection from '../components/luxury/LuxuryMarqueeSection';
+import LuxuryNewsletterSection from '../components/luxury/LuxuryNewsletterSection';
+import LuxuryNotesSection from '../components/luxury/LuxuryNotesSection';
+import LuxuryProductGridSection from '../components/luxury/LuxuryProductGridSection';
+import LuxuryPromiseSection from '../components/luxury/LuxuryPromiseSection';
+import LuxuryStorySection from '../components/luxury/LuxuryStorySection';
+import LuxuryTestimonialsSection from '../components/luxury/LuxuryTestimonialsSection';
+
+const testimonialItems = [
+  {
+    author: 'Rahul M., Mumbai',
+    quote:
+      "Arova Noir is everything I've been searching for. Deep, rich, and it lasts through the entire day.",
+    rating: 5,
+  },
+  {
+    author: 'Priya S., Pune',
+    quote:
+      "Finally a perfume that feels premium and stays gentle on sensitive skin. Rose Nuit is divine.",
+    rating: 5,
+  },
+  {
+    author: 'Kavya R., Nagpur',
+    quote:
+      'The packaging, scent profile and longevity feel truly luxe. AROVA stands out from the crowd.',
+    rating: 5,
+  },
+];
+
+const promiseItems = [
+  {
+    icon: '🌱',
+    title: 'Clean Formula',
+    description: 'Ethanol-based and mindful on skin, crafted without the harsh edge of mass-market blends.',
+  },
+  {
+    icon: '⏳',
+    title: 'Long Lasting',
+    description: 'Designed to linger from morning rituals to evening moments with a refined dry-down.',
+  },
+  {
+    icon: '✨',
+    title: 'Unique Blend',
+    description: 'Balanced signature layering inspired by earth, spice, florals and woods.',
+  },
+  {
+    icon: '🤍',
+    title: 'Skin Friendly',
+    description: 'Built for daily wear with clean luxury at the center of every formulation.',
+  },
+];
+
+const noteTiers = [
+  { label: 'Top Notes', notes: 'Bergamot, Neroli, Citrus', icon: '🍋' },
+  { label: 'Heart Notes', notes: 'Rose, Jasmine, Vetiver', icon: '🌹' },
+  { label: 'Base Notes', notes: 'Sandalwood, Amber, Musk', icon: '🪵' },
+];
+
+const genderCards = [
+  {
+    label: 'For Him',
+    title: 'Bold. Grounded. Unforgettable.',
+    description:
+      'Deep woods, dark earth and raw strength for the man who commands presence without saying a word.',
+    to: '/category/men',
+    cta: "Shop Men's",
+    letter: 'H',
+    variant: 'dark',
+  },
+  {
+    label: 'For Her',
+    title: 'Soft. Radiant. Eternal.',
+    description:
+      'Blooming florals, warm spice and silken musk for the woman who carries grace like a second skin.',
+    to: '/category/women',
+    cta: "Shop Women's",
+    letter: 'H',
+    variant: 'light',
+  },
+];
 
 const Home = () => {
-  const [openFaq, setOpenFaq] = useState(0);
-  const faqRef = useRef(null);
-  const [faqVisible, setFaqVisible] = useState(false);
-  const heroBanner =
-    'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776088569/Untitled_design_8_vfoi7z.svg';
-
-  // Mobile-only banner
-  const mobileHeroBanner =
-    'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776237003/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_s9auqi.svg';
-
-  const faqItems = [
-    {
-      question: 'Are Arova perfumes long-lasting?',
-      answer:
-        'Yes, our perfumes are crafted to last throughout your day while remaining subtle and pleasant.',
-    },
-    {
-      question: 'Are these perfumes suitable for daily use?',
-      answer: 'Absolutely. Arova is designed as a luxury + daily wear perfume brand.',
-    },
-    {
-      question: 'Are your perfumes clean?',
-      answer: 'Yes, we focus on clean and thoughtfully crafted formulations.',
-    },
-    {
-      question: 'Do you offer returns?',
-      answer: 'Please refer to our Return Policy for details.',
-    },
-  ];
+  const [allProducts, setAllProducts] = useState([]);
+  const [lowStockThreshold, setLowStockThreshold] = useState(8);
+  const { addToCart } = useCart();
 
   useEffect(() => {
-    const node = faqRef.current;
-    if (!node) return undefined;
+    let ignore = false;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          setFaqVisible(true);
-          observer.disconnect();
+    const loadData = async () => {
+      try {
+        const [productsRes, pricing] = await Promise.all([
+          fetchSarees('', { limit: 12 }),
+          fetchPricingSettings(),
+        ]);
+
+        const products = Array.isArray(productsRes) ? productsRes : productsRes?.products || [];
+        if (!ignore) {
+          setAllProducts(products.slice(0, 6));
+          if (typeof pricing?.lowStockThreshold === 'number') {
+            setLowStockThreshold(pricing.lowStockThreshold);
+          }
         }
-      },
-      { threshold: 0.15 }
-    );
+      } catch {
+        if (!ignore) {
+          setAllProducts([]);
+        }
+      }
+    };
 
-    observer.observe(node);
-    return () => observer.disconnect();
+    loadData();
+    return () => {
+      ignore = true;
+    };
   }, []);
 
+  const collectionProducts = useMemo(() => allProducts.slice(0, 6), [allProducts]);
+
+  const handleAddToCart = async (product) => {
+    await addToCart(product, 1, null);
+  };
+
+  const handleNewsletterSubmit = async () => Promise.resolve();
 
   return (
-    // Added a container with padding for visual balance
-    <div className="min-h-screen pt-0 pb-16 md:pb-0 mt-0 bg-[var(--brand-cream)]">
-      
-      {/* 1. Hero Slider/Banner - Primary Visual & CTA */}
-      <HeroSlider
-        slides={[{ desktop: heroBanner, alt: 'Arova Perfume Banner' }]}
-        mobileSrc={mobileHeroBanner}
-        mobileCtaTo="/products"
-        mobileCtaLabel="Shop Now"
-      />
+    <div className="relative overflow-hidden bg-[var(--luxury-cream)] text-[var(--luxury-brown)]">
+      <div className="luxury-grain pointer-events-none fixed inset-0 z-[1]" />
+      <div className="relative z-[2]">
+        <LuxuryHeroSection
+          eyebrow="Est. 2024 — Nagpur, India"
+          title="Where Earth Meets"
+          accent="Essence"
+          description="Clean perfumery crafted with ethanol-based formulas. A divine blend of fragrant notes and secret accords, long-lasting, skin-friendly, and born from nature."
+          primaryCta={{ label: 'Explore Collection', to: '/products' }}
+          secondaryCta={{ label: 'Our Story', to: '/about' }}
+          tagline="from earth to essence"
+        />
 
-      <BestSellers />
-      <MensSection />
-      <WomenSection />
-      
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
-        <hr className="my-8 border-[var(--brand-border)]" />
-      </main>
+        <LuxuryMarqueeSection
+          items={[
+            'Ethanol-Based Formula',
+            'Long Lasting',
+            'Skin Friendly',
+            'Fragrant Note x Secret Blend',
+            'Clean Perfumery',
+            'For Him & Her',
+          ]}
+        />
 
-      <ArovaPromise />
+        <LuxuryProductGridSection
+          id="collections"
+          label="Our Collection"
+          title="Scents that"
+          accent="Speak"
+          description="A curated edit of signature fragrances designed for modern luxury, memorable layering and effortless daily wear."
+          products={collectionProducts}
+          cta={{ label: 'Shop All Fragrances', to: '/products' }}
+          onAddToCart={handleAddToCart}
+          lowStockThreshold={lowStockThreshold}
+        />
 
-      {/* FAQ Section */}
-      <section
-        ref={faqRef}
-        className={`w-full pb-12 transition-all duration-700 ease-out md:pb-16 ${
-          faqVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-        }`}
-      >
-        <div className="relative overflow-hidden bg-[linear-gradient(180deg,#fffdfc_0%,#f9f3f1_100%)] px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
-          <div className="pointer-events-none absolute -top-16 right-0 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(56,19,19,0.14),transparent_70%)]" />
-          <div className="pointer-events-none absolute -bottom-20 left-0 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(201,169,110,0.2),transparent_72%)]" />
+        <LuxuryStorySection
+          quote="Perfume is the most intimate expression of who you are."
+          description="AROVA was born from the belief that luxury and consciousness can coexist. Each fragrance is crafted to linger beautifully, tell your story and honour the earth it comes from."
+          founder={{ initials: 'SP', name: 'Samiksha Paliwal', title: 'Founder, AROVA' }}
+        />
 
-          <div className="relative mx-auto max-w-6xl">
-            <div className="text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[var(--brand-muted)]">Support</p>
-              <h2 className="mt-3 text-3xl font-semibold text-[var(--brand-maroon)] sm:text-4xl">Frequently Asked Questions</h2>
-              <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[var(--brand-muted)] sm:text-base">
-                Everything you need to know about Arova fragrances, quality, and everyday usage.
-              </p>
-            </div>
+        <LuxuryPromiseSection items={promiseItems} />
 
-            <div className="mt-8 space-y-4">
-              {faqItems.map((item, index) => {
-                const isOpen = openFaq === index;
-                return (
-                  <div
-                    key={item.question}
-                    className={`rounded-2xl border bg-white/95 shadow-sm backdrop-blur transition-all duration-300 ${
-                      isOpen
-                        ? 'border-[var(--brand-maroon)] shadow-[0_14px_34px_rgba(56,19,19,0.12)]'
-                        : 'border-[var(--brand-border)] hover:border-[#d2b7ad]'
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setOpenFaq((prev) => (prev === index ? -1 : index))}
-                      className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left sm:px-6 sm:py-5"
-                    >
-                      <span className="text-sm font-semibold text-[var(--brand-text)] sm:text-base">
-                        {item.question}
-                      </span>
-                      <span
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm font-bold transition-all duration-300 ${
-                          isOpen
-                            ? 'rotate-45 border-[var(--brand-maroon)] bg-[var(--brand-maroon)] text-white'
-                            : 'border-[var(--brand-border)] bg-white text-[var(--brand-muted)]'
-                        }`}
-                      >
-                        +
-                      </span>
-                    </button>
+        <LuxuryNotesSection tiers={noteTiers} cta={{ label: 'Shop All Fragrances', to: '/products' }} />
 
-                    <div className={`grid transition-all duration-300 ease-out ${isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                      <div className="overflow-hidden">
-                        <p className="px-5 pb-5 text-sm leading-relaxed text-[var(--brand-muted)] sm:px-6 sm:text-[15px]">
-                          {item.answer}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
+        <LuxuryGenderSection items={genderCards} />
 
-      {/* Cache Consent Banner - Shows only once */}
-      <CacheConsent />
+        <LuxuryTestimonialsSection items={testimonialItems} />
+
+        <LuxuryNewsletterSection onSubmit={handleNewsletterSubmit} />
+
+        <CacheConsent />
+      </div>
     </div>
   );
 };
 
-export default Home;   
+export default Home;
