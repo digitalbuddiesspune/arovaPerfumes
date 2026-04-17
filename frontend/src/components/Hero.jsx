@@ -16,30 +16,20 @@ const fadeUp = {
 
 const Hero = () => {
   return (
-    <section className="min-h-screen bg-[#F5F0E8]">
-      <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
-        <div className="flex items-center bg-[#2C1008] px-6 py-16 sm:px-10 lg:px-16">
+    <section className="min-h-[68vh] bg-[#F5F0E8]">
+      <div className="grid min-h-[68vh] grid-cols-1 lg:grid-cols-2">
+        <div className="flex items-center bg-[#2C1008] px-6 py-9 sm:px-10 lg:px-16">
           <div className="max-w-xl">
-            <motion.p
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              custom={0.15}
-              className="[font-family:'Cinzel',serif] text-[10px] uppercase tracking-[0.4em] text-[#C9A96E]"
-            >
-              ✦ Est. 2024 — Nagpur, India
-            </motion.p>
-
             <motion.h1
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              custom={0.3}
-              className="mt-7 [font-family:'Cormorant_Garamond',serif] text-5xl leading-[0.98] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
+              custom={0.2}
+              className="[font-family:'Cormorant_Garamond',serif] text-5xl leading-[0.98] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
             >
-              Where Earth
+              Luxury,
               <br />
-              Meets <span className="italic text-[#C9A96E]">Essence</span>
+              Made for <span className="italic text-[#C9A96E]">Every Day</span>
             </motion.h1>
 
             <motion.p
@@ -49,8 +39,8 @@ const Hero = () => {
               custom={0.45}
               className="mt-7 max-w-md [font-family:'Jost',sans-serif] text-sm leading-8 text-[#F5F0E8]/70 sm:text-[15px]"
             >
-              Clean perfumery crafted with ethanol-based formulas. A divine blend of Fraganote &
-              Secret — long-lasting, skin-friendly, and born from nature.
+              Clean perfumes crafted for modern lifestyles. Long-lasting, refined, and effortlessly
+              wearable.
             </motion.p>
 
             <motion.div

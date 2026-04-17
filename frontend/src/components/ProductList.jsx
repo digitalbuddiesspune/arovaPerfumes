@@ -527,14 +527,14 @@ const ProductList = ({ defaultCategory } = {}) => {
       return (
         <div className="text-center py-12">
           <p className="text-red-500 text-xl font-semibold">❌ {error}</p>
-          <p className="text-gray-600 mt-2">Check the console for details, and ensure `fetchSarees` is correctly implemented.</p>
+          <p className="mt-2 text-[var(--brand-muted)]">Check the console for details, and ensure `fetchSarees` is correctly implemented.</p>
         </div>
       );
     }
 
     // --- Main Render Block ---
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-[var(--brand-cream)]">
             <style>{styles}</style>
             {toast.show && (
                 <div className={`${toast.type === 'error' ? 'bg-rose-600' : 'bg-emerald-600'} fixed bottom-4 right-4 z-[100] text-white px-4 py-2 rounded shadow-lg`}>
@@ -553,7 +553,7 @@ const ProductList = ({ defaultCategory } = {}) => {
 
                 {/* --- TOP HEADER --- */}
                 <div className="mb-10">
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-900 text-center">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[var(--brand-maroon)] text-center">
                         {displayCategoryName || 'All Products'}
                     </h1>
                 </div>
@@ -564,16 +564,16 @@ const ProductList = ({ defaultCategory } = {}) => {
                         
                         {/* Product Grid */}
                         {loading ? (
-                            <div className="flex justify-center items-center py-20 text-gray-600">
-                                <FaSpinner className="w-6 h-6 animate-spin mr-3 text-amber-700" />
+                            <div className="flex justify-center items-center py-20 text-[var(--brand-muted)]">
+                                <FaSpinner className="w-6 h-6 animate-spin mr-3 text-[var(--brand-maroon)]" />
                                 <span className="text-lg">Loading products...</span>
                             </div>
                         ) : filteredProducts.length === 0 ? (
-                            <div className="text-center py-20 bg-white rounded-xl shadow-lg border border-gray-200">
-                                <p className="text-gray-500 text-xl font-serif italic mb-4">No treasures found matching your selections.</p>
+                            <div className="text-center py-20 bg-white rounded-xl shadow-lg border border-[var(--brand-border)]">
+                                <p className="text-[var(--brand-muted)] text-xl font-serif italic mb-4">No treasures found matching your selections.</p>
                                 <button
                                     onClick={resetFilters}
-                                    className="mt-4 text-amber-700 hover:text-amber-800 font-medium text-base transition-colors underline underline-offset-4"
+                                    className="mt-4 text-[var(--brand-maroon)] hover:text-[var(--brand-maroon-2)] font-medium text-base transition-colors underline underline-offset-4"
                                 >
                                     Clear all filters to see more
                                 </button>
@@ -590,7 +590,7 @@ const ProductList = ({ defaultCategory } = {}) => {
                                         <Link
                                             key={pid || p.title}
                                             to={pid ? `/product/${pid}` : '#'}
-                                            className="group bg-white overflow-hidden transition-all duration-300 cursor-pointer"
+                                            className="group overflow-hidden transition-all duration-300 cursor-pointer"
                                             onClick={(e) => {
                                                 if (!pid) {
                                                     e.preventDefault();
@@ -603,8 +603,8 @@ const ProductList = ({ defaultCategory } = {}) => {
                                                 const mrpValue = Number(p.mrp || 0);
 
                                                 return (
-                                                    <div className="rounded-none border-0 bg-transparent overflow-hidden transition-all duration-300 hover:shadow-none">
-                                                        <div className="relative bg-transparent overflow-hidden">
+                                                    <div className="rounded-none border border-[var(--brand-border)] bg-[#f4ece8] overflow-hidden transition-all duration-300 hover:shadow-none">
+                                                        <div className="relative bg-[#f1e7e2] overflow-hidden">
                                                             <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start max-w-[88%] pointer-events-none">
                                                                 {showBestSeller && (
                                                                     <span className="bg-amber-500 text-white text-[9px] px-2 py-1 rounded-full font-semibold tracking-wide shadow-md">
@@ -632,11 +632,11 @@ const ProductList = ({ defaultCategory } = {}) => {
                                                         </div>
 
                                                         <div className="flex min-h-[160px] flex-col px-2 pb-2 pt-2 sm:min-h-[172px]">
-                                                            <p className="line-clamp-2 min-h-[2.5rem] text-center text-[11px] font-semibold uppercase leading-5 text-black sm:min-h-[2.75rem] sm:text-sm">
+                                                            <p className="line-clamp-2 min-h-[2.5rem] text-center text-[11px] font-semibold uppercase leading-5 text-[var(--brand-text)] sm:min-h-[2.75rem] sm:text-sm">
                                                                 {p.title || 'Perfume'}
                                                             </p>
                                                             {notes ? (
-                                                                <p className="mt-0.5 line-clamp-1 min-h-[1rem] text-center text-[10px] text-gray-600 sm:text-xs">
+                                                                <p className="mt-0.5 line-clamp-1 min-h-[1rem] text-center text-[10px] text-[var(--brand-muted)] sm:text-xs">
                                                                     {notes}
                                                                 </p>
                                                             ) : (
@@ -644,15 +644,15 @@ const ProductList = ({ defaultCategory } = {}) => {
                                                             )}
 
                                                             <div className="mt-2 flex min-h-[1.25rem] items-baseline justify-center gap-2 text-center">
-                                                                <p className="text-sm font-bold text-black sm:text-base">
+                                                                <p className="text-sm font-bold text-[var(--brand-maroon)] sm:text-base">
                                                                     ₹{finalPrice.toLocaleString('en-IN')}
                                                                 </p>
                                                                 {mrpValue > finalPrice && (
                                                                     <>
-                                                                        <p className="text-[11px] text-gray-400 line-through sm:text-xs">
+                                                                        <p className="text-[11px] text-[var(--brand-muted)]/70 line-through sm:text-xs">
                                                                             ₹{mrpValue.toLocaleString('en-IN')}
                                                                         </p>
-                                                                        <span className="text-[11px] font-medium text-green-600 sm:text-xs">
+                                                                        <span className="text-[11px] font-medium text-[var(--brand-maroon)] sm:text-xs">
                                                                             {Math.round(((mrpValue - finalPrice) / mrpValue) * 100)}% off
                                                                         </span>
                                                                     </>
@@ -663,7 +663,7 @@ const ProductList = ({ defaultCategory } = {}) => {
                                                                 type="button"
                                                                 onClick={(e) => handleAddToCartFromCard(p, e)}
                                                                 disabled={addingToCartId === pid}
-                                                                className="mt-auto block w-full border border-black px-2 py-2 text-xs transition-colors hover:bg-gray-50 disabled:opacity-60 sm:text-sm"
+                                                                className="mt-auto block w-full border border-[var(--brand-maroon)] px-2 py-2 text-xs text-[var(--brand-maroon)] transition-colors hover:bg-[var(--brand-cream)] disabled:opacity-60 sm:text-sm"
                                                             >
                                                                 {addingToCartId === pid ? 'Adding...' : 'Add to cart'}
                                                             </button>

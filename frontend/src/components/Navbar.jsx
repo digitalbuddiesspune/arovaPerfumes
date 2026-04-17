@@ -28,7 +28,7 @@ const Navbar = () => {
           : 'bg-transparent'
       }`}
     >
-      <nav className="mx-auto flex h-14 max-w-[1600px] items-center justify-between px-5 pt-1 sm:h-[60px] sm:px-8 sm:pt-1.5 lg:px-16">
+      <nav className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 pt-1 sm:h-[60px] sm:px-8 sm:pt-1.5 lg:px-16">
         <Link
           to="/"
           className="inline-flex items-center"

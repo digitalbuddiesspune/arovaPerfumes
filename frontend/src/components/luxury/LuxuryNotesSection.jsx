@@ -4,22 +4,34 @@ import { Reveal } from './LuxuryMotion';
 
 const LuxuryNotesSection = ({ tiers = [], cta }) => {
   return (
-    <section id="notes" className="px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+    <section
+      id="notes"
+      className="relative overflow-hidden bg-[linear-gradient(160deg,#f8f1ea_0%,#f5ece3_46%,#f9f4ef_100%)] px-5 py-20 sm:px-8 lg:px-12 lg:py-28"
+    >
+      <div className="pointer-events-none absolute -left-10 top-0 h-52 w-52 rounded-full bg-[radial-gradient(circle,rgba(201,169,110,0.2),transparent_72%)]" />
+      <div className="pointer-events-none absolute -right-12 bottom-0 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(44,16,8,0.08),transparent_72%)]" />
+
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <Reveal>
-          <div className="border-y border-[rgba(44,16,8,0.1)]">
+          <div className="relative pl-6 sm:pl-8">
+            <div className="absolute bottom-0 left-0 top-0 w-px bg-[linear-gradient(180deg,rgba(201,169,110,0.18),rgba(44,16,8,0.16),rgba(201,169,110,0.18))]" />
             {tiers.map((tier) => (
               <div
                 key={tier.label}
-                className="flex items-center gap-4 border-b border-[rgba(44,16,8,0.1)] px-0 py-6 last:border-b-0 sm:gap-6 sm:px-2"
+                className="relative flex items-start gap-4 border-b border-[rgba(44,16,8,0.1)] py-6 last:border-b-0 sm:gap-6 sm:py-7"
               >
-                <span className="min-w-24 font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.26em] text-[var(--luxury-gold-dark)]">
-                  {tier.label}
-                </span>
-                <span className="font-[var(--font-cormorant)] text-2xl italic text-[var(--luxury-brown)] sm:text-[1.75rem]">
-                  {tier.notes}
-                </span>
-                <span className="ml-auto text-2xl">{tier.icon}</span>
+                <span className="absolute -left-[30px] top-7 inline-flex h-3.5 w-3.5 rounded-full border border-[var(--luxury-gold)] bg-[#f8efe6]" />
+                <div className="min-w-[88px] pt-1">
+                  <p className="font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.26em] text-[var(--luxury-gold-dark)]">
+                    {tier.label}
+                  </p>
+                </div>
+                <div className="min-w-0">
+                  <p className="font-[var(--font-cormorant)] text-2xl italic leading-tight text-[var(--luxury-brown)] sm:text-[1.75rem]">
+                    {tier.notes}
+                  </p>
+                </div>
+                <span className="ml-auto pt-1 text-2xl">{tier.icon}</span>
               </div>
             ))}
           </div>

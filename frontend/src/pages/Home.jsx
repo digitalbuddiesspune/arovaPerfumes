@@ -34,26 +34,10 @@ const testimonialItems = [
 ];
 
 const promiseItems = [
-  {
-    icon: '🌱',
-    title: 'Clean Formula',
-    description: 'Ethanol-based and mindful on skin, crafted without the harsh edge of mass-market blends.',
-  },
-  {
-    icon: '⏳',
-    title: 'Long Lasting',
-    description: 'Designed to linger from morning rituals to evening moments with a refined dry-down.',
-  },
-  {
-    icon: '✨',
-    title: 'Unique Blend',
-    description: 'Balanced signature layering inspired by earth, spice, florals and woods.',
-  },
-  {
-    icon: '🤍',
-    title: 'Skin Friendly',
-    description: 'Built for daily wear with clean luxury at the center of every formulation.',
-  },
+  'Clean & conscious formulations',
+  'Long-lasting fragrances',
+  'Designed for everyday use',
+  'Premium feel, accessible pricing',
 ];
 
 const noteTiers = [
@@ -88,6 +72,9 @@ const genderCards = [
 const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [lowStockThreshold, setLowStockThreshold] = useState(8);
+  const [announcementMarquee, setAnnouncementMarquee] = useState(
+    '1st Order - 50% Off ✦ Use Code SMELLGOOD5 for extra 5% off on prepaid orders ✦'
+  );
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -105,6 +92,9 @@ const Home = () => {
           setAllProducts(products.slice(0, 6));
           if (typeof pricing?.lowStockThreshold === 'number') {
             setLowStockThreshold(pricing.lowStockThreshold);
+          }
+          if (pricing?.announcementMarquee && String(pricing.announcementMarquee).trim()) {
+            setAnnouncementMarquee(String(pricing.announcementMarquee).trim());
           }
         }
       } catch {
@@ -144,6 +134,18 @@ const Home = () => {
             'For Him & Her',
           ]}
         />
+        <section className="overflow-hidden bg-[#1f0c06] py-2.5">
+          <div className="luxury-marquee-track flex min-w-max items-center whitespace-nowrap">
+            {[0, 1, 2].map((idx) => (
+              <span
+                key={idx}
+                className="px-8 font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.22em] text-[#C9A96E] sm:text-[11px]"
+              >
+                {announcementMarquee}
+              </span>
+            ))}
+          </div>
+        </section>
 
         <LuxuryProductGridSection
           id="collections"
@@ -157,17 +159,22 @@ const Home = () => {
           lowStockThreshold={lowStockThreshold}
         />
 
+        <LuxuryGenderSection items={genderCards} />
+
         <LuxuryStorySection
           quote="Perfume is the most intimate expression of who you are."
           description="AROVA was born from the belief that luxury and consciousness can coexist. Each fragrance is crafted to linger beautifully, tell your story and honour the earth it comes from."
-          founder={{ initials: 'SP', name: 'Samiksha Paliwal', title: 'Founder, AROVA' }}
+          founder={{
+            initials: 'SP',
+            name: 'Samiksha Paliwal',
+            title: 'Founder, AROVA',
+            photo: 'https://ui-avatars.com/api/?name=Samiksha+Paliwal&background=2c1008&color=C9A96E&size=200',
+          }}
         />
 
         <LuxuryPromiseSection items={promiseItems} />
 
         <LuxuryNotesSection tiers={noteTiers} cta={{ label: 'Shop All Fragrances', to: '/products' }} />
-
-        <LuxuryGenderSection items={genderCards} />
 
         <LuxuryTestimonialsSection items={testimonialItems} />
 
