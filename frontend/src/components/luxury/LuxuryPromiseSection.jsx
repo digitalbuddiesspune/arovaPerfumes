@@ -30,18 +30,18 @@ const LuxuryPromiseSection = ({ items = [] }) => {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.65, delay: 0.1 }}
         >
-          <div className="flex items-center justify-between gap-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-2 sm:overflow-x-auto sm:whitespace-nowrap sm:scrollbar-hide">
             {items.map((item, index) => {
               const text = typeof item === 'string' ? item : item?.title || '';
               return (
                 <div
                   key={`${text}-${index}`}
-                  className="flex shrink-0 items-center gap-3 rounded-xl border border-[rgba(201,169,110,0.22)] bg-[rgba(255,255,255,0.03)] px-3 py-3 sm:px-4"
+                  className="flex items-center gap-3 rounded-xl border border-[rgba(201,169,110,0.22)] bg-[rgba(255,255,255,0.03)] px-3 py-3 sm:shrink-0 sm:px-4"
                 >
                   <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--luxury-gold)]/70 text-[11px] text-[var(--luxury-gold)]">
                     ✦
                   </span>
-                  <p className="whitespace-nowrap font-[var(--font-jost)] text-sm text-[rgba(245,240,232,0.92)]">
+                  <p className="font-[var(--font-jost)] text-sm text-[rgba(245,240,232,0.92)] sm:whitespace-nowrap">
                     {text}
                   </p>
                 </div>
