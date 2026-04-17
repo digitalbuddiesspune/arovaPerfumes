@@ -24,10 +24,10 @@ const Navbar = () => {
 
   return (
     <header
-      className={`fixed left-0 right-0 top-0 z-[160] border-b border-[rgba(44,16,8,0.08)] bg-[var(--luxury-cream)] transition-all duration-500 ${
+      className={`fixed left-0 right-0 top-0 z-[160] transition-all duration-500 ${
         isScrolled
-          ? 'lg:bg-[rgba(245,240,232,0.88)] lg:shadow-[0_8px_24px_rgba(44,16,8,0.12)] lg:backdrop-blur-xl'
-          : 'lg:bg-transparent lg:shadow-none lg:backdrop-blur-0'
+          ? 'border-b border-[rgba(44,16,8,0.08)] bg-[rgba(245,240,232,0.88)] shadow-[0_8px_24px_rgba(44,16,8,0.12)] backdrop-blur-xl'
+          : 'bg-transparent shadow-none'
       }`}
     >
       <nav className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 pt-1 sm:h-[60px] sm:px-8 sm:pt-1.5 lg:px-16">
