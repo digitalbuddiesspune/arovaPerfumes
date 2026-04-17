@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { FaRupeeSign, FaSpinner, FaFilter, FaTimes } from 'react-icons/fa';
+import { FiHeart } from 'react-icons/fi';
 // import { IoEyeOutline } from 'react-icons/io5'; // IoEyeOutline is imported but not used, can be removed if not needed later
 
 // --- IMPORTANT: This line is now the intended data source. Ensure 'fetchSarees' is available. ---
@@ -605,6 +606,18 @@ const ProductList = ({ defaultCategory } = {}) => {
                                                 return (
                                                     <div className="rounded-none border border-[var(--brand-border)] bg-[#f4ece8] overflow-hidden transition-all duration-300 hover:shadow-none">
                                                         <div className="relative bg-[#f1e7e2] overflow-hidden">
+                                                            <button
+                                                                type="button"
+                                                                onClick={(e) => toggleWishlist(p, e)}
+                                                                className={`absolute top-2 right-2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border transition-colors ${
+                                                                    isWishlisted(pid)
+                                                                        ? 'border-[var(--brand-maroon)] bg-[var(--brand-maroon)] text-white'
+                                                                        : 'border-[var(--brand-border)] bg-white/90 text-[var(--brand-maroon)] hover:bg-white'
+                                                                }`}
+                                                                aria-label={isWishlisted(pid) ? 'Remove from wishlist' : 'Add to wishlist'}
+                                                            >
+                                                                <FiHeart className={`h-4 w-4 ${isWishlisted(pid) ? 'fill-current' : ''}`} />
+                                                            </button>
                                                             <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start max-w-[88%] pointer-events-none">
                                                                 {showBestSeller && (
                                                                     <span className="bg-amber-500 text-white text-[9px] px-2 py-1 rounded-full font-semibold tracking-wide shadow-md">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiShoppingCart, FiUser } from 'react-icons/fi';
+import { FiHeart, FiShoppingCart, FiUser } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 
 const BRAND_LOGO_URL =
@@ -46,7 +46,7 @@ const Navbar = () => {
           {navItems.map((item) => (
             <a
               key={item.label}
-              href={item.href}
+              href={`/${item.href}`}
               className="relative [font-family:'Cinzel',serif] text-[11px] uppercase tracking-[0.22em] text-[#2C1008] transition-colors duration-300 hover:text-[#C9A96E]"
             >
               {item.label}
@@ -55,6 +55,13 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          <Link
+            to="/wishlist"
+            className="hidden xl:inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
+            aria-label="Wishlist"
+          >
+            <FiHeart className="h-4 w-4" />
+          </Link>
           <Link
             to="/profile"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
