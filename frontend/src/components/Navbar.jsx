@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiShoppingCart, FiUser } from 'react-icons/fi';
+import { useCart } from '../context/CartContext';
 
 const BRAND_LOGO_URL =
   'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776086342/Untitled_design_9_fc6qsg.png';
@@ -13,6 +14,7 @@ const navItems = [
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { cartCount } = useCart();
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 40);
@@ -62,10 +64,15 @@ const Navbar = () => {
           </Link>
           <Link
             to="/cart"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
+            className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
             aria-label="Cart"
           >
             <FiShoppingCart className="h-4 w-4" />
+            {cartCount > 0 && (
+              <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--brand-maroon)] px-1 text-[9px] font-semibold leading-none text-white">
+                {cartCount > 9 ? '9+' : cartCount}
+              </span>
+            )}
           </Link>
           <Link
             to="/products"
