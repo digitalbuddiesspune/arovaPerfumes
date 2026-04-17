@@ -434,7 +434,7 @@ export default function AddressForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 relative">
+    <div className="min-h-screen bg-gray-50 p-4 pt-10 sm:pt-20 relative">
       {/* Loading Overlay */}
       {processingOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">

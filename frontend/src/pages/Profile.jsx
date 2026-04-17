@@ -356,7 +356,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--brand-cream)]">
+    <div className="min-h-screen bg-[var(--brand-cream)] pt-14 sm:pt-16">
       <div className="flex flex-col lg:flex-row">
         {/* Mobile Header */}
         <div className="lg:hidden bg-[var(--brand-cream)] shadow-sm border-b border-[var(--brand-border)] sticky top-0 z-30" style={{ top: 'var(--app-header-height, 0px)' }}>
@@ -1002,11 +1002,11 @@ export default function Profile() {
             {/* Order Details Modal */}
             {selectedOrder && (
               <div 
-                className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+                className="fixed inset-0 z-[220] flex items-center justify-center bg-black/55 p-4"
                 onClick={() => setSelectedOrder(null)}
               >
                 <div 
-                  className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                  className="w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-2xl bg-white shadow-2xl"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Modal Header */}

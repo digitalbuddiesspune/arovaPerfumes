@@ -142,9 +142,9 @@ function Cart() {
   const getProductId = (item) => item?.id || item?._id || item?.productId;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-4">
+    <div className="min-h-screen bg-gray-50 pb-4 pt-12 sm:pt-14">
       {/* Header */}
-      <div className="bg-white sticky top-0 z-10 border-b border-gray-200">
+      <div className="bg-white sticky top-[var(--app-header-height,0px)] z-10 border-b border-gray-200">
         <div className="flex items-center justify-between px-4 py-4">
           <button 
             onClick={() => navigate(-1)}

@@ -388,7 +388,7 @@ const ProductDetail = () => {
         </div>
 
         {/* All Information */}
-        <div className="mt-6 bg-white p-4 sm:p-6">
+        <div className="mt-10 bg-white p-5 sm:mt-12 sm:p-7">
           <h3 className="text-base font-semibold text-gray-900 mb-4 tracking-wide">ALL PRODUCT INFORMATION</h3>
           {infoFields.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
@@ -407,11 +407,13 @@ const ProductDetail = () => {
 
       {/* Product Suggestions */}
       {product && (
-        <ProductSuggestions
-          currentProductId={product._id || id}
-          category={product.category}
-          maxProducts={8}
-        />
+        <div className="mt-10 sm:mt-12">
+          <ProductSuggestions
+            currentProductId={product._id || id}
+            category={product.category}
+            maxProducts={8}
+          />
+        </div>
       )}
     </div>
   );

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FiShoppingCart, FiUser } from 'react-icons/fi';
 
 const BRAND_LOGO_URL =
   'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776086342/Untitled_design_9_fc6qsg.png';
 
 const navItems = [
   { label: 'Collections', href: '#collections' },
-  { label: 'Our Story', href: '#story' },
   { label: 'Fragrance', href: '#notes' },
   { label: 'For Him & Her', href: '#gender' },
 ];
@@ -52,12 +52,28 @@ const Navbar = () => {
           ))}
         </div>
 
-        <Link
-          to="/products"
-          className="inline-flex min-h-11 items-center justify-center border border-[#2C1008] px-6 [font-family:'Cinzel',serif] text-[10px] uppercase tracking-[0.2em] text-[#2C1008] transition-all duration-300 hover:bg-[#2C1008] hover:text-[#F5F0E8]"
-        >
-          Shop Now
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/profile"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
+            aria-label="Profile"
+          >
+            <FiUser className="h-4 w-4" />
+          </Link>
+          <Link
+            to="/cart"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
+            aria-label="Cart"
+          >
+            <FiShoppingCart className="h-4 w-4" />
+          </Link>
+          <Link
+            to="/products"
+            className="inline-flex min-h-10 items-center justify-center border border-[#2C1008] px-5 [font-family:'Cinzel',serif] text-[10px] uppercase tracking-[0.2em] text-[#2C1008] transition-all duration-300 hover:bg-[#2C1008] hover:text-[#F5F0E8] sm:px-6"
+          >
+            Shop Now
+          </Link>
+        </div>
       </nav>
     </header>
   );
