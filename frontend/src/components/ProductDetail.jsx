@@ -204,7 +204,7 @@ const ProductDetail = () => {
           {toast.text}
         </div>
       )}
-      <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-6 pt-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-6 pt-12 sm:pt-20">
         <div className="text-xs text-gray-500 mb-3">
           Home <span className="mx-1">›</span> {product.category || "Collection"} <span className="mx-1">›</span> {product.title}
         </div>

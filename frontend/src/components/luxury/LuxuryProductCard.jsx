@@ -51,6 +51,7 @@ const LuxuryProductCard = ({ product, onAddToCart, lowStockThreshold = 8, index 
 
   return (
     <motion.div
+      className="mx-auto w-full max-w-[220px] sm:max-w-[250px] lg:max-w-[270px]"
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.25 }}
@@ -97,16 +98,16 @@ const LuxuryProductCard = ({ product, onAddToCart, lowStockThreshold = 8, index 
             <h3 className="min-h-[2.5rem] font-[var(--font-cormorant)] text-[1.2rem] leading-[1.02] text-[var(--luxury-brown)] sm:min-h-[2.8rem] sm:text-[1.45rem] lg:text-[1.7rem]">
               {title}
             </h3>
-            <p className="mt-1 min-h-[2rem] font-[var(--font-cormorant)] text-[12px] italic leading-4 tracking-[0.04em] text-[var(--luxury-brown-light)] sm:mt-2 sm:min-h-[1.25rem] sm:text-sm sm:leading-5 sm:tracking-[0.08em]">
+            <p className="mt-0.5 min-h-[1.7rem] font-[var(--font-cormorant)] text-[12px] italic leading-4 tracking-[0.04em] text-[var(--luxury-brown-light)] sm:mt-1 sm:min-h-[1.1rem] sm:text-sm sm:leading-5 sm:tracking-[0.08em]">
               {notes}
             </p>
-            <div className="mt-4 flex flex-1 flex-col gap-3 sm:mt-5 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+            <div className="mt-3 flex flex-1 flex-col gap-2 sm:mt-4 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
               <div className="min-w-0">
                 <p className="font-[var(--font-cormorant)] text-[1.55rem] font-semibold leading-none text-[var(--luxury-brown)] sm:text-[1.9rem] lg:text-3xl">
                   ₹{price.toLocaleString('en-IN')}
                 </p>
                 {mrp > price ? (
-                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-[var(--font-jost)] text-[10px] text-[var(--luxury-brown-light)] sm:text-xs">
+                  <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 font-[var(--font-jost)] text-[10px] text-[var(--luxury-brown-light)] sm:text-xs">
                     <span className="line-through">₹{mrp.toLocaleString('en-IN')}</span>
                     <span className="uppercase tracking-[0.14em] text-[var(--luxury-gold-dark)]">
                       Save {discountPercent}%
@@ -118,7 +119,7 @@ const LuxuryProductCard = ({ product, onAddToCart, lowStockThreshold = 8, index 
                 type="button"
                 onClick={handleAdd}
                 disabled={isAdding}
-                className="mt-auto min-h-11 w-full shrink-0 border border-[var(--luxury-brown)] px-3 py-2.5 font-[var(--font-cinzel)] text-[8px] uppercase tracking-[0.18em] text-[var(--luxury-brown)] transition duration-300 hover:bg-[var(--luxury-brown)] hover:text-[var(--luxury-cream)] disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-12 sm:w-auto sm:px-5 sm:py-3 sm:text-[9px] sm:tracking-[0.24em]"
+                className="mt-auto min-h-10 w-full shrink-0 border border-[var(--luxury-brown)] px-3 py-2 font-[var(--font-cinzel)] text-[8px] uppercase tracking-[0.18em] text-[var(--luxury-brown)] transition duration-300 hover:bg-[var(--luxury-brown)] hover:text-[var(--luxury-cream)] disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-11 sm:w-auto sm:px-5 sm:py-2.5 sm:text-[9px] sm:tracking-[0.24em]"
               >
                 {isAdding ? 'Adding' : 'Add to Cart'}
               </button>

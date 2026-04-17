@@ -12,9 +12,9 @@ const LuxuryHeroSection = ({
   tagline,
 }) => {
   return (
-    <section className="relative overflow-hidden bg-[var(--luxury-cream)]">
+    <section className="-mt-px relative overflow-hidden bg-[var(--luxury-cream)]">
       <div className="grid min-h-[calc(100vh-var(--app-header-height,0px))] grid-cols-1 lg:grid-cols-2">
-        <div className="relative flex items-center overflow-hidden bg-[var(--luxury-brown)] px-6 py-16 sm:px-10 lg:px-16 lg:py-20 xl:px-20">
+        <div className="relative flex items-center overflow-hidden bg-[var(--luxury-brown)] px-5 py-8 sm:px-8 sm:py-10 lg:px-14 lg:py-12 xl:px-18">
           <div className="absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(201,169,110,0.14),transparent_68%)]" />
           <div className="relative z-10 max-w-xl">
             <motion.p
@@ -27,7 +27,7 @@ const LuxuryHeroSection = ({
               {eyebrow}
             </motion.p>
             <motion.h1
-              className="mt-7 font-[var(--font-cormorant)] text-[clamp(3.5rem,9vw,6.25rem)] leading-[0.96] font-light text-[var(--luxury-cream)]"
+              className="mt-4 font-[var(--font-cormorant)] text-[clamp(3rem,8vw,6.25rem)] leading-[0.96] font-light text-[var(--luxury-cream)] sm:mt-5"
               variants={fadeUp}
               initial="hidden"
               animate="visible"
@@ -37,7 +37,7 @@ const LuxuryHeroSection = ({
               <span className="text-[var(--luxury-gold)] italic"> {accent}</span>
             </motion.h1>
             <motion.p
-              className="mt-7 max-w-md font-[var(--font-jost)] text-sm leading-8 text-[rgba(245,240,232,0.68)] sm:text-[15px]"
+              className="mt-4 max-w-md font-[var(--font-jost)] text-sm leading-7 text-[rgba(245,240,232,0.68)] sm:mt-5 sm:text-[15px]"
               variants={fadeUp}
               initial="hidden"
               animate="visible"
@@ -46,7 +46,7 @@ const LuxuryHeroSection = ({
               {description}
             </motion.p>
             <motion.div
-              className="mt-10 flex flex-wrap items-center gap-5"
+              className="mt-6 flex flex-wrap items-center gap-4 sm:mt-7 sm:gap-5"
               variants={fadeUp}
               initial="hidden"
               animate="visible"

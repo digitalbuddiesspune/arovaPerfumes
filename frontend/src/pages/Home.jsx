@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { fetchPricingSettings, fetchSarees } from '../services/api';
 import { useCart } from '../context/CartContext';
 import CacheConsent from '../components/CacheConsent';
+import Hero from '../components/Hero';
 import LuxuryGenderSection from '../components/luxury/LuxuryGenderSection';
-import LuxuryHeroSection from '../components/luxury/LuxuryHeroSection';
 import LuxuryMarqueeSection from '../components/luxury/LuxuryMarqueeSection';
 import LuxuryNewsletterSection from '../components/luxury/LuxuryNewsletterSection';
 import LuxuryNotesSection from '../components/luxury/LuxuryNotesSection';
@@ -132,15 +132,7 @@ const Home = () => {
     <div className="relative overflow-hidden bg-[var(--luxury-cream)] text-[var(--luxury-brown)]">
       <div className="luxury-grain pointer-events-none fixed inset-0 z-[1]" />
       <div className="relative z-[2]">
-        <LuxuryHeroSection
-          eyebrow="Est. 2024 — Nagpur, India"
-          title="Where Earth Meets"
-          accent="Essence"
-          description="Clean perfumery crafted with ethanol-based formulas. A divine blend of fragrant notes and secret accords, long-lasting, skin-friendly, and born from nature."
-          primaryCta={{ label: 'Explore Collection', to: '/products' }}
-          secondaryCta={{ label: 'Our Story', to: '/about' }}
-          tagline="from earth to essence"
-        />
+        <Hero />
 
         <LuxuryMarqueeSection
           items={[

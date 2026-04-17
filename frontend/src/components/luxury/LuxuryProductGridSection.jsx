@@ -17,7 +17,7 @@ const LuxuryProductGridSection = ({
 }) => {
   return (
     <section id={id} className="px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-14 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <LuxurySectionHeading
             label={label}
@@ -37,7 +37,7 @@ const LuxuryProductGridSection = ({
         </div>
 
         <motion.div
-          className="grid grid-cols-2 gap-6 sm:gap-8 xl:grid-cols-3"
+          className="grid grid-cols-2 gap-4 sm:gap-6 xl:grid-cols-3"
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"

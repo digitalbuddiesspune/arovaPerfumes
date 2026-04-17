@@ -22,7 +22,7 @@ const Layout = () => {
   return (
     <div className="flex flex-col min-h-screen bg-[var(--brand-cream)]" style={{ '--app-header-height': `${headerHeight}px` }}>
       {/* Navbar and Header - Fixed at top */}
-      <div ref={headerWrapRef} className="fixed top-0 left-0 right-0 z-50 bg-[var(--brand-cream)]">
+      <div ref={headerWrapRef} className="fixed top-0 left-0 right-0 z-[140] bg-[var(--brand-cream)]">
         <div className="border-t-0">
           <Navbar />
         </div>

@@ -549,7 +549,7 @@ const ProductList = ({ defaultCategory } = {}) => {
                 </div>
             )}
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-24 pb-12">
 
                 {/* --- TOP HEADER --- */}
                 <div className="mb-10">
