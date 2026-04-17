@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
 const Layout = () => {
+  const location = useLocation();
   const headerWrapRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(0);
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     const updateHeight = () => {
@@ -34,7 +36,7 @@ const Layout = () => {
       <div aria-hidden="true" style={{ height: headerHeight }} className="bg-[var(--brand-cream)] border-b border-[var(--brand-border)]" />
 
       {/* Main Content Area with responsive padding */}
-      <main className="flex-grow pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+      <main className={`flex-grow ${isHomePage ? 'pb-0' : 'pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0'}`}>
         <Outlet />
       </main>
 

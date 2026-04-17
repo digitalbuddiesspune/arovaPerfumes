@@ -142,28 +142,23 @@ function Cart() {
   const getProductId = (item) => item?.id || item?._id || item?.productId;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-4 pt-12 sm:pt-14">
+    <div className="min-h-screen bg-[var(--brand-cream)] pb-4 pt-12 sm:pt-14">
       {/* Header */}
-      <div className="bg-white sticky top-[var(--app-header-height,0px)] z-10 border-b border-gray-200">
-        <div className="flex items-center justify-between px-4 py-4">
+      <div className="bg-[var(--brand-cream)] sticky top-[var(--app-header-height,0px)] z-10 border-b border-[var(--brand-border)]">
+        <div className="relative flex items-center justify-between px-4 py-4">
           <button 
             onClick={() => navigate(-1)}
-            className="text-gray-700 hover:text-gray-900 cursor-pointer"
+            className="text-[var(--brand-text)] hover:text-[var(--brand-maroon)] cursor-pointer"
           >
             <FaArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-lg font-bold text-gray-900">Cart</h1>
+          <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold text-[var(--brand-maroon)]">
+            Cart
+          </h1>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => navigate('/reorders')}
-              className="px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors cursor-pointer"
-            >
-              Reorders
-            </button>
             <button 
               onClick={clearCart}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-[var(--brand-maroon)] hover:text-[var(--brand-maroon-2)] hover:bg-white rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={cart.length === 0}
               title="Clear Cart"
             >
@@ -176,24 +171,24 @@ function Cart() {
 
       {cart.length === 0 ? (
         <div className="text-center py-12 px-4">
-          <FaShoppingCart className="mx-auto text-5xl text-gray-300 mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">Your cart is empty</h2>
-          <p className="text-gray-500 mb-6">Looks like you haven't added anything to your cart yet.</p>
+          <FaShoppingCart className="mx-auto mb-4 text-5xl text-[var(--brand-muted)]/50" />
+          <h2 className="mb-4 text-2xl font-semibold text-[var(--brand-maroon)]">Your cart is empty</h2>
+          <p className="mb-6 text-[var(--brand-muted)]">Looks like you haven't added anything to your cart yet.</p>
           <button
             onClick={() => navigate('/')}
-            className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 transition-colors cursor-pointer"
+            className="rounded-md bg-[var(--brand-maroon)] px-6 py-2 text-white transition-colors hover:bg-[var(--brand-maroon-2)] cursor-pointer"
           >
             Continue Shopping
           </button>
         </div>
       ) : (
         <div className="px-4 py-4 max-w-7xl mx-auto space-y-4">
-          <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
-              <FaTicketAlt className="text-gray-600" />
+          <section className="rounded-lg border border-[var(--brand-border)] bg-white shadow-sm p-4">
+            <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--brand-maroon)]">
+              <FaTicketAlt className="text-[var(--brand-muted)]" />
               Available coupons
             </h3>
-            <p className="text-[11px] text-gray-500 mb-2">
+            <p className="mb-2 text-[11px] text-[var(--brand-muted)]">
               Showing all active coupons created by admin.
             </p>
             {Array.isArray(eligibleCoupons) && eligibleCoupons.length > 0 ? (
@@ -260,10 +255,10 @@ function Cart() {
             {/* Product Listings - Left Side */}  
             <div className="lg:col-span-2 space-y-4">
               {cart.map((item) => (
-                <div key={item.id} className="bg-white rounded-lg shadow-sm p-4">
+                <div key={item.id} className="rounded-lg border border-[var(--brand-border)] bg-white shadow-sm p-4">
                   <div className="flex gap-4">
                     {/* Product Image - Left */}
-                    <div className="w-32 h-32 flex-shrink-0 rounded-md overflow-hidden bg-gray-100">
+                    <div className="h-32 w-32 flex-shrink-0 overflow-hidden rounded-md bg-[var(--brand-cream)]">
                       <img
                         src={item.image}
                         alt={item.name}
@@ -284,7 +279,7 @@ function Cart() {
                     <div className="flex-1 min-w-0">
                       {/* Product Title */}
                       <h3 
-                        className="text-lg font-semibold text-gray-900 mb-2 cursor-pointer hover:text-blue-600 transition-colors"
+                        className="mb-2 cursor-pointer text-lg font-semibold text-[var(--brand-maroon)] transition-colors hover:text-[var(--brand-maroon-2)]"
                         onClick={() => {
                           const pid = getProductId(item);
                           if (!pid) return;
@@ -396,8 +391,8 @@ function Cart() {
             {/* PRICE DETAILS - Right Side */}
             <div className="lg:col-span-1">
               <div className="lg:sticky lg:top-20">
-                <div className="bg-white shadow-sm rounded p-4 sticky top-4">
-                  <h3 className="text-gray-500 text-sm font-medium mb-4">PRICE DETAILS</h3>
+                <div className="sticky top-4 rounded border border-[var(--brand-border)] bg-white p-4 shadow-sm">
+                  <h3 className="mb-4 text-sm font-medium text-[var(--brand-muted)]">PRICE DETAILS</h3>
 
                   <div className="space-y-3 mb-4 pb-4 border-b">
                     {/* Total MRP */}
@@ -528,7 +523,7 @@ function Cart() {
                       }
                       navigate('/checkout/address');
                     }}
-                    className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-colors cursor-pointer"
+                    className="w-full rounded-lg bg-[var(--brand-maroon)] px-4 py-3 font-medium text-white transition-colors hover:bg-[var(--brand-maroon-2)] cursor-pointer"
                   >
                     Checkout
                   </button>

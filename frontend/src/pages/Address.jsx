@@ -434,7 +434,7 @@ export default function AddressForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 pt-10 sm:pt-20 relative">
+    <div className="relative min-h-screen bg-gray-50 p-4 pt-[calc(var(--app-header-height,0px)+5rem)] sm:pt-[calc(var(--app-header-height,0px)+5.25rem)]">
       {/* Loading Overlay */}
       {processingOrder && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -741,41 +741,44 @@ export default function AddressForm() {
                 <span>1</span>
                 <span className="font-medium">DELIVERY ADDRESS</span>
               </div>
-              <div className="p-6">
-                <div className="mb-4 p-4 border border-green-200 bg-green-50 rounded">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-medium">{formData.name}</h3>
-                      <p className="text-gray-700">
-                        {formData.address}, {formData.locality},<br />
+              <div className="p-4 sm:p-6">
+                <div className="mb-4 rounded border border-green-200 bg-green-50 p-4">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <h3 className="font-medium break-words">{formData.name}</h3>
+                      <p className="mt-1 break-words text-gray-700">
+                        {formData.address}, {formData.locality},
+                        <br />
                         {formData.city}, {formData.state} - {formData.pincode}
                       </p>
-                      <p className="mt-2">
+                      <p className="mt-2 break-words">
                         <span className="font-medium">Mobile:</span> {formData.mobile}
                         {formData.alternatePhone && `, ${formData.alternatePhone}`}
                       </p>
                       {formData.landmark && (
-                        <p><span className="font-medium">Landmark:</span> {formData.landmark}</p>
+                        <p className="mt-1 break-words">
+                          <span className="font-medium">Landmark:</span> {formData.landmark}
+                        </p>
                       )}
                     </div>
-                    <div className="flex flex-col items-end gap-2">
-                      <div className="flex gap-3">
+                    <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
+                      <div className="flex items-center gap-2 sm:justify-end">
                         <button
                           type="button"
                           onClick={handleEditAddress}
-                          className="text-black hover:text-gray-800 text-sm font-medium"
+                          className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-black hover:bg-gray-100"
                         >
                           EDIT
                         </button>
                         <button
                           type="button"
                           onClick={handleDeleteAddress}
-                          className="text-red-600 hover:text-red-800 text-sm font-medium"
+                          className="rounded border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50"
                         >
                           DELETE
                         </button>
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 sm:text-right">
                         {formData.addressType.toUpperCase()} ADDRESS
                       </div>
                     </div>
