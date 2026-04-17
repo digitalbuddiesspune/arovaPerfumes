@@ -36,7 +36,7 @@ const Wishlist = () => {
 
   if (!items.length) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 pt-[calc(var(--app-header-height,0px)+4rem)] text-center">
         <h2 className="text-xl font-semibold text-gray-800 mb-2">Your Wishlist is Empty</h2>
         <p className="text-gray-600 mb-4">Tap the heart on any product to save it here.</p>
         <button
@@ -50,7 +50,7 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="max-w-7xl mx-auto px-4 py-6 pt-[calc(var(--app-header-height,0px)+4rem)]">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">My Wishlist</h1>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {items.map((p, idx) => {
