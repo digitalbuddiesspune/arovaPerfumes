@@ -1,24 +1,35 @@
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
+/** Fallback so content never sits under the fixed header before measure (mobile overlap fix). */
+const DEFAULT_HEADER_HEIGHT_PX = 72;
+
 const Layout = () => {
   const location = useLocation();
   const headerWrapRef = useRef(null);
-  const [headerHeight, setHeaderHeight] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(DEFAULT_HEADER_HEIGHT_PX);
   const isHomePage = location.pathname === '/';
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const el = headerWrapRef.current;
+    if (!el) return;
+
     const updateHeight = () => {
-      if (headerWrapRef.current) {
-        setHeaderHeight(headerWrapRef.current.offsetHeight);
-      }
+      const h = el.offsetHeight;
+      if (h > 0) setHeaderHeight(h);
     };
+
     updateHeight();
+    const ro = new ResizeObserver(updateHeight);
+    ro.observe(el);
     window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', updateHeight);
+    };
   }, []);
 
   return (

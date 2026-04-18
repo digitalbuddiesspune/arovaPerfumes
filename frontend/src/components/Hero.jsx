@@ -18,7 +18,7 @@ const Hero = () => {
   return (
     <section className="min-h-[68vh] bg-[#F5F0E8]">
       <div className="grid min-h-[68vh] grid-cols-1 lg:grid-cols-2">
-        <div className="flex items-center bg-[#2C1008] px-6 py-9 sm:px-10 lg:px-16">
+        <div className="flex items-center bg-[#2C1008] px-6 pb-9 pt-[calc(env(safe-area-inset-top,0px)+5.25rem)] sm:px-10 lg:px-16 lg:pb-9 lg:pt-16">
           <div className="max-w-xl">
             <motion.h1
               variants={fadeUp}

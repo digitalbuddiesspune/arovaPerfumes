@@ -14,21 +14,40 @@ const navItems = [
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  /** xl and up: keep scroll-based navbar. Below xl: solid bar, no transition (mobile/tablet). */
+  const [isDesktopNav, setIsDesktopNav] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(min-width: 1280px)').matches : false
+  );
   const { cartCount } = useCart();
 
   useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1280px)');
+    const sync = () => setIsDesktopNav(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktopNav) return;
     const onScroll = () => setIsScrolled(window.scrollY > 40);
+    onScroll();
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [isDesktopNav]);
+
+  const scrolledBar =
+    'border-b border-[rgba(44,16,8,0.08)] bg-[rgba(245,240,232,0.88)] shadow-[0_8px_24px_rgba(44,16,8,0.12)] backdrop-blur-xl';
 
   return (
     <header
-      className={`fixed left-0 right-0 top-0 z-[160] transition-all duration-500 ${
-        isScrolled
-          ? 'border-b border-[rgba(44,16,8,0.08)] bg-[rgba(245,240,232,0.88)] shadow-[0_8px_24px_rgba(44,16,8,0.12)] backdrop-blur-xl'
-          : 'bg-transparent shadow-none'
-      }`}
+      className={
+        isDesktopNav
+          ? `fixed left-0 right-0 top-0 z-[160] transition-all duration-500 ${
+              isScrolled ? scrolledBar : 'bg-transparent shadow-none'
+            }`
+          : `fixed left-0 right-0 top-0 z-[160] ${scrolledBar}`
+      }
     >
       <nav className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 pt-1 sm:h-[60px] sm:px-8 sm:pt-1.5 lg:px-16">
         <Link
