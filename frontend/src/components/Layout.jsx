@@ -1,5 +1,6 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { fetchPricingSettings } from '../services/api';
 import Header from './Header';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -11,7 +12,28 @@ const Layout = () => {
   const location = useLocation();
   const headerWrapRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(DEFAULT_HEADER_HEIGHT_PX);
+  const [homeAnnouncementMarquee, setHomeAnnouncementMarquee] = useState(
+    '1st Order - 50% Off ✦ Use Code SMELLGOOD5 for extra 5% off on prepaid orders ✦'
+  );
   const isHomePage = location.pathname === '/';
+
+  useEffect(() => {
+    if (!isHomePage) return;
+    let ignore = false;
+    (async () => {
+      try {
+        const pricing = await fetchPricingSettings();
+        if (!ignore && pricing?.announcementMarquee && String(pricing.announcementMarquee).trim()) {
+          setHomeAnnouncementMarquee(String(pricing.announcementMarquee).trim());
+        }
+      } catch {
+        /* keep default */
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+  }, [isHomePage]);
 
   useLayoutEffect(() => {
     const el = headerWrapRef.current;
@@ -37,7 +59,7 @@ const Layout = () => {
       {/* Navbar and Header - Fixed at top */}
       <div ref={headerWrapRef} className="fixed top-0 left-0 right-0 z-[140] bg-[var(--brand-cream)]">
         <div className="border-t-0">
-          <Navbar />
+          <Navbar announcementMarquee={isHomePage ? homeAnnouncementMarquee : ''} />
         </div>
         <div className="h-px bg-black/10" aria-hidden="true" />
         <Header />

@@ -87,6 +87,8 @@ const productSchema = new mongoose.Schema(
     notes: { type: notesSchema, default: () => ({}) },
 
     shortDescription: { type: String, trim: true, default: '' },
+    /** Bullet lines for product detail “Why you'll love it” */
+    whyYoullLoveIt: { type: [String], default: [] },
     description: { type: String, trim: true, default: '' },
     offers: { type: offersSchema, default: () => ({}) },
     services: { type: servicesSchema, default: () => ({}) },

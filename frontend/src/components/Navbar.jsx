@@ -12,7 +12,7 @@ const navItems = [
   { label: 'For Him & Her', href: '#gender' },
 ];
 
-const Navbar = () => {
+const Navbar = ({ announcementMarquee = '' }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   /** xl and up: keep scroll-based navbar. Below xl: solid bar, no transition (mobile/tablet). */
   const [isDesktopNav, setIsDesktopNav] = useState(() =>
@@ -39,17 +39,37 @@ const Navbar = () => {
   const scrolledBar =
     'border-b border-[rgba(44,16,8,0.08)] bg-[rgba(245,240,232,0.88)] shadow-[0_8px_24px_rgba(44,16,8,0.12)] backdrop-blur-xl';
 
+  const showMobileOfferStrip = Boolean(String(announcementMarquee || '').trim());
+
   return (
-    <header
-      className={
-        isDesktopNav
-          ? `fixed left-0 right-0 top-0 z-[160] transition-all duration-500 ${
-              isScrolled ? scrolledBar : 'bg-transparent shadow-none'
-            }`
-          : `fixed left-0 right-0 top-0 z-[160] ${scrolledBar}`
-      }
-    >
-      <nav className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 pt-1 sm:h-[60px] sm:px-8 sm:pt-1.5 lg:px-16">
+    <div className="fixed left-0 right-0 top-0 z-[160]">
+      {showMobileOfferStrip ? (
+        <section
+          aria-label="Offers and announcements"
+          className="lg:hidden overflow-hidden border-b border-[var(--luxury-gold)]/25 bg-[var(--luxury-brown)] py-1 sm:py-1.5"
+        >
+          <div className="luxury-marquee-track flex min-w-max items-center whitespace-nowrap">
+            {[0, 1, 2].map((idx) => (
+              <span
+                key={idx}
+                className="px-6 font-[var(--font-cinzel)] text-[9px] uppercase tracking-[0.2em] text-[var(--luxury-gold)] sm:text-[10px]"
+              >
+                {String(announcementMarquee).trim()}
+              </span>
+            ))}
+          </div>
+        </section>
+      ) : null}
+      <header
+        className={
+          isDesktopNav
+            ? `relative w-full transition-all duration-500 ${
+                isScrolled ? scrolledBar : 'bg-transparent shadow-none'
+              }`
+            : `relative w-full ${scrolledBar}`
+        }
+      >
+        <nav className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 pt-1 sm:h-[60px] sm:px-8 sm:pt-1.5 lg:px-16">
         <Link
           to="/"
           className="inline-flex items-center"
@@ -83,14 +103,14 @@ const Navbar = () => {
           </Link>
           <Link
             to="/profile"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
+            className="hidden md:inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
             aria-label="Profile"
           >
             <FiUser className="h-4 w-4" />
           </Link>
           <Link
             to="/cart"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
+            className="relative hidden md:inline-flex h-9 w-9 items-center justify-center rounded-full border border-transparent text-[#2C1008] transition-all duration-300 hover:border-[#2C1008]/20 hover:bg-white/70 hover:text-[#C9A96E]"
             aria-label="Cart"
           >
             <FiShoppingCart className="h-4 w-4" />
@@ -107,8 +127,9 @@ const Navbar = () => {
             Shop Now
           </Link>
         </div>
-      </nav>
-    </header>
+        </nav>
+      </header>
+    </div>
   );
 };
 

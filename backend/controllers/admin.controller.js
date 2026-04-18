@@ -9,6 +9,20 @@ const ORDER_STATUS_ALLOWED = new Set(['pending','confirmed','packed','shipped','
 const PAYMENT_STATUS_ALLOWED = new Set(['paid','pending','failed','refunded']);
 const PAYMENT_METHOD_ALLOWED = new Set(['razorpay','cod','card','upi']);
 
+function normalizeWhyYoullLoveIt(value) {
+  if (Array.isArray(value)) {
+    return value.map((v) => String(v).trim()).filter(Boolean).slice(0, 40);
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 40);
+  }
+  return [];
+}
+
 const mapLegacyStatusToOrderStatus = (status = '') => {
   const s = String(status).toLowerCase();
   if (s === 'delivered') return 'delivered';
@@ -81,6 +95,7 @@ export async function createProduct(req, res) {
       reviews = {},
       notes = {},
       shortDescription = '',
+      whyYoullLoveIt,
       description = '',
       images = [],
       services = {},
@@ -123,6 +138,7 @@ export async function createProduct(req, res) {
         baseNotes: notes.baseNotes || [],
       },
       shortDescription,
+      whyYoullLoveIt: normalizeWhyYoullLoveIt(whyYoullLoveIt),
       description,
       images: imageArray,
       services: {
@@ -407,6 +423,7 @@ export async function updateProduct(req, res) {
       notes = {},
       shortDescription,
       description,
+      whyYoullLoveIt,
       images,
       services = {},
       shippingAndReturns = {},
@@ -423,6 +440,7 @@ export async function updateProduct(req, res) {
     if (subcategory !== undefined) updates.subcategory = subcategory;
     if (description !== undefined) updates.description = description;
     if (shortDescription !== undefined) updates.shortDescription = shortDescription;
+    if (whyYoullLoveIt !== undefined) updates.whyYoullLoveIt = normalizeWhyYoullLoveIt(whyYoullLoveIt);
 
     // Pricing - support both old and new format
     const mrp = pricing.mrp || req.body.mrp;

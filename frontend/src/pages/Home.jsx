@@ -134,12 +134,12 @@ const Home = () => {
             'For Him & Her',
           ]}
         />
-        <section className="overflow-hidden bg-[#1f0c06] py-2.5">
+        <section className="hidden overflow-hidden border-b border-[var(--luxury-gold)]/25 bg-[var(--luxury-brown)] py-1 sm:py-1.5 lg:block">
           <div className="luxury-marquee-track flex min-w-max items-center whitespace-nowrap">
             {[0, 1, 2].map((idx) => (
               <span
                 key={idx}
-                className="px-8 font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.22em] text-[#C9A96E] sm:text-[11px]"
+                className="px-6 font-[var(--font-cinzel)] text-[9px] uppercase tracking-[0.2em] text-[var(--luxury-gold)] sm:text-[10px]"
               >
                 {announcementMarquee}
               </span>

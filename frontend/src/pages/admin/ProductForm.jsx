@@ -242,6 +242,20 @@ const ProductForm = ({
               {errors.description ? <p className="mt-1 text-xs text-rose-600">{errors.description}</p> : null}
             </div>
 
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Why you&apos;ll love it <span className="font-normal text-gray-500">(one line per bullet)</span>
+              </label>
+              <textarea
+                name="whyYoullLoveIt"
+                rows="4"
+                value={form.whyYoullLoveIt}
+                onChange={onChange}
+                className="w-full rounded-lg border px-3 py-2 font-mono text-sm"
+                placeholder={'Long-lasting formula\nClean fragrance profile\nPerfect for everyday wear'}
+              />
+            </div>
+
             <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-gray-700">
               <input type="checkbox" checked={form.isBestSeller} onChange={(e) => onCheckboxChange('isBestSeller', e.target.checked)} />
               Mark as Best Seller

@@ -137,6 +137,10 @@ const ProductDetail = () => {
     ...(product?.baseNotes || []),
   ].filter(Boolean);
 
+  const whyYoullLoveIt = Array.isArray(product?.whyYoullLoveIt)
+    ? product.whyYoullLoveIt.map((s) => String(s).trim()).filter(Boolean)
+    : [];
+
   const infoFields = [
     { label: "Brand", value: product?.product_info?.brand || product?.brand },
     { label: "Category", value: product?.category },
@@ -375,14 +379,16 @@ const ProductDetail = () => {
                 </div>
               ) : null}
 
-              <div>
-                <h3 className="text-sm font-semibold text-gray-900 tracking-wide">WHY YOU&apos;LL LOVE IT</h3>
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-700">
-                  <li>Long-lasting formula</li>
-                  <li>Clean fragrance profile</li>
-                  <li>Perfect for everyday use</li>
-                </ul>
-              </div>
+              {whyYoullLoveIt.length > 0 ? (
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 tracking-wide">WHY YOU&apos;LL LOVE IT</h3>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-700">
+                    {whyYoullLoveIt.map((line, idx) => (
+                      <li key={`${idx}-${line.slice(0, 32)}`}>{line}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

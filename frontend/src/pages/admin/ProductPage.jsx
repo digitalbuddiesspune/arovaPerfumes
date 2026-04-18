@@ -7,6 +7,13 @@ import ProductTable from './ProductTable';
 const MIN_IMAGES = 1;
 const MAX_IMAGES = 8;
 
+const parseWhyYoullLoveLines = (text) =>
+  String(text || '')
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 40);
+
 const INITIAL_FORM = {
   title: '',
   price: '',
@@ -14,6 +21,7 @@ const INITIAL_FORM = {
   category: '',
   shortDescription: '',
   description: '',
+  whyYoullLoveIt: '',
   imageUrls: Array(MIN_IMAGES).fill(''),
   brand: '',
   stock: '',
@@ -50,6 +58,7 @@ const ProductPage = () => {
     category: '',
     shortDescription: '',
     description: '',
+    whyYoullLoveIt: '',
     imageUrls: [''],
     brand: '',
     stock: '',
@@ -210,6 +219,7 @@ const ProductPage = () => {
         IncludedComponents: '',
       },
       shippingAndReturns: { returns: { isReturnable: Boolean(form.isReturnable) } },
+      whyYoullLoveIt: parseWhyYoullLoveLines(form.whyYoullLoveIt),
     };
 
     setSaving(true);
@@ -270,6 +280,9 @@ const ProductPage = () => {
       rating: productRating || '',
       totalReviews: productTotalReviews || '',
       isBestSeller: Boolean(product.isBestSeller),
+      whyYoullLoveIt: Array.isArray(product.whyYoullLoveIt)
+        ? product.whyYoullLoveIt.filter(Boolean).join('\n')
+        : '',
     });
   };
 
@@ -296,6 +309,7 @@ const ProductPage = () => {
       rating: '',
       totalReviews: '',
       isBestSeller: false,
+      whyYoullLoveIt: '',
     });
   };
 
@@ -387,6 +401,7 @@ const ProductPage = () => {
             .map((v) => v.trim())
             .filter(Boolean),
         },
+        whyYoullLoveIt: parseWhyYoullLoveLines(editForm.whyYoullLoveIt),
         isBestSeller: Boolean(editForm.isBestSeller),
       });
       closeEdit();
@@ -688,6 +703,19 @@ const ProductPage = () => {
                     value={editForm.description}
                     onChange={onEditChange}
                     className="w-full rounded-lg border px-3 py-2"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    Why you&apos;ll love it <span className="font-normal text-gray-500">(one line per bullet)</span>
+                  </label>
+                  <textarea
+                    name="whyYoullLoveIt"
+                    rows="4"
+                    value={editForm.whyYoullLoveIt}
+                    onChange={onEditChange}
+                    className="w-full rounded-lg border px-3 py-2 font-mono text-sm"
+                    placeholder={'Long-lasting formula\nClean fragrance profile\nPerfect for everyday wear'}
                   />
                 </div>
               </div>

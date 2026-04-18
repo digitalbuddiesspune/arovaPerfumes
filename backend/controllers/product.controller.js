@@ -10,6 +10,21 @@ const normalizeGender = (gender) => {
 
 const escapeRegex = (value = '') => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+/** Admin / API: strings (newline-separated), array of strings, or omitted */
+const normalizeWhyYoullLoveIt = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((v) => String(v).trim()).filter(Boolean).slice(0, 40);
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 40);
+  }
+  return [];
+};
+
 const normalizeCategoryTerm = (value = '') => {
   const raw = String(value || '').trim().toLowerCase();
   if (!raw) return '';
@@ -66,6 +81,7 @@ const mapPayload = (body = {}) => {
       baseNotes: body?.notes?.baseNotes ?? body.baseNotes ?? [],
     },
     shortDescription: body.shortDescription,
+    whyYoullLoveIt: normalizeWhyYoullLoveIt(body?.whyYoullLoveIt),
     description: body.description,
     offers: {
       couponCode: body?.offers?.couponCode ?? body.couponCode ?? '',
@@ -114,6 +130,7 @@ const toClientShape = (product) => {
     middleNotes: notes.middleNotes || [],
     baseNotes: notes.baseNotes || [],
     shortDescription: doc.shortDescription || '',
+    whyYoullLoveIt: Array.isArray(doc.whyYoullLoveIt) ? doc.whyYoullLoveIt.filter(Boolean) : [],
     couponCode: offers.couponCode || '',
     discount: offers.discount || 0,
     applicableOn: offers.applicableOn || '',
