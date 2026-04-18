@@ -3,6 +3,7 @@ import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { FaRupeeSign, FaFilter, FaTimes, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { searchProducts, fetchPricingSettings } from '../services/api';
 import { getProductPromoBadges } from '../utils/productBadges';
+import { formatDiscountPercent } from '../utils/formatDiscountPercent';
 
 // Add CSS to hide scrollbar
 const styles = `
@@ -420,9 +421,9 @@ const Search = () => {
                         e.target.src = 'https://res.cloudinary.com/dnyp5jknp/image/upload/v1775567474/d3b4e9cd-feaf-4362-9a38-20c30bbb5db9.png'; 
                       }}
                     />
-                    {(p.discountPercent > 0 || p.discount) && (
+                    {formatDiscountPercent(p.discountPercent ?? p.discount) > 0 && (
                       <span className="absolute top-3 right-3 bg-white text-green-600 border border-green-600 text-xs font-bold px-2 py-1 rounded-full">
-                        {p.discountPercent || p.discount}% OFF
+                        {formatDiscountPercent(p.discountPercent ?? p.discount)}% OFF
                       </span>
                     )}
                   </div>

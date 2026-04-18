@@ -7,6 +7,7 @@ import { FiHeart } from 'react-icons/fi';
 // --- IMPORTANT: This line is now the intended data source. Ensure 'fetchSarees' is available. ---
 import { fetchSarees, fetchPricingSettings } from '../services/api';
 import { getProductPromoBadges } from '../utils/productBadges';
+import { formatDiscountPercent } from '../utils/formatDiscountPercent';
 import ProductFilters from './ProductFilters'; 
 import { useCart } from '../context/CartContext';
 import ProductImage from './ProductImage';
@@ -666,7 +667,7 @@ const ProductList = ({ defaultCategory } = {}) => {
                                                                             ₹{mrpValue.toLocaleString('en-IN')}
                                                                         </p>
                                                                         <span className="text-[11px] font-medium text-[var(--brand-maroon)] sm:text-xs">
-                                                                            {Math.round(((mrpValue - finalPrice) / mrpValue) * 100)}% off
+                                                                            {formatDiscountPercent(((mrpValue - finalPrice) / mrpValue) * 100)}% off
                                                                         </span>
                                                                     </>
                                                                 )}

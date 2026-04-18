@@ -1,5 +1,6 @@
 import React from 'react';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
+import { formatDiscountPercent } from '../../utils/formatDiscountPercent';
 
 const resolveImageSrc = (product) => {
   const raw =
@@ -100,7 +101,7 @@ const ProductTable = ({
                     </td>
                     <td className="px-4 py-3 align-middle">₹{(Number(product.price) || 0).toLocaleString('en-IN')}</td>
                     <td className="px-4 py-3 align-middle">₹{(Number(product.mrp) || 0).toLocaleString('en-IN')}</td>
-                    <td className="px-4 py-3 align-middle">{Number(product.discountPercent) || 0}%</td>
+                    <td className="px-4 py-3 align-middle">{formatDiscountPercent(product.discountPercent)}%</td>
                     <td className="px-4 py-3 align-middle">{Number(product.stock ?? product.quantity ?? 0)}</td>
                     <td className="px-4 py-3 align-middle">
                       <input

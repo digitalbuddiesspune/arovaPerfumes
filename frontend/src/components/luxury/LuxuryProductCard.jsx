@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductImage from '../ProductImage';
 import { getProductPromoBadges } from '../../utils/productBadges';
+import { formatDiscountPercent } from '../../utils/formatDiscountPercent';
 
 const getProductImages = (product) => {
   const fromGallery = Array.isArray(product?.imageGallery) ? product.imageGallery : [];
@@ -34,7 +35,7 @@ const LuxuryProductCard = ({ product, onAddToCart, lowStockThreshold = 8, index 
   const primaryImage = images[0] || product?.images?.image1 || product?.image;
   const hoverImage = images[1];
   const { showBestSeller, showFewLeft } = getProductPromoBadges(product, lowStockThreshold);
-  const discountPercent = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+  const discountPercent = mrp > price ? formatDiscountPercent(((mrp - price) / mrp) * 100) : 0;
 
   const handleAdd = async (event) => {
     event.preventDefault();

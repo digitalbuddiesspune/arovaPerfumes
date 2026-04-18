@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaTrash, FaPlus, FaMinus, FaArrowLeft, FaShoppingCart, FaTimes, FaCheck, FaTicketAlt } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
 import { fetchPricingSettings } from '../services/api';
+import { formatDiscountPercent } from '../utils/formatDiscountPercent';
 
 function Cart() {
   const navigate = useNavigate();
@@ -199,7 +200,7 @@ function Cart() {
                   const isApplied = appliedCoupon?.code === c.code;
                   const off =
                     c.discountType === 'percentage'
-                      ? `${c.discountValue}% off`
+                      ? `${formatDiscountPercent(c.discountValue)}% off`
                       : `₹${Number(c.discountValue || 0).toLocaleString('en-IN')} off`;
                   return (
                     <div
@@ -306,7 +307,7 @@ function Cart() {
                                   <span className="text-xl font-bold text-gray-900">₹{salePrice.toLocaleString()}</span>
                                   <span className="text-sm text-gray-500 line-through">₹{mrp.toLocaleString()}</span>
                                   <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">
-                                    {Math.round(((mrp - salePrice) / mrp) * 100)}% OFF
+                                    {formatDiscountPercent(((mrp - salePrice) / mrp) * 100)}% OFF
                                   </span>
                                 </div>
                               ) : (

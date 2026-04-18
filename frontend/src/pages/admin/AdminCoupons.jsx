@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../utils/api';
+import { formatDiscountPercent } from '../../utils/formatDiscountPercent';
 
 const emptyForm = {
   code: '',
@@ -383,7 +384,7 @@ const AdminCoupons = () => {
                     </td>
                     <td className="px-4 py-3 text-sm">
                       {coupon.discountType === 'percentage'
-                        ? `${coupon.discountValue}%`
+                        ? `${formatDiscountPercent(coupon.discountValue)}%`
                         : formatPrice(coupon.discountValue)}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">{formatDate(coupon.expiryDate)}</td>

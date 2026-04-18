@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchSarees } from '../services/api';
 import ProductImage from './ProductImage';
+import { formatDiscountPercent } from '../utils/formatDiscountPercent';
 
 const getProductImages = (item) => {
   const fromGallery = Array.isArray(item?.imageGallery) ? item.imageGallery : [];
@@ -101,7 +102,7 @@ const BestSellers = () => {
             const hoverImage = productImages[1];
             const rating = Number(product.rating || 0);
             const reviews = Number(product.totalReviews || 0);
-            const discountPercent = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+            const discountPercent = mrp > price ? formatDiscountPercent(((mrp - price) / mrp) * 100) : 0;
 
             return (
               <Link key={id} to={`/product/${id}`} className="group block">

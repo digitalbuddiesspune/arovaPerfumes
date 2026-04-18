@@ -5,6 +5,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { FiSettings, FiUser, FiPackage, FiMapPin, FiLogOut, FiRefreshCw, FiShoppingBag, FiMail, FiPhone, FiEdit2, FiHeart, FiHome, FiSearch } from 'react-icons/fi';
 import ProductImage from '../components/ProductImage';
 import { formatDisplayOrderId } from '../utils/orderId';
+import { formatDiscountPercent } from '../utils/formatDiscountPercent';
 
 const PROFILE_TABS = ['profile', 'orders', 'track', 'addresses'];
 
@@ -832,7 +833,7 @@ export default function Profile() {
                                         <>
                                           <span className="text-xs text-gray-400 line-through">₹{productMrp.toLocaleString('en-IN')}</span>
                                           <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium">
-                                            {Math.round(((productMrp - salePrice) / productMrp) * 100)}% off
+                                            {formatDiscountPercent(((productMrp - salePrice) / productMrp) * 100)}% off
                                           </span>
                                         </>
                                       )}

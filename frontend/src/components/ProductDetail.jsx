@@ -4,6 +4,7 @@ import { FaBolt, FaShoppingCart, FaSpinner } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { fetchSareeById, fetchPricingSettings } from "../services/api";
 import { getProductPromoBadges } from "../utils/productBadges";
+import { formatDiscountPercent } from "../utils/formatDiscountPercent";
 import ProductSuggestions from "./ProductSuggestions";
 
 const FALLBACK_IMAGE = "/no-image.png";
@@ -116,7 +117,7 @@ const ProductDetail = () => {
   const showReviews = reviews > 0 && rating > 0;
   const mrp = Number(product?.mrp || 0);
   const sellingPrice = Number(product?.price || product?.salePrice || Math.round(mrp - (mrp * Number(product?.discountPercent || 0)) / 100) || 0);
-  const discountPercent = Number(product?.discountPercent || 0);
+  const discountPercent = formatDiscountPercent(product?.discountPercent);
 
   const stockQty = Number(product?.quantity ?? 0);
   const maxBuyQty = stockQty > 0 ? stockQty : 99;
@@ -181,19 +182,19 @@ const ProductDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <FaSpinner className="animate-spin text-4xl text-black" />
+      <div className="flex min-h-screen items-center justify-center bg-[var(--luxury-cream)]">
+        <FaSpinner className="animate-spin text-4xl text-[var(--luxury-gold)]" />
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-500">{error || "Product not found"}</p>
+      <div className="bg-[var(--luxury-cream)] py-12 text-center text-[var(--luxury-brown)]">
+        <p className="text-rose-700">{error || "Product not found"}</p>
         <button
           onClick={() => navigate("/")}
-          className="mt-4 px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors"
+          className="mt-4 rounded border border-[var(--luxury-brown)] bg-[var(--luxury-brown)] px-4 py-2 text-sm text-[var(--luxury-cream)] transition-colors hover:bg-[#3d160c]"
         >
           Go Back
         </button>
@@ -202,30 +203,31 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f7f7] pb-20 sm:pb-6">
+    <div className="min-h-screen bg-[var(--luxury-cream)] pb-20 text-[var(--luxury-brown)] sm:pb-6">
       {toast.show && (
-        <div className={`${toast.type === "error" ? "bg-rose-600" : "bg-emerald-600"} fixed bottom-4 right-4 z-[100] text-white px-4 py-2 rounded shadow-lg`}>
+        <div className={`${toast.type === "error" ? "bg-rose-700" : "bg-emerald-700"} fixed bottom-4 right-4 z-[100] rounded px-4 py-2 text-white shadow-lg`}>
           {toast.text}
         </div>
       )}
-      <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-6 pt-20 sm:pt-30">
-        <div className="text-xs text-gray-500 mb-3">
-          Home <span className="mx-1">›</span> {product.category || "Collection"} <span className="mx-1">›</span> {product.title}
+      <div className="mx-auto max-w-7xl px-3 pt-20 sm:px-5 sm:pt-28 lg:px-6">
+        <div className="mb-3 text-xs text-[var(--luxury-brown)]/55">
+          Home <span className="mx-1 text-[var(--luxury-gold)]/80">›</span> {product.category || "Collection"}{" "}
+          <span className="mx-1 text-[var(--luxury-gold)]/80">›</span> {product.title}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Left image gallery */}
           <div>
-            <div className="bg-white p-2 border border-gray-100 relative">
-              <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 items-start max-w-[min(90%,14rem)] pointer-events-none">
+            <div className="relative border border-[var(--luxury-gold)]/20 bg-[#f4ece8] p-2 shadow-sm">
+              <div className="pointer-events-none absolute left-3 top-3 z-10 flex max-w-[min(90%,14rem)] flex-col items-start gap-1.5">
                 {showBestSeller && (
-                  <span className="inline-flex bg-amber-500 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide shadow-md">
-                    BEST SELLER
+                  <span className="inline-flex bg-[var(--luxury-brown)] px-2.5 py-1 font-[var(--font-cinzel)] text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--luxury-gold)] shadow-md sm:text-xs">
+                    Bestseller
                   </span>
                 )}
                 {showFewLeft && (
-                  <span className="inline-flex bg-rose-600 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-semibold tracking-wide shadow-md leading-tight">
-                    ONLY FEW LEFT — HURRY
+                  <span className="inline-flex border border-[var(--luxury-gold)]/40 bg-[rgba(44,16,8,0.85)] px-2.5 py-1 font-[var(--font-cinzel)] text-[10px] font-semibold uppercase tracking-[0.12em] leading-tight text-[var(--luxury-cream)] shadow-md sm:text-xs">
+                    Few left — hurry
                   </span>
                 )}
               </div>
@@ -241,14 +243,14 @@ const ProductDetail = () => {
             </div>
 
             {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2 mt-2">
+              <div className="mt-2 grid grid-cols-4 gap-2">
                 {images.map((img, idx) => (
                   <button
                     key={`${img}-${idx}`}
                     type="button"
                     onClick={() => setSelectedImageIdx(idx)}
-                    className={`bg-white border p-1 ${
-                      idx === selectedImageIdx ? "border-black" : "border-gray-200"
+                    className={`border bg-[#f4ece8] p-1 transition-colors ${
+                      idx === selectedImageIdx ? "border-[var(--luxury-brown)] ring-1 ring-[var(--luxury-gold)]/40" : "border-[var(--brand-border)] hover:border-[var(--luxury-gold)]/35"
                     }`}
                   >
                     <img
@@ -267,38 +269,46 @@ const ProductDetail = () => {
           </div>
 
           {/* Right details panel */}
-          <div className="bg-white p-4 sm:p-5">
+          <div className="border border-[rgba(44,16,8,0.08)] bg-[#f4ece8] p-4 shadow-sm sm:p-5">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-semibold uppercase tracking-wide text-gray-900 leading-tight">
+              <h1 className="font-[var(--font-cormorant)] text-3xl font-semibold leading-tight tracking-wide text-[var(--luxury-brown)] sm:text-4xl">
                 {product.title}
               </h1>
-              <p className="text-xs tracking-[0.2em] mt-1 text-gray-700">EAU DE PARFUM</p>
+              <p className="mt-1 font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.28em] text-[var(--luxury-gold-dark)] sm:text-[11px]">
+                Eau de Parfum
+              </p>
             </div>
 
             {showReviews ? (
               <div className="mt-3 flex items-center gap-2">
-                <div className="text-sm">{"★".repeat(Math.round(rating))}{"☆".repeat(5 - Math.round(rating))}</div>
-                <span className="text-xs text-gray-600">{reviews} reviews</span>
+                <div className="text-sm text-[var(--luxury-gold)]">{"★".repeat(Math.round(rating))}{"☆".repeat(5 - Math.round(rating))}</div>
+                <span className="text-xs text-[var(--luxury-brown)]/65">{reviews} reviews</span>
               </div>
             ) : null}
 
-            <div className="mt-5 flex items-end gap-2">
-              <span className="text-3xl font-semibold text-gray-900">₹ {sellingPrice.toLocaleString("en-IN")}</span>
+            <div className="mt-5 flex flex-wrap items-end gap-2">
+              <span className="font-[var(--font-cormorant)] text-3xl font-semibold text-[var(--luxury-brown)]">
+                ₹ {sellingPrice.toLocaleString("en-IN")}
+              </span>
               {mrp > sellingPrice && (
-                <span className="text-sm text-gray-400 line-through">MRP ₹ {mrp.toLocaleString("en-IN")}</span>
+                <span className="text-sm text-[var(--luxury-brown)]/45 line-through">MRP ₹ {mrp.toLocaleString("en-IN")}</span>
               )}
               {discountPercent > 0 && (
-                <span className="text-[10px] px-2 py-1 bg-emerald-100 text-emerald-700 font-semibold">SAVE {Math.round(discountPercent)}%</span>
+                <span className="bg-[var(--luxury-cream)] px-2 py-1 font-[var(--font-cinzel)] text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--luxury-brown)] ring-1 ring-[var(--luxury-gold)]/35">
+                  Save {discountPercent}%
+                </span>
               )}
             </div>
             {notes.length > 0 && (
               <div className="mt-4">
-                <h3 className="mb-3 text-sm font-semibold tracking-[0.14em] text-gray-900">NOTES</h3>
-                <div className="flex flex-wrap gap-3">
+                <h3 className="mb-3 font-[var(--font-cinzel)] text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--luxury-brown)]">
+                  Notes
+                </h3>
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {notes.slice(0, 8).map((note, idx) => (
                     <span
                       key={`${note}-${idx}`}
-                      className="rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm"
+                      className="rounded-full border border-[var(--luxury-gold)]/35 bg-[var(--luxury-cream)] px-3 py-1.5 text-sm text-[var(--luxury-brown)] shadow-sm sm:px-4 sm:py-2"
                     >
                       {note}
                     </span>
@@ -308,26 +318,28 @@ const ProductDetail = () => {
             )}
             {product.shortDescription ? (
               <div className="mt-4">
-                <p className="mt-1 text-sm text-gray-700 leading-relaxed">{product.shortDescription}</p>
+                <p className="mt-1 text-sm leading-relaxed text-[var(--luxury-brown)]/85">{product.shortDescription}</p>
               </div>
             ) : null}
 
             <div className="mt-5">
-              <label className="block text-xs font-semibold tracking-wide mb-2 text-gray-800">QUANTITY</label>
+              <label className="mb-2 block font-[var(--font-cinzel)] text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--luxury-brown)]">
+                Quantity
+              </label>
               <div className="flex items-center gap-2">
-                <div className="flex items-center border border-gray-300">
+                <div className="flex items-center border border-[var(--luxury-brown)]/25 bg-[var(--luxury-cream)]">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-8 h-8 text-gray-700 hover:bg-gray-100"
+                    className="h-8 w-8 text-[var(--luxury-brown)] transition-colors hover:bg-[rgba(201,169,110,0.15)]"
                   >
                     -
                   </button>
-                  <span className="w-10 text-center text-sm">{quantity}</span>
+                  <span className="w-10 text-center text-sm font-medium">{quantity}</span>
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.min(maxBuyQty, q + 1))}
-                    className="w-8 h-8 text-gray-700 hover:bg-gray-100"
+                    className="h-8 w-8 text-[var(--luxury-brown)] transition-colors hover:bg-[rgba(201,169,110,0.15)]"
                   >
                     +
                   </button>
@@ -335,9 +347,9 @@ const ProductDetail = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={isAdding || stockQty === 0}
-                  className="flex-1 border border-black text-black py-2 text-sm font-medium hover:bg-gray-50 disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="flex flex-1 items-center justify-center gap-2 border border-[var(--luxury-brown)] py-2 text-sm font-medium text-[var(--luxury-brown)] transition-colors hover:bg-[var(--luxury-brown)] hover:text-[var(--luxury-cream)] disabled:opacity-60"
                 >
-                  <FaShoppingCart className="w-4 h-4" />
+                  <FaShoppingCart className="h-4 w-4" />
                   {isAdding ? "Adding..." : "Add to cart"}
                 </button>
               </div>
@@ -346,22 +358,22 @@ const ProductDetail = () => {
             <button
               onClick={handleBuyNow}
               disabled={isAdding || stockQty === 0}
-              className="w-full mt-3 bg-black text-white py-2 text-sm font-medium hover:bg-gray-800 disabled:opacity-60 flex items-center justify-center gap-2"
+              className="mt-3 flex w-full items-center justify-center gap-2 bg-[var(--luxury-gold)] py-2.5 text-sm font-medium text-[var(--luxury-brown)] transition-colors hover:bg-[var(--luxury-gold-dark)] hover:text-[var(--luxury-cream)] disabled:opacity-60"
             >
-              <FaBolt className="w-4 h-4" />
+              <FaBolt className="h-4 w-4" />
               Buy Now
             </button>
 
-            <div className="mt-4 grid grid-cols-2 gap-2 text-[10px] text-center text-gray-600 border-t border-b py-3">
-              <div>Secure Transaction</div>
-              <div>Easy Order Tracking</div>
+            <div className="mt-4 grid grid-cols-2 gap-2 border-y border-[var(--luxury-gold)]/20 py-3 text-center font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.14em] text-[var(--luxury-brown)]/75">
+              <div>Secure transaction</div>
+              <div>Easy order tracking</div>
             </div>
 
-            <p className="mt-3 text-xs text-gray-600 leading-relaxed">
+            <p className="mt-3 text-xs leading-relaxed text-[var(--luxury-brown)]/70">
               {product.isReturnable !== false ? (
                 <>
                   This product is eligible for return under our{" "}
-                  <Link to="/returns" className="text-gray-900 underline underline-offset-2 hover:no-underline">
+                  <Link to="/returns" className="font-medium text-[var(--luxury-brown)] underline underline-offset-2 hover:text-[var(--luxury-gold-dark)]">
                     return policy
                   </Link>
                   .
@@ -371,18 +383,22 @@ const ProductDetail = () => {
               )}
             </p>
 
-            <div className="mt-5 space-y-4 border-t pt-4">
+            <div className="mt-5 space-y-4 border-t border-[var(--luxury-gold)]/20 pt-4">
               {product.description ? (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 tracking-wide">DESCRIPTION</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-700">{product.description}</p>
+                  <h3 className="font-[var(--font-cinzel)] text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--luxury-brown)]">
+                    Description
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--luxury-brown)]/85">{product.description}</p>
                 </div>
               ) : null}
 
               {whyYoullLoveIt.length > 0 ? (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 tracking-wide">WHY YOU&apos;LL LOVE IT</h3>
-                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-700">
+                  <h3 className="font-[var(--font-cinzel)] text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--luxury-brown)]">
+                    Why you&apos;ll love it
+                  </h3>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--luxury-brown)]/85">
                     {whyYoullLoveIt.map((line, idx) => (
                       <li key={`${idx}-${line.slice(0, 32)}`}>{line}</li>
                     ))}
@@ -394,19 +410,21 @@ const ProductDetail = () => {
         </div>
 
         {/* All Information */}
-        <div className="mt-10 bg-white p-5 sm:mt-12 sm:p-7">
-          <h3 className="text-base font-semibold text-gray-900 mb-4 tracking-wide">ALL PRODUCT INFORMATION</h3>
+        <div className="mt-10 border border-[rgba(44,16,8,0.08)] bg-[#f4ece8] p-5 shadow-sm sm:mt-12 sm:p-7">
+          <h3 className="mb-4 font-[var(--font-cinzel)] text-base font-semibold uppercase tracking-[0.18em] text-[var(--luxury-brown)]">
+            All product information
+          </h3>
           {infoFields.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+            <div className="grid grid-cols-1 gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
               {infoFields.map((field) => (
-                <div key={field.label} className="flex justify-between gap-3 border-b border-gray-100 py-1.5">
-                  <span className="text-gray-600">{field.label}</span>
-                  <span className="text-gray-900 font-medium text-right">{String(field.value)}</span>
+                <div key={field.label} className="flex justify-between gap-3 border-b border-[var(--brand-border)] py-1.5">
+                  <span className="text-[var(--luxury-brown)]/65">{field.label}</span>
+                  <span className="text-right font-medium text-[var(--luxury-brown)]">{String(field.value)}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-500">No additional information available.</p>
+            <p className="text-sm text-[var(--luxury-brown)]/55">No additional information available.</p>
           )}
         </div>
       </div>
