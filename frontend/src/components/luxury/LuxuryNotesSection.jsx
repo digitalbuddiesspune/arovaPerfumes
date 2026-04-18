@@ -26,12 +26,11 @@ const LuxuryNotesSection = ({ tiers = [], cta }) => {
                     {tier.label}
                   </p>
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="font-[var(--font-cormorant)] text-2xl italic leading-tight text-[var(--luxury-brown)] sm:text-[1.75rem]">
                     {tier.notes}
                   </p>
                 </div>
-                <span className="ml-auto pt-1 text-2xl">{tier.icon}</span>
               </div>
             ))}
           </div>

@@ -365,19 +365,71 @@ export async function adminGetOrderById(req, res) {
 
 export async function adminStats(req, res) {
   try {
-    // Calculate revenue from delivered orders (using orderStatus field if available, fallback to status)
+    /**
+     * Revenue = sum of order totals where payment is recorded as paid only.
+     * Matches paymentStatus 'paid', or isPaid true, or legacy status 'paid'.
+     * Excludes cancelled / returned orders from the sum.
+     * Amount uses totalPrice, then legacy amount, then itemsPrice+tax+shipping-discount.
+     */
     const [revenueAgg] = await Order.aggregate([
-      { 
-        $match: { 
-          $or: [
-            { orderStatus: 'delivered' },
-            { status: 'delivered' }
-          ]
-        } 
+      {
+        $match: {
+          $and: [
+            {
+              $or: [
+                { paymentStatus: 'paid' },
+                { isPaid: true },
+                { status: 'paid' },
+              ],
+            },
+            {
+              $nor: [
+                { orderStatus: 'cancelled' },
+                { orderStatus: 'returned' },
+                { status: 'cancelled' },
+                { status: 'returned' },
+              ],
+            },
+          ],
+        },
       },
-      { $group: { _id: null, total: { $sum: '$amount' }, count: { $sum: 1 } } },
+      {
+        $addFields: {
+          revenueAmount: {
+            $cond: [
+              { $gt: [{ $ifNull: ['$totalPrice', 0] }, 0] },
+              '$totalPrice',
+              {
+                $cond: [
+                  { $gt: [{ $ifNull: ['$amount', 0] }, 0] },
+                  '$amount',
+                  {
+                    $subtract: [
+                      {
+                        $add: [
+                          { $ifNull: ['$itemsPrice', 0] },
+                          { $ifNull: ['$taxPrice', 0] },
+                          { $ifNull: ['$shippingPrice', 0] },
+                        ],
+                      },
+                      { $ifNull: ['$discount', 0] },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$revenueAmount' },
+          count: { $sum: 1 },
+        },
+      },
     ]);
-    const totalRevenue = revenueAgg?.total || 0;
+    const totalRevenue = Math.round(Number(revenueAgg?.total || 0));
     
     // Count all documents
     const totalOrders = await Order.countDocuments();

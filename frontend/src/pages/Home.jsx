@@ -41,9 +41,9 @@ const promiseItems = [
 ];
 
 const noteTiers = [
-  { label: 'Top Notes', notes: 'Bergamot, Neroli, Citrus', icon: '🍋' },
-  { label: 'Heart Notes', notes: 'Rose, Jasmine, Vetiver', icon: '🌹' },
-  { label: 'Base Notes', notes: 'Sandalwood, Amber, Musk', icon: '🪵' },
+  { label: 'Top Notes', notes: 'Bergamot, Neroli, Citrus' },
+  { label: 'Heart Notes', notes: 'Rose, Jasmine, Vetiver' },
+  { label: 'Base Notes', notes: 'Sandalwood, Amber, Musk' },
 ];
 
 const genderCards = [

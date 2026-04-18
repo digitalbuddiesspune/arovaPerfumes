@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FiHeart, FiShoppingCart, FiUser } from 'react-icons/fi';
+import { Link, useLocation } from 'react-router-dom';
+import { FiHeart, FiSettings, FiShoppingCart, FiUser } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
 
 const BRAND_LOGO_URL =
@@ -13,12 +13,20 @@ const navItems = [
 ];
 
 const Navbar = ({ announcementMarquee = '' }) => {
+  const location = useLocation();
+  const [isAdminUser, setIsAdminUser] = useState(
+    () => typeof window !== 'undefined' && localStorage.getItem('auth_is_admin') === 'true'
+  );
   const [isScrolled, setIsScrolled] = useState(false);
   /** xl and up: keep scroll-based navbar. Below xl: solid bar, no transition (mobile/tablet). */
   const [isDesktopNav, setIsDesktopNav] = useState(() =>
     typeof window !== 'undefined' ? window.matchMedia('(min-width: 1280px)').matches : false
   );
   const { cartCount } = useCart();
+
+  useEffect(() => {
+    setIsAdminUser(localStorage.getItem('auth_is_admin') === 'true');
+  }, [location.pathname]);
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1280px)');
@@ -120,6 +128,15 @@ const Navbar = ({ announcementMarquee = '' }) => {
               </span>
             )}
           </Link>
+          {isAdminUser ? (
+            <Link
+              to="/admin"
+              className="hidden min-h-10 items-center justify-center gap-1.5 border border-[#2C1008]/40 px-4 [font-family:'Cinzel',serif] text-[10px] uppercase tracking-[0.2em] text-[#2C1008] transition-all duration-300 hover:border-[#C9A96E] hover:bg-[rgba(44,16,8,0.04)] hover:text-[#5c2e0e] xl:inline-flex"
+            >
+              <FiSettings className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              Admin
+            </Link>
+          ) : null}
           <Link
             to="/products"
             className="inline-flex min-h-10 items-center justify-center border border-[#2C1008] px-5 [font-family:'Cinzel',serif] text-[10px] uppercase tracking-[0.2em] text-[#2C1008] transition-all duration-300 hover:bg-[#2C1008] hover:text-[#F5F0E8] sm:px-6"
