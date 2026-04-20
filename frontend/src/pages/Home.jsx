@@ -70,6 +70,8 @@ const genderCards = [
 
 const DESKTOP_HOME_BANNER_URL =
   'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776680296/Untitled_design_18_eaxeiv.png';
+const MOBILE_HOME_BANNER_URL =
+  'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776237003/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_s9auqi.svg';
 
 const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
@@ -129,6 +131,17 @@ const Home = () => {
               className="h-auto w-full object-cover"
             />
           </div>
+        </section>
+
+        <section
+          aria-label="Arova mobile hero banner"
+          className="overflow-hidden border-b border-[var(--luxury-gold)]/20 bg-[#120908] lg:hidden"
+        >
+          <img
+            src={MOBILE_HOME_BANNER_URL}
+            alt="Arova luxury fragrance mobile banner"
+            className="h-auto w-full object-cover"
+          />
         </section>
 
         <LuxuryProductGridSection
