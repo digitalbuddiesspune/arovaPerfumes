@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FiHeart, FiSettings, FiShoppingCart, FiUser } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
@@ -47,14 +47,15 @@ const Navbar = ({ announcementMarquee = '' }) => {
   const scrolledBar =
     'border-b border-[rgba(44,16,8,0.08)] bg-[rgba(245,240,232,0.88)] shadow-[0_8px_24px_rgba(44,16,8,0.12)] backdrop-blur-xl';
 
-  const showMobileOfferStrip = Boolean(String(announcementMarquee || '').trim());
+  const offerStripText = useMemo(() => String(announcementMarquee || '').trim(), [announcementMarquee]);
+  const showOfferStrip = Boolean(offerStripText);
 
   return (
     <div className="fixed left-0 right-0 top-0 z-[160]">
-      {showMobileOfferStrip ? (
+      {showOfferStrip ? (
         <section
           aria-label="Offers and announcements"
-          className="lg:hidden overflow-hidden border-b border-[var(--luxury-gold)]/25 bg-[var(--luxury-brown)] py-1 sm:py-1.5"
+          className="overflow-hidden border-b border-[var(--luxury-gold)]/25 bg-[var(--luxury-brown)] py-1 sm:py-1.5"
         >
           <div className="luxury-marquee-track flex min-w-max items-center whitespace-nowrap">
             {[0, 1, 2].map((idx) => (
@@ -62,20 +63,14 @@ const Navbar = ({ announcementMarquee = '' }) => {
                 key={idx}
                 className="px-6 font-[var(--font-cinzel)] text-[9px] uppercase tracking-[0.2em] text-[var(--luxury-gold)] sm:text-[10px]"
               >
-                {String(announcementMarquee).trim()}
+                {offerStripText}
               </span>
             ))}
           </div>
         </section>
       ) : null}
       <header
-        className={
-          isDesktopNav
-            ? `relative w-full transition-all duration-500 ${
-                isScrolled ? scrolledBar : 'bg-transparent shadow-none'
-              }`
-            : `relative w-full ${scrolledBar}`
-        }
+        className={`relative w-full ${scrolledBar}`}
       >
         <nav className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 pt-1 sm:h-[60px] sm:px-8 sm:pt-1.5 lg:px-16">
         <Link

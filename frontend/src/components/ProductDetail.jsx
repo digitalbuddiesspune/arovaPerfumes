@@ -117,7 +117,11 @@ const ProductDetail = () => {
   const showReviews = reviews > 0 && rating > 0;
   const mrp = Number(product?.mrp || 0);
   const sellingPrice = Number(product?.price || product?.salePrice || Math.round(mrp - (mrp * Number(product?.discountPercent || 0)) / 100) || 0);
-  const discountPercent = formatDiscountPercent(product?.discountPercent);
+  /** Prefer % derived from MRP vs price when they differ (API often omits discountPercent). */
+  let discountPercent = formatDiscountPercent(product?.discountPercent);
+  if (mrp > 0 && sellingPrice >= 0 && mrp > sellingPrice) {
+    discountPercent = formatDiscountPercent(((mrp - sellingPrice) / mrp) * 100);
+  }
 
   const stockQty = Number(product?.quantity ?? 0);
   const maxBuyQty = stockQty > 0 ? stockQty : 99;

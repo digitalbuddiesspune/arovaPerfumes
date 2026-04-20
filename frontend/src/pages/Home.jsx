@@ -4,7 +4,6 @@ import { useCart } from '../context/CartContext';
 import CacheConsent from '../components/CacheConsent';
 import Hero from '../components/Hero';
 import LuxuryGenderSection from '../components/luxury/LuxuryGenderSection';
-import LuxuryMarqueeSection from '../components/luxury/LuxuryMarqueeSection';
 import LuxuryNewsletterSection from '../components/luxury/LuxuryNewsletterSection';
 import LuxuryNotesSection from '../components/luxury/LuxuryNotesSection';
 import LuxuryProductGridSection from '../components/luxury/LuxuryProductGridSection';
@@ -69,12 +68,12 @@ const genderCards = [
   },
 ];
 
+const DESKTOP_HOME_BANNER_URL =
+  'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776680296/Untitled_design_18_eaxeiv.png';
+
 const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [lowStockThreshold, setLowStockThreshold] = useState(8);
-  const [announcementMarquee, setAnnouncementMarquee] = useState(
-    '1st Order - 50% Off ✦ Use Code SMELLGOOD5 for extra 5% off on prepaid orders ✦'
-  );
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -92,9 +91,6 @@ const Home = () => {
           setAllProducts(products.slice(0, 6));
           if (typeof pricing?.lowStockThreshold === 'number') {
             setLowStockThreshold(pricing.lowStockThreshold);
-          }
-          if (pricing?.announcementMarquee && String(pricing.announcementMarquee).trim()) {
-            setAnnouncementMarquee(String(pricing.announcementMarquee).trim());
           }
         }
       } catch {
@@ -121,29 +117,17 @@ const Home = () => {
   return (
     <div className="relative overflow-hidden bg-[var(--luxury-cream)] text-[var(--luxury-brown)]">
       <div className="luxury-grain pointer-events-none fixed inset-0 z-[1]" />
-      <div className="relative z-[2]">
-        <Hero />
-
-        <LuxuryMarqueeSection
-          items={[
-            'Ethanol-Based Formula',
-            'Long Lasting',
-            'Skin Friendly',
-            'Fragrant Note x Secret Blend',
-            'Clean Perfumery',
-            'For Him & Her',
-          ]}
-        />
-        <section className="hidden overflow-hidden border-b border-[var(--luxury-gold)]/25 bg-[var(--luxury-brown)] py-1 sm:py-1.5 lg:block">
-          <div className="luxury-marquee-track flex min-w-max items-center whitespace-nowrap">
-            {[0, 1, 2].map((idx) => (
-              <span
-                key={idx}
-                className="px-6 font-[var(--font-cinzel)] text-[9px] uppercase tracking-[0.2em] text-[var(--luxury-gold)] sm:text-[10px]"
-              >
-                {announcementMarquee}
-              </span>
-            ))}
+      <div className="relative z-[2] pt-16 sm:pt-20">
+        <section
+          aria-label="Arova desktop hero banner"
+          className="hidden overflow-hidden border-b border-[var(--luxury-gold)]/20 bg-[#120908] lg:block"
+        >
+          <div className="mx-auto w-full max-w-[1920px]">
+            <img
+              src={DESKTOP_HOME_BANNER_URL}
+              alt="Arova luxury fragrance collection banner"
+              className="h-auto w-full object-cover"
+            />
           </div>
         </section>
 
@@ -171,6 +155,8 @@ const Home = () => {
             photo: 'https://ui-avatars.com/api/?name=Samiksha+Paliwal&background=2c1008&color=C9A96E&size=200',
           }}
         />
+
+        <Hero />
 
         <LuxuryPromiseSection items={promiseItems} />
 
