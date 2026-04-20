@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Box, LayoutGrid, LogOut, Search, ShoppingBag, Tag, Truck, User } from 'lucide-react';
+import { ArrowLeft, BookOpen, Box, Image, LayoutGrid, LogOut, Search, ShoppingBag, Tag, Truck, User } from 'lucide-react';
 
 const Title = () => {
   const { pathname } = useLocation();
@@ -10,6 +10,7 @@ const Title = () => {
   if (pathname.startsWith('/admin/policies')) return 'Policies';
   if (pathname.startsWith('/admin/coupons')) return 'Coupons';
   if (pathname.startsWith('/admin/shipping-pricing')) return 'Shipping & pricing';
+  if (pathname.startsWith('/admin/home-banners')) return 'Add banner';
   return 'Admin';
 };
 
@@ -57,6 +58,7 @@ const AdminLayout = () => {
           {navItem('/admin/policies', 'Policies', BookOpen)}
           {navItem('/admin/coupons', 'Coupons', Tag)}
           {navItem('/admin/shipping-pricing', 'Shipping & pricing', Truck)}
+          {navItem('/admin/home-banners', 'Add banner', Image)}
           <button
             onClick={() => navigate('/')}
             className="mt-auto flex items-center gap-3 rounded-md border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20"
@@ -86,6 +88,7 @@ const AdminLayout = () => {
               {navItem('/admin/policies', 'Policies', BookOpen)}
               {navItem('/admin/coupons', 'Coupons', Tag)}
               {navItem('/admin/shipping-pricing', 'Shipping & pricing', Truck)}
+              {navItem('/admin/home-banners', 'Add banner', Image)}
               <button
                 onClick={() => {
                   setOpen(false);

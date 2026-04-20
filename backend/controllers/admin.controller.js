@@ -801,3 +801,118 @@ export async function updateHeroSlider(req, res) {
     return res.status(500).json({ message: 'Failed to update hero slider', error: err.message });
   }
 }
+
+// Home Banners management functions
+const DEFAULT_HOME_DESKTOP_BANNER =
+  'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776680296/Untitled_design_18_eaxeiv.png';
+const DEFAULT_HOME_MOBILE_BANNER =
+  'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776237003/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_s9auqi.svg';
+const toCleanUrlList = (value) => {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => String(item || '').trim()).filter(Boolean);
+};
+
+export async function getHomeBanners(req, res) {
+  try {
+    const homeBannersSetting = await Settings.findOne({ key: 'home_banners' });
+
+    if (!homeBannersSetting || !homeBannersSetting.value) {
+      return res.json({
+        desktopBanners: [DEFAULT_HOME_DESKTOP_BANNER],
+        mobileBanners: [DEFAULT_HOME_MOBILE_BANNER],
+        desktopSrc: DEFAULT_HOME_DESKTOP_BANNER,
+        mobileSrc: DEFAULT_HOME_MOBILE_BANNER,
+      });
+    }
+
+    try {
+      const parsed = JSON.parse(homeBannersSetting.value);
+      const desktopBanners = toCleanUrlList(parsed?.desktopBanners);
+      const mobileBanners = toCleanUrlList(parsed?.mobileBanners);
+      const legacyDesktop = String(parsed?.desktopSrc || '').trim();
+      const legacyMobile = String(parsed?.mobileSrc || '').trim();
+      const finalDesktopBanners =
+        desktopBanners.length > 0
+          ? desktopBanners
+          : legacyDesktop
+          ? [legacyDesktop]
+          : [DEFAULT_HOME_DESKTOP_BANNER];
+      const finalMobileBanners =
+        mobileBanners.length > 0
+          ? mobileBanners
+          : legacyMobile
+          ? [legacyMobile]
+          : [DEFAULT_HOME_MOBILE_BANNER];
+      return res.json({
+        desktopBanners: finalDesktopBanners,
+        mobileBanners: finalMobileBanners,
+        desktopSrc: finalDesktopBanners[0] || DEFAULT_HOME_DESKTOP_BANNER,
+        mobileSrc: finalMobileBanners[0] || DEFAULT_HOME_MOBILE_BANNER,
+      });
+    } catch {
+      return res.json({
+        desktopBanners: [DEFAULT_HOME_DESKTOP_BANNER],
+        mobileBanners: [DEFAULT_HOME_MOBILE_BANNER],
+        desktopSrc: DEFAULT_HOME_DESKTOP_BANNER,
+        mobileSrc: DEFAULT_HOME_MOBILE_BANNER,
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to fetch home banner settings', error: err.message });
+  }
+}
+
+export async function updateHomeBanners(req, res) {
+  try {
+    const desktopBannersInput = toCleanUrlList(req.body?.desktopBanners);
+    const mobileBannersInput = toCleanUrlList(req.body?.mobileBanners);
+    const legacyDesktop = String(req.body?.desktopSrc || '').trim();
+    const legacyMobile = String(req.body?.mobileSrc || '').trim();
+
+    const desktopBanners = desktopBannersInput.length
+      ? desktopBannersInput
+      : legacyDesktop
+      ? [legacyDesktop]
+      : [];
+    const mobileBanners = mobileBannersInput.length
+      ? mobileBannersInput
+      : legacyMobile
+      ? [legacyMobile]
+      : [];
+
+    const finalDesktopBanners = desktopBanners.length ? desktopBanners : [DEFAULT_HOME_DESKTOP_BANNER];
+    const finalMobileBanners = mobileBanners.length
+      ? mobileBanners
+      : finalDesktopBanners.length
+      ? [finalDesktopBanners[0]]
+      : [DEFAULT_HOME_MOBILE_BANNER];
+
+    const payload = {
+      desktopBanners: finalDesktopBanners,
+      mobileBanners: finalMobileBanners,
+      desktopSrc: finalDesktopBanners[0] || DEFAULT_HOME_DESKTOP_BANNER,
+      mobileSrc: finalMobileBanners[0] || DEFAULT_HOME_MOBILE_BANNER,
+    };
+
+    const setting = await Settings.findOneAndUpdate(
+      { key: 'home_banners' },
+      {
+        key: 'home_banners',
+        value: JSON.stringify(payload),
+        description: 'Homepage desktop and mobile top banners',
+      },
+      { new: true, upsert: true, runValidators: true }
+    );
+
+    const parsed = JSON.parse(setting.value);
+    return res.json({
+      message: 'Home banners updated successfully',
+      desktopBanners: parsed.desktopBanners || [parsed.desktopSrc].filter(Boolean),
+      mobileBanners: parsed.mobileBanners || [parsed.mobileSrc].filter(Boolean),
+      desktopSrc: parsed.desktopSrc,
+      mobileSrc: parsed.mobileSrc,
+    });
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to update home banners', error: err.message });
+  }
+}

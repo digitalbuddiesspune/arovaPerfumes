@@ -28,6 +28,7 @@ import AdminOrderDetails from '../pages/admin/AdminOrderDetails';
 import AdminPolicies from '../pages/admin/AdminPolicies';
 import AdminCoupons from '../pages/admin/AdminCoupons';
 import AdminPriceSettings from '../pages/admin/AdminPriceSettings';
+import AdminHomeBanners from '../pages/admin/AdminHomeBanners';
 import PrivacyPolicy from '../pages/PrivacyPolicy';
 import TermsOfService from '../pages/TermsOfService';
 import ShippingPolicy from '../pages/ShippingPolicy';
@@ -143,6 +144,7 @@ const Router = () => {
           <Route path="policies" element={<AdminPolicies />} />
           <Route path="coupons" element={<AdminCoupons />} />
           <Route path="shipping-pricing" element={<AdminPriceSettings />} />
+          <Route path="home-banners" element={<AdminHomeBanners />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

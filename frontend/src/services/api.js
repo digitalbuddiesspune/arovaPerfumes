@@ -360,3 +360,44 @@ export const fetchPricingSettings = async () => {
     };
   }
 };
+
+export const fetchHomeBanners = async () => {
+  const defaultBanners = {
+    desktopBanners: [
+      'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776680296/Untitled_design_18_eaxeiv.png',
+    ],
+    mobileBanners: [
+      'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776237003/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_s9auqi.svg',
+    ],
+    desktopSrc:
+      'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776680296/Untitled_design_18_eaxeiv.png',
+    mobileSrc:
+      'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776237003/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_s9auqi.svg',
+  };
+
+  try {
+    const res = await fetch(`${API_URL}/settings/home-banners`, {
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+    });
+    if (!res.ok) throw new Error('Failed to fetch home banners');
+    const data = await res.json();
+    const desktopBanners = Array.isArray(data?.desktopBanners)
+      ? data.desktopBanners.filter((url) => String(url || '').trim())
+      : [];
+    const mobileBanners = Array.isArray(data?.mobileBanners)
+      ? data.mobileBanners.filter((url) => String(url || '').trim())
+      : [];
+    const desktopSrc = data?.desktopSrc || desktopBanners[0] || defaultBanners.desktopSrc;
+    const mobileSrc = data?.mobileSrc || mobileBanners[0] || defaultBanners.mobileSrc;
+    return {
+      desktopBanners: desktopBanners.length ? desktopBanners : [desktopSrc],
+      mobileBanners: mobileBanners.length ? mobileBanners : [mobileSrc],
+      desktopSrc,
+      mobileSrc,
+    };
+  } catch (error) {
+    console.error('Error fetching home banners:', error);
+    return defaultBanners;
+  }
+};

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { fetchPricingSettings, fetchSarees } from '../services/api';
+import { fetchHomeBanners, fetchPricingSettings, fetchSarees } from '../services/api';
 import { useCart } from '../context/CartContext';
 import CacheConsent from '../components/CacheConsent';
 import Hero from '../components/Hero';
@@ -67,14 +67,19 @@ const genderCards = [
   },
 ];
 
-const DESKTOP_HOME_BANNER_URL =
-  'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776680296/Untitled_design_18_eaxeiv.png';
-const MOBILE_HOME_BANNER_URL =
-  'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776237003/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_s9auqi.svg';
-
 const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [lowStockThreshold, setLowStockThreshold] = useState(8);
+  const [homeBanners, setHomeBanners] = useState({
+    desktopBanners: [
+      'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776680296/Untitled_design_18_eaxeiv.png',
+    ],
+    mobileBanners: [
+      'https://res.cloudinary.com/dnyp5jknp/image/upload/v1776237003/Beige_and_Green_Simple_Luxury_Perfume_Instagram_Post_600_x_600_px_s9auqi.svg',
+    ],
+  });
+  const [desktopBannerIndex, setDesktopBannerIndex] = useState(0);
+  const [mobileBannerIndex, setMobileBannerIndex] = useState(0);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -82,9 +87,10 @@ const Home = () => {
 
     const loadData = async () => {
       try {
-        const [productsRes, pricing] = await Promise.all([
+        const [productsRes, pricing, banners] = await Promise.all([
           fetchSarees('', { limit: 12 }),
           fetchPricingSettings(),
+          fetchHomeBanners(),
         ]);
 
         const products = Array.isArray(productsRes) ? productsRes : productsRes?.products || [];
@@ -92,6 +98,22 @@ const Home = () => {
           setAllProducts(products.slice(0, 6));
           if (typeof pricing?.lowStockThreshold === 'number') {
             setLowStockThreshold(pricing.lowStockThreshold);
+          }
+          if (banners?.desktopBanners || banners?.mobileBanners || banners?.desktopSrc || banners?.mobileSrc) {
+            setHomeBanners({
+              desktopBanners:
+                banners.desktopBanners?.length > 0
+                  ? banners.desktopBanners
+                  : banners.desktopSrc
+                  ? [banners.desktopSrc]
+                  : homeBanners.desktopBanners,
+              mobileBanners:
+                banners.mobileBanners?.length > 0
+                  ? banners.mobileBanners
+                  : banners.mobileSrc
+                  ? [banners.mobileSrc]
+                  : homeBanners.mobileBanners,
+            });
           }
         }
       } catch {
@@ -107,6 +129,36 @@ const Home = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const length = homeBanners.desktopBanners.length;
+    if (length <= 1) return;
+    const timer = setInterval(() => {
+      setDesktopBannerIndex((prev) => (prev + 1) % length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [homeBanners.desktopBanners]);
+
+  useEffect(() => {
+    const length = homeBanners.mobileBanners.length;
+    if (length <= 1) return;
+    const timer = setInterval(() => {
+      setMobileBannerIndex((prev) => (prev + 1) % length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [homeBanners.mobileBanners]);
+
+  useEffect(() => {
+    if (desktopBannerIndex >= homeBanners.desktopBanners.length) {
+      setDesktopBannerIndex(0);
+    }
+  }, [desktopBannerIndex, homeBanners.desktopBanners.length]);
+
+  useEffect(() => {
+    if (mobileBannerIndex >= homeBanners.mobileBanners.length) {
+      setMobileBannerIndex(0);
+    }
+  }, [mobileBannerIndex, homeBanners.mobileBanners.length]);
+
   const collectionProducts = useMemo(() => allProducts.slice(0, 6), [allProducts]);
 
   const handleAddToCart = async (product) => {
@@ -114,6 +166,15 @@ const Home = () => {
   };
 
   const handleNewsletterSubmit = async () => Promise.resolve();
+  const desktopSlidesCount = homeBanners.desktopBanners.length;
+  const goToPrevDesktopBanner = () => {
+    if (desktopSlidesCount <= 1) return;
+    setDesktopBannerIndex((prev) => (prev - 1 + desktopSlidesCount) % desktopSlidesCount);
+  };
+  const goToNextDesktopBanner = () => {
+    if (desktopSlidesCount <= 1) return;
+    setDesktopBannerIndex((prev) => (prev + 1) % desktopSlidesCount);
+  };
 
   return (
     <div className="relative overflow-hidden bg-[var(--luxury-cream)] text-[var(--luxury-brown)]">
@@ -121,26 +182,68 @@ const Home = () => {
       <div className="relative z-[2] pt-16 sm:pt-20">
         <section
           aria-label="Arova desktop hero banner"
-          className="hidden overflow-hidden border-b border-[var(--luxury-gold)]/20 bg-[#120908] lg:block"
+          className="relative hidden overflow-hidden border-b border-[var(--luxury-gold)]/20 bg-[#120908] lg:block"
         >
-          <div className="mx-auto w-full max-w-[1920px]">
-            <img
-              src={DESKTOP_HOME_BANNER_URL}
-              alt="Arova luxury fragrance collection banner"
-              className="h-auto w-full object-cover"
-            />
+          <div className="mx-auto w-full max-w-[1920px] overflow-hidden">
+            <div
+              className="flex w-full transition-transform duration-700 ease-in-out"
+              style={{ transform: `translateX(-${desktopBannerIndex * 100}%)` }}
+            >
+              {homeBanners.desktopBanners.map((banner, idx) => (
+                <img
+                  key={`desktop-banner-${idx}`}
+                  src={banner}
+                  alt={`Arova luxury fragrance desktop banner ${idx + 1}`}
+                  className="h-auto w-full shrink-0 basis-full object-cover"
+                />
+              ))}
+            </div>
           </div>
+          {desktopSlidesCount > 1 ? (
+            <>
+              <button
+                type="button"
+                onClick={goToPrevDesktopBanner}
+                className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/45 p-2.5 text-white transition hover:bg-black/65"
+                aria-label="Previous desktop banner"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={goToNextDesktopBanner}
+                className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/45 p-2.5 text-white transition hover:bg-black/65"
+                aria-label="Next desktop banner"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          ) : null}
         </section>
 
         <section
           aria-label="Arova mobile hero banner"
           className="overflow-hidden border-b border-[var(--luxury-gold)]/20 bg-[#120908] lg:hidden"
         >
-          <img
-            src={MOBILE_HOME_BANNER_URL}
-            alt="Arova luxury fragrance mobile banner"
-            className="h-auto w-full object-cover"
-          />
+          <div className="overflow-hidden">
+            <div
+              className="flex w-full transition-transform duration-700 ease-in-out"
+              style={{ transform: `translateX(-${mobileBannerIndex * 100}%)` }}
+            >
+              {homeBanners.mobileBanners.map((banner, idx) => (
+                <img
+                  key={`mobile-banner-${idx}`}
+                  src={banner}
+                  alt={`Arova luxury fragrance mobile banner ${idx + 1}`}
+                  className="h-auto w-full shrink-0 basis-full object-cover"
+                />
+              ))}
+            </div>
+          </div>
         </section>
 
         <LuxuryProductGridSection

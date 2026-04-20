@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import auth from '../middleware/auth.js';
 import adminOnly from '../middleware/admin.js';
-import { createProduct, adminListProducts, deleteProductById, adminListOrders, adminStats, adminListAddresses, updateProduct, updateOrderStatus, adminGetOrderById, getPolicy, getAllPolicies, updatePolicy, getLogo, updateLogo, getHeroSlider, updateHeroSlider } from '../controllers/admin.controller.js';
+import { createProduct, adminListProducts, deleteProductById, adminListOrders, adminStats, adminListAddresses, updateProduct, updateOrderStatus, adminGetOrderById, getPolicy, getAllPolicies, updatePolicy, getLogo, updateLogo, getHeroSlider, updateHeroSlider, getHomeBanners, updateHomeBanners } from '../controllers/admin.controller.js';
 
 const router = Router();
 
@@ -39,5 +39,10 @@ router.patch('/logo', auth, adminOnly, updateLogo);
 router.get('/hero-slider', auth, adminOnly, getHeroSlider);
 router.put('/hero-slider', auth, adminOnly, updateHeroSlider);
 router.patch('/hero-slider', auth, adminOnly, updateHeroSlider);
+
+// Home Banners
+router.get('/home-banners', auth, adminOnly, getHomeBanners);
+router.put('/home-banners', auth, adminOnly, updateHomeBanners);
+router.patch('/home-banners', auth, adminOnly, updateHomeBanners);
 
 export default router;

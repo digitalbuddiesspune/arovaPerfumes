@@ -112,6 +112,10 @@ export const api = {
     // Hero Slider endpoints
     getHeroSlider: () => request('/admin/hero-slider', { method: 'GET' }),
     updateHeroSlider: (payload) => request('/admin/hero-slider', { method: 'PUT', body: JSON.stringify(payload) }),
+    // Home banners endpoints
+    getHomeBanners: () => request('/admin/home-banners', { method: 'GET' }),
+    updateHomeBanners: (payload) =>
+      request('/admin/home-banners', { method: 'PUT', body: JSON.stringify(payload) }),
     // Coupons (same routes as standalone admin app; requires isAdmin JWT)
     couponsList: () => request('/coupons/admin/all', { method: 'GET' }),
     couponCreate: (payload) => request('/coupons', { method: 'POST', body: JSON.stringify(payload) }),
@@ -129,6 +133,8 @@ export const api = {
   getLogo: () => request('/settings/logo', { method: 'GET' }),
   // Public hero slider endpoint
   getHeroSlider: () => request('/settings/hero-slider', { method: 'GET' }),
+  // Public homepage desktop/mobile banner endpoint
+  getHomeBanners: () => request('/settings/home-banners', { method: 'GET' }),
 };
 
 export default api;
