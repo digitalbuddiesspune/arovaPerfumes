@@ -14,63 +14,81 @@ const fadeUp = {
   }),
 };
 
+const floatMotion = {
+  y: [0, -8, 0],
+  transition: {
+    duration: 5.5,
+    repeat: Infinity,
+    ease: 'easeInOut',
+  },
+};
+
 const Hero = () => {
   return (
-    <section className="min-h-[68vh] bg-[#F5F0E8]">
-      <div className="grid min-h-[68vh] grid-cols-1 lg:grid-cols-2">
-        <div className="flex items-center bg-[#2C1008] px-6 pb-9 pt-[calc(env(safe-area-inset-top,0px)+5.25rem)] sm:px-10 lg:px-16 lg:pb-9 lg:pt-16">
-          <div className="max-w-xl">
-            <motion.h1
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              custom={0.2}
-              className="[font-family:'Cormorant_Garamond',serif] text-5xl leading-[0.98] text-[#F5F0E8] sm:text-6xl lg:text-7xl"
-            >
-              Luxury,
-              <br />
-              Made for <span className="italic text-[#C9A96E]">Every Day</span>
-            </motion.h1>
+    <section className="relative overflow-hidden bg-[linear-gradient(180deg,var(--luxury-cream-deep)_0%,#f7f1e8_100%)] px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
+      <motion.div
+        aria-hidden="true"
+        animate={{ scale: [1, 1.08, 1], opacity: [0.16, 0.26, 0.16] }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        className="pointer-events-none absolute -left-24 top-10 h-60 w-60 rounded-full bg-[var(--luxury-gold)]/20 blur-3xl"
+      />
+      <motion.div
+        aria-hidden="true"
+        animate={{ scale: [1.02, 0.95, 1.02], opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        className="pointer-events-none absolute right-0 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-[var(--luxury-brown-light)]/15 blur-3xl"
+      />
+      <div className="mx-auto max-w-6xl">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.35 }}
+          variants={fadeUp}
+          custom={0.05}
+          className="max-w-3xl border-l-2 border-[var(--luxury-gold)]/45 pl-5 sm:pl-7 lg:pl-9"
+        >
+          <motion.p
+            variants={fadeUp}
+            custom={0.1}
+            animate={floatMotion}
+            className="inline-flex rounded-full border border-[var(--luxury-gold)]/30 bg-[var(--luxury-gold)]/10 px-4 py-1.5 font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.3em] text-[var(--luxury-gold-dark)]"
+          >
+            Signature Collection
+          </motion.p>
+          <motion.h1
+            variants={fadeUp}
+            custom={0.2}
+            className="mt-4 [font-family:'Cormorant_Garamond',serif] text-5xl leading-[0.98] text-[var(--luxury-brown)] sm:text-6xl lg:text-7xl"
+          >
+            Luxury,
+            <br />
+            Made for <span className="italic text-[var(--luxury-gold)]">Every Day</span>
+          </motion.h1>
 
-            <motion.p
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              custom={0.45}
-              className="mt-7 max-w-md [font-family:'Jost',sans-serif] text-sm leading-8 text-[#F5F0E8]/70 sm:text-[15px]"
-            >
-              Clean perfumes crafted for modern lifestyles. Long-lasting, refined, and effortlessly
-              wearable.
-            </motion.p>
+          <motion.p
+            variants={fadeUp}
+            custom={0.45}
+            className="mt-7 max-w-2xl [font-family:'Jost',sans-serif] text-sm leading-8 text-[var(--luxury-brown-mid)]/85 sm:text-[15px]"
+          >
+            Clean perfumes crafted for modern lifestyles. Long-lasting, refined, and effortlessly
+            wearable.
+          </motion.p>
 
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              custom={0.6}
-              className="mt-10 flex flex-wrap items-center gap-5"
-            >
+          <motion.div
+            variants={fadeUp}
+            custom={0.6}
+            className="mt-10 flex flex-wrap items-center gap-5"
+          >
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
               <Link
                 to="/products"
-                className="inline-flex min-h-12 items-center justify-center bg-[#C9A96E] px-8 [font-family:'Cinzel',serif] text-[11px] uppercase tracking-[0.22em] text-[#2C1008] transition duration-300 hover:bg-[#F5F0E8]"
+                className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--luxury-brown)] px-8 [font-family:'Cinzel',serif] text-[11px] uppercase tracking-[0.22em] text-[var(--luxury-cream)] transition duration-300 hover:bg-[var(--luxury-brown-mid)]"
               >
                 Explore Collection
               </Link>
-              <a
-                href="#story"
-                className="inline-flex min-h-12 items-center justify-center border-b border-[#F5F0E8]/40 pb-1 [font-family:'Cinzel',serif] text-[11px] uppercase tracking-[0.2em] text-[#F5F0E8] transition duration-300 hover:border-[#C9A96E] hover:text-[#C9A96E]"
-              >
-                Our Story
-              </a>
             </motion.div>
-          </div>
-        </div>
-
-        <div className="hidden items-center justify-center bg-[#F5F0E8] lg:flex">
-          <div className="flex h-72 w-72 items-center justify-center rounded-full border border-[#C9A96E]/35 text-center [font-family:'Cinzel',serif] text-xs uppercase tracking-[0.2em] text-[#2C1008]/60">
-            Image Placeholder
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

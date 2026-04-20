@@ -6,7 +6,6 @@ const FOOTER_LOGO_URL =
 const Footer = () => {
   const primaryLinks = [
     { name: 'Legal Pages', path: '/legal' },
-    { name: 'About Us', path: '/about' },
     { name: 'Social Proofs', path: '/social-proofs' },
   ];
 
@@ -17,6 +16,7 @@ const Footer = () => {
   ];
 
   const shippingLinks = [
+    { name: 'About Us', path: '/about' },
     { name: 'Privacy Policy', path: '/privacy' },
     { name: 'Delivery & Returns Policy', path: '/returns' },
     { name: 'Shipping Policy', path: '/shipping' },

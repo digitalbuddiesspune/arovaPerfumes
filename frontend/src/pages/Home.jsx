@@ -8,7 +8,6 @@ import LuxuryNewsletterSection from '../components/luxury/LuxuryNewsletterSectio
 import LuxuryNotesSection from '../components/luxury/LuxuryNotesSection';
 import LuxuryProductGridSection from '../components/luxury/LuxuryProductGridSection';
 import LuxuryPromiseSection from '../components/luxury/LuxuryPromiseSection';
-import LuxuryStorySection from '../components/luxury/LuxuryStorySection';
 import LuxuryTestimonialsSection from '../components/luxury/LuxuryTestimonialsSection';
 
 const testimonialItems = [
@@ -157,17 +156,6 @@ const Home = () => {
         />
 
         <LuxuryGenderSection items={genderCards} />
-
-        <LuxuryStorySection
-          quote="Perfume is the most intimate expression of who you are."
-          description="AROVA was born from the belief that luxury and consciousness can coexist. Each fragrance is crafted to linger beautifully, tell your story and honour the earth it comes from."
-          founder={{
-            initials: 'SP',
-            name: 'Samiksha Paliwal',
-            title: 'Founder, AROVA',
-            photo: 'https://ui-avatars.com/api/?name=Samiksha+Paliwal&background=2c1008&color=C9A96E&size=200',
-          }}
-        />
 
         <Hero />
 
