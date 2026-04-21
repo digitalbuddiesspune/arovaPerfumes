@@ -3,6 +3,7 @@ import { CartProvider } from '../context/CartContext';
 import Layout from '../components/Layout';
 import Home from '../pages/Home';
 import About from '../pages/About';
+import Contact from '../pages/Contact';
 import SignIn from '../pages/SignIn';
 import SignUp from '../pages/SignUp';
 import ForgotPassword from '../pages/ForgotPassword';
@@ -110,6 +111,7 @@ const Router = () => {
           {/* Product Detail - Using ID for better reliability */}
           <Route path="product/:id" element={<ProductDetail />} />
           <Route path="about" element={<About />} />
+          <Route path="contact" element={<Contact />} />
           <Route path="legal" element={<LegalPages />} />
           <Route path="social-proofs" element={<SocialProofs />} />
           <Route path="wishlist" element={<Wishlist />} />

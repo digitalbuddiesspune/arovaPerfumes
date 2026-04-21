@@ -49,6 +49,9 @@ const Navbar = ({ announcementMarquee = '' }) => {
 
   const offerStripText = useMemo(() => String(announcementMarquee || '').trim(), [announcementMarquee]);
   const showOfferStrip = Boolean(offerStripText);
+  const handleLogoClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div className="fixed left-0 right-0 top-0 z-[160]">
@@ -75,6 +78,7 @@ const Navbar = ({ announcementMarquee = '' }) => {
         <nav className="mx-auto flex h-16 max-w-[1600px] items-center justify-between px-5 pt-1 sm:h-[60px] sm:px-8 sm:pt-1.5 lg:px-16">
         <Link
           to="/"
+          onClick={handleLogoClick}
           className="inline-flex items-center"
         >
           <img

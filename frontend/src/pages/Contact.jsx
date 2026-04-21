@@ -1,73 +1,122 @@
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const Contact = () => {
   const [searchParams] = useSearchParams();
   const returnOrder = searchParams.get('topic') === 'return' ? searchParams.get('order') : null;
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        {returnOrder && (
-          <div className="max-w-2xl mx-auto mb-10 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-            <p className="font-semibold">Return request</p>
-            <p className="mt-1 text-amber-900">
-              Please mention order <span className="font-mono font-bold">#{returnOrder}</span> in your message so we can help faster.
+    <div className="relative min-h-screen overflow-hidden bg-[var(--luxury-cream)] text-[var(--luxury-brown)]">
+      <div className="pointer-events-none absolute -left-24 top-16 h-64 w-64 rounded-full bg-[var(--luxury-gold)]/12 blur-3xl" />
+      <div className="pointer-events-none absolute -right-20 bottom-10 h-72 w-72 rounded-full bg-[var(--luxury-brown-light)]/10 blur-3xl" />
+
+      <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14 lg:py-16">
+        <div className="mb-10">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)] transition-colors hover:text-[var(--luxury-brown)]"
+          >
+            <FaArrowLeft className="h-3.5 w-3.5" />
+            Back to Home
+          </Link>
+
+          <div className="mt-6">
+            <p className="font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.3em] text-[var(--luxury-gold-dark)]">
+              Support
             </p>
-          </div>
-        )}
-
-        {/* Hero Section */}
-        <div className="text-center mb-20">
-          <h1 className="text-5xl md:text-6xl font-light tracking-widest mb-6 text-gray-900">
-            CONTACT US
-          </h1>
-          <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-amber-600 to-transparent mx-auto mb-8"></div>
-          <p className="text-lg text-gray-600 italic">We'd love to hear from you</p>
-        </div>
-
-        {/* Contact Information */}
-        <div className="max-w-2xl mx-auto">
-          <div>
-            <h2 className="text-3xl font-light tracking-wider mb-8 text-gray-900 text-center">
-              GET IN TOUCH
-            </h2>
-            <p className="text-lg text-gray-700 leading-relaxed mb-12 text-center">
-              Have a question about our sarees or need assistance with your order? We're here to help! Reach out to us and we'll respond as soon as possible.
+            <h1 className="mt-3 font-[var(--font-cormorant)] text-5xl font-light leading-none sm:text-6xl">
+              Contact Us
+            </h1>
+            <p className="mt-5 max-w-3xl font-[var(--font-jost)] text-sm leading-7 text-[var(--luxury-brown-mid)] sm:text-[15px]">
+              Need help with an order, delivery, returns, or product details? Our team is ready to
+              assist you.
             </p>
-          </div>
-
-          {/* Contact Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <div className="flex items-start space-x-4 p-6 bg-white border-2 border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-              <div className="text-3xl text-amber-600">📧</div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Email</h3>
-                <p className="text-gray-700">
-                  <a href="mailto:info@sanskrutee.com" className="hover:text-amber-600 transition-colors">
-                    info@sanskrutee.com
-                  </a>
-                </p>
-                <p className="text-gray-700">
-                  <a href="mailto:support@sanskrutee.com" className="hover:text-amber-600 transition-colors">
-                    support@sanskrutee.com
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4 p-6 bg-white border-2 border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-              <div className="text-3xl text-amber-600">📞</div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Phone</h3>
-                <p className="text-gray-700">+91 98765 43210</p>
-                <p className="text-gray-700">+91 98765 43211</p>
-              </div>
-            </div>
-
           </div>
         </div>
 
+        {returnOrder ? (
+          <div className="mb-8 border-l-2 border-[var(--luxury-gold)] bg-[var(--luxury-gold)]/8 px-4 py-3">
+            <p className="font-[var(--font-cinzel)] text-[11px] uppercase tracking-[0.2em] text-[var(--luxury-gold-dark)]">
+              Return Request
+            </p>
+            <p className="mt-1 font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
+              Please mention order <span className="font-semibold">#{returnOrder}</span> so we can
+              help you faster.
+            </p>
+          </div>
+        ) : null}
+
+        <section className="space-y-7 border-t border-[var(--luxury-gold)]/25 pt-8">
+          <div className="border-b border-[var(--luxury-gold)]/15 pb-7">
+            <h2 className="font-[var(--font-cormorant)] text-3xl font-semibold">Email Support</h2>
+            <p className="mt-3 font-[var(--font-jost)] text-sm leading-7 text-[var(--luxury-brown-mid)] sm:text-[15px]">
+              <a href="mailto:arovaworld08@gmail.com" className="hover:text-[var(--luxury-gold-dark)]">
+                arovaworld08@gmail.com
+              </a>
+            </p>
+          </div>
+
+          <div className="border-b border-[var(--luxury-gold)]/15 pb-7">
+            <h2 className="font-[var(--font-cormorant)] text-3xl font-semibold">Phone Support</h2>
+            <p className="mt-3 font-[var(--font-jost)] text-sm leading-7 text-[var(--luxury-brown-mid)] sm:text-[15px]">
+              +91 9309490435
+            </p>
+          </div>
+
+          <form className="space-y-4 border-b border-[var(--luxury-gold)]/15 pb-7">
+            <h2 className="font-[var(--font-cormorant)] text-3xl font-semibold">Send a Message</h2>
+            <div>
+              <label className="mb-1 block font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
+                Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                className="w-full border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
+                placeholder="Enter your name"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
+                Number
+              </label>
+              <input
+                type="tel"
+                name="number"
+                className="w-full border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
+                placeholder="Enter your phone number"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                className="w-full border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
+                placeholder="Enter your email"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
+                Message
+              </label>
+              <textarea
+                name="message"
+                rows={5}
+                className="w-full resize-y border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
+                placeholder="Write your message"
+              />
+            </div>
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center bg-[var(--luxury-brown)] px-6 py-2.5 font-[var(--font-cinzel)] text-[11px] uppercase tracking-[0.18em] text-[var(--luxury-cream)] transition hover:bg-[var(--luxury-brown-mid)]"
+            >
+              Submit
+            </button>
+          </form>
+        </section>
       </div>
     </div>
   );

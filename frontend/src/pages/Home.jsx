@@ -67,6 +67,26 @@ const genderCards = [
   },
 ];
 
+const faqItems = [
+  {
+    question: 'Q. Are Arova perfumes long-lasting?',
+    answer:
+      'Yes, our perfumes are crafted to last throughout your day while remaining subtle and pleasant.',
+  },
+  {
+    question: 'Q. Are these perfumes suitable for daily use?',
+    answer: 'Absolutely. Arova is designed as a luxury + daily wear perfume brand.',
+  },
+  {
+    question: 'Q. Are your perfumes clean?',
+    answer: 'Yes, we focus on clean and thoughtfully crafted formulations.',
+  },
+  {
+    question: 'Q. Do you offer returns?',
+    answer: 'Please refer to our Return Policy for details.',
+  },
+];
+
 const Home = () => {
   const [allProducts, setAllProducts] = useState([]);
   const [lowStockThreshold, setLowStockThreshold] = useState(8);
@@ -267,6 +287,28 @@ const Home = () => {
         <LuxuryNotesSection tiers={noteTiers} cta={{ label: 'Shop All Fragrances', to: '/products' }} />
 
         <LuxuryTestimonialsSection items={testimonialItems} />
+
+        <section className="px-5 py-14 sm:px-8 sm:py-16 lg:px-12">
+          <div className="mx-auto max-w-5xl">
+            <div className="text-center">
+              <p className="font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.32em] text-[var(--luxury-gold-dark)]">
+                FAQ
+              </p>
+            </div>
+            <div className="mt-10 space-y-5">
+              {faqItems.map((item) => (
+                <div key={item.question} className="border-b border-[var(--luxury-gold)]/20 pb-5">
+                  <h3 className="font-[var(--font-cormorant)] text-3xl font-semibold text-[var(--luxury-brown)]">
+                    {item.question}
+                  </h3>
+                  <p className="mt-2 font-[var(--font-jost)] text-sm leading-7 text-[var(--luxury-brown-mid)] sm:text-[15px]">
+                    {item.answer}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <LuxuryNewsletterSection onSubmit={handleNewsletterSubmit} />
 

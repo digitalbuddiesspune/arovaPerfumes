@@ -6,6 +6,7 @@ const FOOTER_LOGO_URL =
 const Footer = () => {
   const supportLinks = [
     { name: 'About Us', path: '/about' },
+    { name: 'Contact Us', path: '/contact' },
     { name: 'Track My Order', path: '/profile?tab=track' },
   ];
 
@@ -29,14 +30,14 @@ const Footer = () => {
         <div className="mb-14 grid gap-12 border-b border-white/10 pb-14 lg:grid-cols-[1.6fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-4">
-              <div className="rounded-full border border-white/15 bg-white/5 p-3">
-              <img
-                src={FOOTER_LOGO_URL}
-                alt="Arova"
-                className="h-10 w-auto object-contain sm:h-12"
-                loading="lazy"
-              />
-              </div>
+              <Link to="/" onClick={scrollToTop} className="rounded-full border border-white/15 bg-white/5 p-3">
+                <img
+                  src={FOOTER_LOGO_URL}
+                  alt="Arova"
+                  className="h-10 w-auto object-contain sm:h-12"
+                  loading="lazy"
+                />
+              </Link>
               <div>
                 <p className="font-[var(--font-cinzel)] text-[11px] uppercase tracking-[0.34em] text-[var(--luxury-gold)]">
                   AROVA
