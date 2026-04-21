@@ -3,6 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 import { FiPhone } from 'react-icons/fi';
 
+const AUTH_LOGO_URL =
+  'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776086342/Untitled_design_9_fc6qsg.png';
+
 const SignIn = () => {
   const [loginMethod, setLoginMethod] = useState('email'); // 'email' or 'otp'
   
@@ -145,9 +148,12 @@ const SignIn = () => {
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[var(--brand-cream)] via-[#efe1dc] to-[#e4cfca] items-center justify-center">
           <div className="text-center">
             <Link to="/" className="inline-block mb-8">
-              <h1 className="text-5xl font-serif font-bold text-[var(--brand-maroon)]">
-                ArovaPerfume
-              </h1>
+              <img
+                src={AUTH_LOGO_URL}
+                alt="Arova"
+                className="h-20 w-auto object-contain"
+                loading="eager"
+              />
             </Link>
           </div>
         </div>
@@ -158,16 +164,19 @@ const SignIn = () => {
             {/* Mobile Logo */}
             <div className="lg:hidden text-center mb-6">
               <Link to="/" className="inline-block mb-6">
-                <h1 className="text-2xl font-serif font-bold text-[var(--brand-maroon)]">
-                  ArovaPerfume
-                </h1>
+                <img
+                  src={AUTH_LOGO_URL}
+                  alt="Arova"
+                  className="h-12 w-auto object-contain"
+                  loading="eager"
+                />
               </Link>
             </div>
 
             {/* Form Header */}
             <div className="text-center mb-6">
               <h2 className="text-xl font-serif font-semibold text-[var(--brand-text)] mb-1">
-                Welcome Back
+                Welcome
               </h2>
               <p className="text-[var(--brand-muted)]">
                 Sign in to your account to continue shopping

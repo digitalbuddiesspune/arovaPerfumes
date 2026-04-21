@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../utils/api';
 
+const AUTH_LOGO_URL =
+  'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776086342/Untitled_design_9_fc6qsg.png';
+
 const SignUp = () => {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -55,9 +58,12 @@ const SignUp = () => {
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[var(--brand-cream)] via-[#efe1dc] to-[#e4cfca] items-center justify-center">
           <div className="text-center">
             <Link to="/" className="inline-block mb-8">
-              <h1 className="text-6xl font-serif font-bold text-[var(--brand-maroon)]">
-                ArovaPerfume
-              </h1>
+              <img
+                src={AUTH_LOGO_URL}
+                alt="Arova"
+                className="h-20 w-auto object-contain"
+                loading="eager"
+              />
             </Link>
           </div>
         </div>
@@ -68,9 +74,12 @@ const SignUp = () => {
             {/* Mobile Logo */}
             <div className="lg:hidden text-center mb-8">
               <Link to="/" className="inline-block mb-6">
-                <h1 className="text-3xl font-serif font-bold text-[var(--brand-maroon)]">
-                  ArovaPerfume
-                </h1>
+                <img
+                  src={AUTH_LOGO_URL}
+                  alt="Arova"
+                  className="h-12 w-auto object-contain"
+                  loading="eager"
+                />
               </Link>
             </div>
 

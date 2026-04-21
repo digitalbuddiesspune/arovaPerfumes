@@ -4,23 +4,16 @@ const FOOTER_LOGO_URL =
   'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776088789/Untitled_design_10_uqvf6x.png';
 
 const Footer = () => {
-  const primaryLinks = [
-    { name: 'Legal Pages', path: '/legal' },
-    { name: 'Social Proofs', path: '/social-proofs' },
-  ];
-
   const supportLinks = [
-    { name: 'Contact', path: '/contact' },
-    { name: 'For grievances', path: '/contact' },
-    { name: 'Terms & Services', path: '/terms' },
+    { name: 'About Us', path: '/about' },
+    { name: 'Track My Order', path: '/profile?tab=track' },
   ];
 
   const shippingLinks = [
-    { name: 'About Us', path: '/about' },
+    { name: 'Terms & Services', path: '/terms' },
     { name: 'Privacy Policy', path: '/privacy' },
-    { name: 'Delivery & Returns Policy', path: '/returns' },
+    { name: 'Return & Refund Policy', path: '/returns' },
     { name: 'Shipping Policy', path: '/shipping' },
-    { name: 'Track My Order', path: '/profile?tab=track' },
   ];
 
   const scrollToTop = () => {
@@ -33,7 +26,7 @@ const Footer = () => {
   return (
     <footer className="relative overflow-hidden bg-[#1a0a04] text-white">
       <div className="relative mx-auto max-w-7xl px-5 pb-10 pt-20 sm:px-8 lg:px-12">
-        <div className="mb-14 grid gap-12 border-b border-white/10 pb-14 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
+        <div className="mb-14 grid gap-12 border-b border-white/10 pb-14 lg:grid-cols-[1.6fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-4">
               <div className="rounded-full border border-white/15 bg-white/5 p-3">
@@ -67,25 +60,6 @@ const Footer = () => {
 
           <div>
             <h3 className="mb-5 font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.28em] text-[var(--luxury-gold)]">
-              Explore
-            </h3>
-            <ul className="space-y-2">
-              {primaryLinks.map((link) => (
-                <li key={link.path}>
-                  <Link
-                    to={link.path}
-                    onClick={scrollToTop}
-                    className="font-[var(--font-jost)] text-sm text-[rgba(245,240,232,0.58)] transition-colors hover:text-white"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="mb-5 font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.28em] text-[var(--luxury-gold)]">
               Support
             </h3>
             <ul className="space-y-2">
@@ -105,7 +79,7 @@ const Footer = () => {
 
           <div>
             <h3 className="mb-5 font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.28em] text-[var(--luxury-gold)]">
-              Orders & Shipping
+              Legal Pages
             </h3>
             <ul className="space-y-2">
               {shippingLinks.map((link) => (
@@ -125,7 +99,7 @@ const Footer = () => {
 
         <div className="flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-[rgba(245,240,232,0.48)] sm:flex-row sm:items-center sm:justify-between">
           <p className="font-[var(--font-jost)]">
-            © {new Date().getFullYear()} Arova Perfume. All rights reserved. Crafted in Nagpur, India.
+            © {new Date().getFullYear()} Arova. All rights reserved. Crafted in Nagpur, India.
           </p>
           <p className="font-[var(--font-cinzel)] uppercase tracking-[0.22em] text-[var(--luxury-gold)]/80">
             Luxury. Layered. Lasting.
