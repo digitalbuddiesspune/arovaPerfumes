@@ -9,7 +9,7 @@ const About = () => {
           <p className="font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.3em] text-[var(--luxury-gold-dark)]">
             Arova
           </p>
-          <h1 className="mt-4 font-[var(--font-cormorant)] text-5xl font-light uppercase tracking-[0.16em] sm:text-6xl">
+          <h1 className="mt-4 font-[var(--font-cormorant)] text-4xl font-light uppercase tracking-[0.16em] sm:text-5xl">
             About Us
           </h1>
           <div className="mx-auto mt-7 h-px w-32 bg-[linear-gradient(90deg,transparent,var(--luxury-gold),transparent)]" />

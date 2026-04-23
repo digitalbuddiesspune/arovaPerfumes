@@ -298,10 +298,10 @@ const Home = () => {
             <div className="mt-10 space-y-5">
               {faqItems.map((item) => (
                 <div key={item.question} className="border-b border-[var(--luxury-gold)]/20 pb-5">
-                  <h3 className="font-[var(--font-cormorant)] text-3xl font-semibold text-[var(--luxury-brown)]">
+                  <h3 className="font-[var(--font-cormorant)] text-xl font-semibold text-[var(--luxury-brown)] sm:text-2xl">
                     {item.question}
                   </h3>
-                  <p className="mt-2 font-[var(--font-jost)] text-sm leading-7 text-[var(--luxury-brown-mid)] sm:text-[15px]">
+                  <p className="mt-2 font-[var(--font-jost)] text-[13px] leading-6 text-[var(--luxury-brown-mid)] sm:text-[15px] sm:leading-7">
                     {item.answer}
                   </p>
                 </div>

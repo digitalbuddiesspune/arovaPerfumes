@@ -1,9 +1,37 @@
+import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 
 const Contact = () => {
   const [searchParams] = useSearchParams();
   const returnOrder = searchParams.get('topic') === 'return' ? searchParams.get('order') : null;
+  const [result, setResult] = useState('');
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    setResult('Sending...');
+
+    const formData = new FormData(event.target);
+    formData.append('access_key', '156b01bd-55fe-4912-8598-c585ed4fcf43');
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setResult('Message sent successfully.');
+        event.target.reset();
+      } else {
+        setResult('Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      setResult('Network error. Please try again.');
+    }
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--luxury-cream)] text-[var(--luxury-brown)]">
@@ -24,7 +52,7 @@ const Contact = () => {
             <p className="font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.3em] text-[var(--luxury-gold-dark)]">
               Support
             </p>
-            <h1 className="mt-3 font-[var(--font-cormorant)] text-5xl font-light leading-none sm:text-6xl">
+            <h1 className="mt-3 font-[var(--font-cormorant)] text-4xl font-light leading-none sm:text-5xl">
               Contact Us
             </h1>
             <p className="mt-5 max-w-3xl font-[var(--font-jost)] text-sm leading-7 text-[var(--luxury-brown-mid)] sm:text-[15px]">
@@ -63,7 +91,7 @@ const Contact = () => {
             </p>
           </div>
 
-          <form className="space-y-4 border-b border-[var(--luxury-gold)]/15 pb-7">
+          <form onSubmit={onSubmit} className="space-y-4 border-b border-[var(--luxury-gold)]/15 pb-7">
             <h2 className="font-[var(--font-cormorant)] text-3xl font-semibold">Send a Message</h2>
             <div>
               <label className="mb-1 block font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
@@ -72,6 +100,7 @@ const Contact = () => {
               <input
                 type="text"
                 name="name"
+                required
                 className="w-full border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
                 placeholder="Enter your name"
               />
@@ -83,6 +112,7 @@ const Contact = () => {
               <input
                 type="tel"
                 name="number"
+                required
                 className="w-full border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
                 placeholder="Enter your phone number"
               />
@@ -94,6 +124,7 @@ const Contact = () => {
               <input
                 type="email"
                 name="email"
+                required
                 className="w-full border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
                 placeholder="Enter your email"
               />
@@ -105,6 +136,7 @@ const Contact = () => {
               <textarea
                 name="message"
                 rows={5}
+                required
                 className="w-full resize-y border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
                 placeholder="Write your message"
               />
@@ -115,6 +147,9 @@ const Contact = () => {
             >
               Submit
             </button>
+            {result ? (
+              <p className="font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">{result}</p>
+            ) : null}
           </form>
         </section>
       </div>
