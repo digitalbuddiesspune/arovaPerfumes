@@ -6,6 +6,12 @@ import { FiPhone } from 'react-icons/fi';
 const AUTH_LOGO_URL =
   'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776086342/Untitled_design_9_fc6qsg.png';
 
+const getGoogleAuthUrl = () => {
+  const rawBase = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
+  const apiBase = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
+  return `${apiBase}/auth/google`;
+};
+
 const SignIn = () => {
   const [loginMethod, setLoginMethod] = useState('email'); // 'email' or 'otp'
   
@@ -141,9 +147,15 @@ const SignIn = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleGoogleSignIn = () => {
+    setError('');
+    setSuccess('');
+    window.location.assign(getGoogleAuthUrl());
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[var(--brand-cream)] via-[#f6eeea] to-[#efe2dd]">
-      <div className="flex h-screen">
+      <div className="flex min-h-screen">
         {/* Left Side - Logo */}
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[var(--brand-cream)] via-[#efe1dc] to-[#e4cfca] items-center justify-center">
           <div className="text-center">
@@ -159,8 +171,8 @@ const SignIn = () => {
         </div>
 
         {/* Right Side - Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center py-8 px-4">
-          <div className="w-full max-w-sm">
+        <div className="flex w-full items-start justify-center px-4 py-6 sm:py-8 lg:w-1/2 lg:items-center">
+          <div className="w-full max-w-sm sm:max-w-md">
             {/* Mobile Logo */}
             <div className="lg:hidden text-center mb-6">
               <Link to="/" className="inline-block mb-6">
@@ -185,8 +197,28 @@ const SignIn = () => {
 
             {/* Sign In Form */}
             <div className="bg-white rounded-2xl shadow-[0_14px_40px_rgba(56,19,19,0.12)] p-6 border border-[var(--brand-border)]">
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="mb-4 flex w-full items-center justify-center gap-3 rounded-lg border border-[var(--brand-border)] bg-white px-4 py-2.5 font-medium text-[var(--brand-text)] transition-colors hover:bg-[var(--brand-cream)]"
+              >
+                <span
+                  aria-hidden
+                  className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-[#dadce0] bg-white text-xs font-semibold text-[#4285f4]"
+                >
+                  G
+                </span>
+                Continue with Google
+              </button>
+
+              <div className="mb-4 flex items-center gap-3">
+                <span className="h-px flex-1 bg-[var(--brand-border)]" />
+                <span className="text-xs uppercase tracking-[0.18em] text-[var(--brand-muted)]">or</span>
+                <span className="h-px flex-1 bg-[var(--brand-border)]" />
+              </div>
+
               {/* Login Method Toggle */}
-              <div className="flex gap-2 mb-6 bg-[var(--brand-cream)] p-1 rounded-lg border border-[var(--brand-border)]">
+              <div className="mb-6 flex gap-2 rounded-lg border border-[var(--brand-border)] bg-[var(--brand-cream)] p-1">
                 <button
                   type="button"
                   onClick={() => {
@@ -196,7 +228,7 @@ const SignIn = () => {
                     setOtpSent(false);
                     setOtpTimer(0);
                   }}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                  className={`flex-1 rounded-md px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                     loginMethod === 'email'
                       ? 'bg-white text-[var(--brand-maroon)] shadow-sm'
                       : 'text-[var(--brand-muted)] hover:text-[var(--brand-text)]'
@@ -213,7 +245,7 @@ const SignIn = () => {
                     setOtpSent(false);
                     setOtpTimer(0);
                   }}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                  className={`flex-1 rounded-md px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                     loginMethod === 'otp'
                       ? 'bg-white text-[var(--brand-maroon)] shadow-sm'
                       : 'text-[var(--brand-muted)] hover:text-[var(--brand-text)]'

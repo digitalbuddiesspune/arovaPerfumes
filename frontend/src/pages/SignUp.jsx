@@ -5,6 +5,12 @@ import { api } from '../utils/api';
 const AUTH_LOGO_URL =
   'https://res.cloudinary.com/dzd47mpdo/image/upload/v1776086342/Untitled_design_9_fc6qsg.png';
 
+const getGoogleAuthUrl = () => {
+  const rawBase = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/$/, '');
+  const apiBase = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
+  return `${apiBase}/auth/google`;
+};
+
 const SignUp = () => {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -28,6 +34,12 @@ const SignUp = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+
+  const handleGoogleSignUp = () => {
+    setError('');
+    setSuccess('');
+    window.location.assign(getGoogleAuthUrl());
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,7 +65,7 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[var(--brand-cream)] via-[#f6eeea] to-[#efe2dd]">
-      <div className="flex h-screen">
+      <div className="flex min-h-screen">
         {/* Left Side - Logo */}
         <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[var(--brand-cream)] via-[#efe1dc] to-[#e4cfca] items-center justify-center">
           <div className="text-center">
@@ -69,7 +81,7 @@ const SignUp = () => {
         </div>
 
         {/* Right Side - Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center py-12 px-4">
+        <div className="flex w-full items-start justify-center px-4 py-6 sm:py-8 lg:w-1/2 lg:items-center lg:py-12">
           <div className="w-full max-w-md">
             {/* Mobile Logo */}
             <div className="lg:hidden text-center mb-8">
@@ -92,10 +104,30 @@ const SignUp = () => {
 
             {/* Sign Up Form */}
             <div className="bg-white rounded-2xl shadow-[0_14px_40px_rgba(56,19,19,0.12)] p-6 border border-[var(--brand-border)]">
+              <button
+                type="button"
+                onClick={handleGoogleSignUp}
+                className="mb-4 flex w-full items-center justify-center gap-3 rounded-lg border border-[var(--brand-border)] bg-white px-4 py-2.5 font-medium text-[var(--brand-text)] transition-colors hover:bg-[var(--brand-cream)]"
+              >
+                <span
+                  aria-hidden
+                  className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-[#dadce0] bg-white text-xs font-semibold text-[#4285f4]"
+                >
+                  G
+                </span>
+                Continue with Google
+              </button>
+
+              <div className="mb-4 flex items-center gap-3">
+                <span className="h-px flex-1 bg-[var(--brand-border)]" />
+                <span className="text-xs uppercase tracking-[0.18em] text-[var(--brand-muted)]">or</span>
+                <span className="h-px flex-1 bg-[var(--brand-border)]" />
+              </div>
+
               {error && (<div className="mb-3 text-sm text-red-600">{error}</div>)}
               {success && (<div className="mb-3 text-sm text-green-600">{success}</div>)}
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label htmlFor="firstName" className="block text-sm font-medium text-[var(--brand-text)] mb-1">
                       First Name
@@ -160,7 +192,7 @@ const SignUp = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label htmlFor="password" className="block text-sm font-medium text-[var(--brand-text)] mb-1">
                       Password
