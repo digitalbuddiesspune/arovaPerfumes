@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FiHeart, FiSettings, FiShoppingCart, FiUser } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
@@ -22,6 +22,8 @@ const Navbar = ({ announcementMarquee = '' }) => {
   const [isDesktopNav, setIsDesktopNav] = useState(() =>
     typeof window !== 'undefined' ? window.matchMedia('(min-width: 1280px)').matches : false
   );
+  const [isNavVisible, setIsNavVisible] = useState(true);
+  const lastScrollYRef = useRef(0);
   const { cartCount } = useCart();
 
   useEffect(() => {
@@ -44,6 +46,32 @@ const Navbar = ({ announcementMarquee = '' }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [isDesktopNav]);
 
+  useEffect(() => {
+    const SCROLL_DELTA_THRESHOLD = 8;
+    const TOP_LOCK_THRESHOLD = 24;
+
+    const onDirectionScroll = () => {
+      const currentY = window.scrollY || 0;
+      const previousY = lastScrollYRef.current;
+      const delta = currentY - previousY;
+
+      if (currentY <= TOP_LOCK_THRESHOLD) {
+        setIsNavVisible(true);
+        lastScrollYRef.current = currentY;
+        return;
+      }
+
+      if (Math.abs(delta) < SCROLL_DELTA_THRESHOLD) return;
+
+      setIsNavVisible(delta < 0);
+      lastScrollYRef.current = currentY;
+    };
+
+    lastScrollYRef.current = window.scrollY || 0;
+    window.addEventListener('scroll', onDirectionScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onDirectionScroll);
+  }, []);
+
   const scrolledBar =
     'border-b border-[rgba(44,16,8,0.08)] bg-[rgba(245,240,232,0.88)] shadow-[0_8px_24px_rgba(44,16,8,0.12)] backdrop-blur-xl';
 
@@ -54,7 +82,11 @@ const Navbar = ({ announcementMarquee = '' }) => {
   };
 
   return (
-    <div className="fixed left-0 right-0 top-0 z-[160]">
+    <div
+      className={`fixed left-0 right-0 top-0 z-[160] transition-transform duration-300 ease-out ${
+        isNavVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}
+    >
       {showOfferStrip ? (
         <section
           aria-label="Offers and announcements"
