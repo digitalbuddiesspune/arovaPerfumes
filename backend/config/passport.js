@@ -7,9 +7,20 @@ let isSetup = false;
 export function setupPassport() {
   if (isSetup) return;
 
-  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-  const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+  const cleanEnvValue = (value) => String(value || '').trim().replace(/^["']|["']$/g, '');
+  const GOOGLE_CLIENT_ID = cleanEnvValue(process.env.GOOGLE_CLIENT_ID);
+  const GOOGLE_CLIENT_SECRET = cleanEnvValue(process.env.GOOGLE_CLIENT_SECRET);
   const BACKEND_URL = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 7000}`;
+  const maskedClientId = GOOGLE_CLIENT_ID ? `...${GOOGLE_CLIENT_ID.slice(-28)}` : '(missing)';
+  const maskedSecret = GOOGLE_CLIENT_SECRET
+    ? `${GOOGLE_CLIENT_SECRET.slice(0, 6)}... (len:${GOOGLE_CLIENT_SECRET.length})`
+    : '(missing)';
+
+  console.log('[passport] Google OAuth env check', {
+    clientId: maskedClientId,
+    clientSecret: maskedSecret,
+    callbackURL: `${BACKEND_URL}/api/auth/google/callback`,
+  });
 
   if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
     console.warn('[passport] Missing GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET');
