@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { api } from '../../utils/api';
 import { formatDisplayOrderId } from '../../utils/orderId';
 
+const AROVA_LOGO_URL = '/arova-logo.png';
+
 const formatINR = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
 
 const getPhone = (order) =>
@@ -140,9 +142,13 @@ const AdminOrderInvoice = () => {
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm print:rounded-none print:border-0 print:shadow-none">
         <div className="flex flex-col gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-2xl font-semibold text-gray-900">AROVA</p>
-            <p className="mt-1 text-sm text-gray-500">Bill / Tax Invoice</p>
-            <p className="mt-2 text-xs text-gray-500">Atraya Lifestyle Private Limited</p>
+            <img
+              src={`${AROVA_LOGO_URL}?v=2`}
+              alt="AROVA — from earth to essence"
+              className="h-14 w-auto object-contain sm:h-16"
+            />
+            <p className="mt-2 text-sm font-medium text-gray-600">Bill / Tax Invoice</p>
+            <p className="mt-1 text-xs text-gray-500">Atraya Lifestyle Private Limited</p>
           </div>
           <div className="text-left sm:text-right">
             <p className="text-sm text-gray-500">Invoice No.</p>

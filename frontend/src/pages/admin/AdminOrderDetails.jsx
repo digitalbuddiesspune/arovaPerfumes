@@ -3,14 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../utils/api';
 import { formatDisplayOrderId } from '../../utils/orderId';
 
-const STATUS_STEPS = [
-  { value: 'confirmed', label: 'Confirm', step: 1 },
-  { value: 'packed', label: 'Processing', step: 2 },
-  { value: 'shipped', label: 'Shipping', step: 3 },
-  { value: 'delivered', label: 'Delivered', step: 4 },
-  { value: 'cancelled', label: 'Cancelled', step: 5 },
-];
-
 const formatINR = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
 
 const normalizeStatus = (order) => {
@@ -20,18 +12,6 @@ const normalizeStatus = (order) => {
   if (raw === 'on_the_way') return 'shipped';
   if (raw === 'failed') return 'cancelled';
   return raw;
-};
-
-const statusLabel = (status) => {
-  const s = String(status || 'pending').toLowerCase();
-  if (s === 'pending' || s === 'created') return 'pending';
-  if (s === 'confirmed' || s === 'paid') return 'confirmed';
-  if (s === 'packed' || s === 'processing') return 'processing';
-  if (s === 'shipped' || s === 'on_the_way') return 'shipping';
-  if (s === 'delivered') return 'delivered';
-  if (s === 'cancelled' || s === 'failed') return 'cancelled';
-  if (s === 'returned') return 'returned';
-  return s;
 };
 
 const paymentLabel = (order) => {
@@ -173,58 +153,42 @@ const AdminOrderDetails = () => {
 
       {error ? <div className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</div> : null}
 
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500">Order ID</p>
-            <p className="mt-1 text-lg font-semibold text-gray-900">#{formatDisplayOrderId(order)}</p>
+          <div className="rounded-lg bg-gray-50 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Order ID</p>
+            <p className="mt-1 text-xl font-bold text-gray-900">#{formatDisplayOrderId(order)}</p>
           </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500">Order Status</p>
-            <p className="mt-1 text-base font-semibold capitalize text-gray-900">{statusLabel(currentStatus)}</p>
+          <div className="rounded-lg bg-gray-50 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Order Status</p>
+            <select
+              value={currentStatus === 'pending' ? 'pending' : currentStatus}
+              onChange={(e) => setOrderStatus(e.target.value)}
+              disabled={saving}
+              className="mt-1 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-900 outline-none focus:border-orange-400"
+            >
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="packed">Processing</option>
+              <option value="shipped">Shipping</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="returned">Returned</option>
+            </select>
           </div>
-          <div>
-            <p className="text-xs uppercase tracking-wide text-gray-500">Payment Status</p>
+          <div className="rounded-lg bg-gray-50 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Payment Status</p>
             <button
               type="button"
               onClick={togglePayment}
               disabled={saving}
-              className={`mt-1 inline-flex rounded-full px-3 py-1 text-sm font-medium capitalize ${
+              className={`mt-1 inline-flex rounded-full px-3 py-1 text-sm font-semibold capitalize ${
                 payStatus === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'
               }`}
             >
               {payStatus}
             </button>
           </div>
-        </div>
-
-        <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-5">
-          {STATUS_STEPS.map((step) => {
-            const isActive = currentStatus === step.value;
-            const isDone =
-              (step.value === 'confirmed' && ['confirmed', 'packed', 'shipped', 'delivered'].includes(currentStatus)) ||
-              (step.value === 'packed' && ['packed', 'shipped', 'delivered'].includes(currentStatus)) ||
-              (step.value === 'shipped' && ['shipped', 'delivered'].includes(currentStatus)) ||
-              (step.value === 'delivered' && currentStatus === 'delivered') ||
-              (step.value === 'cancelled' && currentStatus === 'cancelled');
-
-            return (
-              <button
-                key={step.value}
-                type="button"
-                disabled={saving}
-                onClick={() => setOrderStatus(step.value)}
-                className={`rounded-lg border px-3 py-3 text-left transition ${
-                  isActive || isDone
-                    ? 'border-orange-400 bg-orange-50 text-orange-700'
-                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <p className="text-xs font-semibold text-gray-500">{step.step}</p>
-                <p className="mt-1 text-sm font-semibold">{step.label}</p>
-              </button>
-            );
-          })}
         </div>
       </div>
 
