@@ -1,11 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Download, Search } from 'lucide-react';
 import { api } from '../../utils/api';
-import OrderTable from './OrderTable';
+import OrderTable, {
+  formatDate,
+  getCustomerPhone,
+  getOrderStatusLabel,
+  getPaymentStatus,
+  getProductSummary,
+  getQty,
+  getTotal,
+  getTransactionId,
+} from './OrderTable';
 import OrderDetailsModal from './OrderDetailsModal';
 import { formatDisplayOrderId } from '../../utils/orderId';
 
-const ORDER_STATUS_OPTIONS = ['all', 'pending', 'confirmed', 'shipped', 'delivered', 'cancelled'];
-const PAYMENT_STATUS_OPTIONS = ['all', 'paid', 'unpaid'];
+const PAGE_SIZE = 12;
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -35,15 +44,25 @@ const AdminOrders = () => {
         if (mounted) setLoading(false);
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
-
-  const normalizedStatus = (o) => String(o.orderStatus || o.status || 'pending').toLowerCase();
-  const normalizedPaymentStatus = (o) => (String(o.paymentStatus || '').toLowerCase() === 'paid' ? 'paid' : 'unpaid');
 
   const showToast = (text, type = 'success') => {
     setToast({ show: true, text, type });
     setTimeout(() => setToast((t) => ({ ...t, show: false })), 2200);
+  };
+
+  const getBucket = (order) => {
+    const label = getOrderStatusLabel(order).toLowerCase();
+    if (label === 'attempted') return 'attempted';
+    if (label === 'confirmed') return 'confirmed';
+    if (label === 'shipping') return 'shipping';
+    if (label === 'delivered') return 'delivered';
+    if (label === 'cancelled') return 'cancelled';
+    if (label === 'returned') return 'returned';
+    return 'attempted';
   };
 
   const filterByDate = (createdAt) => {
@@ -58,71 +77,62 @@ const AdminOrders = () => {
     return true;
   };
 
+  const statusCounts = useMemo(() => {
+    const counts = {
+      all: orders.length,
+      attempted: 0,
+      confirmed: 0,
+      shipping: 0,
+      delivered: 0,
+      cancelled: 0,
+      returned: 0,
+    };
+    orders.forEach((order) => {
+      const bucket = getBucket(order);
+      if (counts[bucket] != null) counts[bucket] += 1;
+    });
+    return counts;
+  }, [orders]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return orders.filter((o) => {
-      const statusOk = orderStatus === 'all' || normalizedStatus(o) === orderStatus;
-      const payOk = paymentStatus === 'all' || normalizedPaymentStatus(o) === paymentStatus;
-      const dateOk = filterByDate(o.createdAt);
-      const text = `${o.user?.name || ''} ${o.user?.email || ''} ${o._id || ''} ${formatDisplayOrderId(o)}`.toLowerCase();
-      const searchOk = !q || text.includes(q);
-      return statusOk && payOk && dateOk && searchOk;
+    return orders.filter((order) => {
+      const statusOk = orderStatus === 'all' || getBucket(order) === orderStatus;
+      const payOk = paymentStatus === 'all' || getPaymentStatus(order) === paymentStatus;
+      const dateOk = filterByDate(order.createdAt);
+
+      if (!statusOk || !payOk || !dateOk) return false;
+      if (!q) return true;
+
+      const productText = (order.items || [])
+        .map((item) => `${item.name || ''} ${item.product?.title || ''}`)
+        .join(' ');
+      const text = [
+        order.user?.name,
+        order.user?.email,
+        order.user?.phone,
+        getCustomerPhone(order),
+        order._id,
+        formatDisplayOrderId(order),
+        productText,
+        getTransactionId(order),
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      return text.includes(q);
     });
   }, [orders, search, orderStatus, paymentStatus, dateFrom, dateTo]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / 10));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems = useMemo(() => {
-    const start = (page - 1) * 10;
-    return filtered.slice(start, start + 10);
+    const start = (page - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
   }, [filtered, page]);
 
   useEffect(() => {
     setPage(1);
   }, [search, orderStatus, paymentStatus, dateFrom, dateTo]);
-
-  const updateStatus = async (order, nextStatus) => {
-    if (!order?._id || normalizedStatus(order) === nextStatus) return;
-    const backup = { ...order };
-    setUpdatingId(order._id);
-    setOrders((prev) => prev.map((item) => (item._id === order._id ? { ...item, orderStatus: nextStatus, status: nextStatus } : item)));
-    try {
-      const updated = await api.admin.updateOrder(order._id, { orderStatus: nextStatus });
-      setOrders((prev) => prev.map((item) => (item._id === order._id ? updated : item)));
-      showToast('Order status updated.');
-    } catch (e) {
-      setOrders((prev) => prev.map((item) => (item._id === order._id ? backup : item)));
-      showToast(e.message || 'Failed to update order status', 'error');
-    } finally {
-      setUpdatingId('');
-    }
-  };
-
-  const updatePaymentStatus = async (order, nextPaymentStatus) => {
-    if (!order?._id) return;
-    const currentPaymentStatus = normalizedPaymentStatus(order);
-    if (currentPaymentStatus === nextPaymentStatus) return;
-
-    const backup = { ...order };
-    const backendPaymentStatus = nextPaymentStatus === 'paid' ? 'paid' : 'pending';
-
-    setUpdatingId(order._id);
-    setOrders((prev) =>
-      prev.map((item) =>
-        item._id === order._id ? { ...item, paymentStatus: backendPaymentStatus, isPaid: nextPaymentStatus === 'paid' } : item
-      )
-    );
-
-    try {
-      const updated = await api.admin.updateOrder(order._id, { paymentStatus: backendPaymentStatus });
-      setOrders((prev) => prev.map((item) => (item._id === order._id ? updated : item)));
-      showToast('Payment status updated.');
-    } catch (e) {
-      setOrders((prev) => prev.map((item) => (item._id === order._id ? backup : item)));
-      showToast(e.message || 'Failed to update payment status', 'error');
-    } finally {
-      setUpdatingId('');
-    }
-  };
 
   const openDetails = async (order) => {
     if (!order?._id) return;
@@ -139,42 +149,147 @@ const AdminOrders = () => {
     }
   };
 
+  const handleDelete = async (order) => {
+    if (!order?._id) return;
+    const ok = window.confirm(`Cancel order #${formatDisplayOrderId(order)}?`);
+    if (!ok) return;
+
+    const backup = { ...order };
+    setUpdatingId(order._id);
+    setOrders((prev) =>
+      prev.map((item) =>
+        item._id === order._id ? { ...item, orderStatus: 'cancelled', status: 'cancelled' } : item
+      )
+    );
+
+    try {
+      const updated = await api.admin.updateOrder(order._id, { orderStatus: 'cancelled' });
+      setOrders((prev) => prev.map((item) => (item._id === order._id ? updated : item)));
+      showToast('Order cancelled.');
+    } catch (e) {
+      setOrders((prev) => prev.map((item) => (item._id === order._id ? backup : item)));
+      showToast(e.message || 'Failed to cancel order', 'error');
+    } finally {
+      setUpdatingId('');
+    }
+  };
+
+  const downloadXls = () => {
+    const rows = [
+      ['Order ID', 'Customer', 'Phone', 'Products', 'Qty', 'Price', 'Status', 'Payment', 'Transaction ID', 'Date'],
+      ...filtered.map((order) => [
+        `#${formatDisplayOrderId(order)}`,
+        order?.user?.name || order?.address?.fullName || 'Customer',
+        getCustomerPhone(order) || '',
+        getProductSummary(order),
+        getQty(order),
+        getTotal(order),
+        getOrderStatusLabel(order),
+        getPaymentStatus(order),
+        getTransactionId(order),
+        formatDate(order.createdAt),
+      ]),
+    ];
+
+    const csv = rows
+      .map((row) =>
+        row
+          .map((cell) => {
+            const value = String(cell ?? '');
+            return `"${value.replace(/"/g, '""')}"`;
+          })
+          .join(',')
+      )
+      .join('\n');
+
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `orders-${new Date().toISOString().slice(0, 10)}.xls`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="mx-auto max-w-7xl space-y-4">
+    <div className="mx-auto max-w-[1400px] space-y-4">
       {toast.show && (
-        <div className={`${toast.type === 'error' ? 'bg-rose-600' : 'bg-emerald-600'} fixed bottom-4 right-4 z-50 rounded-lg px-4 py-2 text-white shadow-lg`}>
+        <div
+          className={`${toast.type === 'error' ? 'bg-rose-600' : 'bg-emerald-600'} fixed bottom-4 right-4 z-50 rounded-lg px-4 py-2 text-white shadow-lg`}
+        >
           {toast.text}
         </div>
       )}
-      <div className="rounded-xl border bg-white p-4 shadow-sm">
-        <h1 className="admin-title text-2xl font-semibold text-gray-900">Orders</h1>
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Order ID / Customer"
-            className="rounded-lg border px-3 py-2 text-sm"
+            placeholder="Search by order ID, product, customer, or phone..."
+            className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-3 text-sm outline-none focus:border-orange-400"
           />
-          <select value={orderStatus} onChange={(e) => setOrderStatus(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
-            {ORDER_STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>
-                {status === 'all'
-                  ? 'All Status'
-                  : status === 'confirmed'
-                  ? 'Processing'
-                  : status.charAt(0).toUpperCase() + status.slice(1)}
-              </option>
-            ))}
-          </select>
-          <select value={paymentStatus} onChange={(e) => setPaymentStatus(e.target.value)} className="rounded-lg border px-3 py-2 text-sm">
-            {PAYMENT_STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>
-                {status === 'all' ? 'Payment: All' : status.charAt(0).toUpperCase() + status.slice(1)}
-              </option>
-            ))}
-          </select>
-          <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="rounded-lg border px-3 py-2 text-sm" />
-          <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="rounded-lg border px-3 py-2 text-sm" />
+        </div>
+
+        <div className="mt-3 flex flex-col gap-3 xl:flex-row xl:items-end">
+          <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Start Date
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 outline-none focus:border-orange-400"
+              />
+            </label>
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+              End Date
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 outline-none focus:border-orange-400"
+              />
+            </label>
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Order Status
+              <select
+                value={orderStatus}
+                onChange={(e) => setOrderStatus(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 outline-none focus:border-orange-400"
+              >
+                <option value="all">All Status ({statusCounts.all})</option>
+                <option value="attempted">Attempted ({statusCounts.attempted})</option>
+                <option value="confirmed">Confirmed ({statusCounts.confirmed})</option>
+                <option value="shipping">Shipping ({statusCounts.shipping})</option>
+                <option value="delivered">Delivered ({statusCounts.delivered})</option>
+                <option value="cancelled">Cancelled ({statusCounts.cancelled})</option>
+                <option value="returned">Returned ({statusCounts.returned})</option>
+              </select>
+            </label>
+            <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Payment Status
+              <select
+                value={paymentStatus}
+                onChange={(e) => setPaymentStatus(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 outline-none focus:border-orange-400"
+              >
+                <option value="all">All Payments</option>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+              </select>
+            </label>
+          </div>
+
+          <button
+            type="button"
+            onClick={downloadXls}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-black"
+          >
+            <Download className="h-4 w-4" />
+            Download XLS
+          </button>
         </div>
       </div>
 
@@ -183,10 +298,9 @@ const AdminOrders = () => {
       <OrderTable
         loading={loading}
         orders={pageItems}
-        statusSavingId={updatingId}
-        onStatusChange={updateStatus}
-        onPaymentStatusChange={updatePaymentStatus}
+        deletingId={updatingId}
         onView={openDetails}
+        onDelete={handleDelete}
         page={page}
         totalPages={totalPages}
         onPrev={() => setPage((prev) => Math.max(1, prev - 1))}

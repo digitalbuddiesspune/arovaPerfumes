@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Box, Image, LayoutGrid, LogOut, Search, ShoppingBag, Tag, Truck, User } from 'lucide-react';
+import { ArrowLeft, Bell, BookOpen, Box, CreditCard, Image, LayoutGrid, LogOut, ShoppingBag, Tag, Truck } from 'lucide-react';
 
 const Title = () => {
   const { pathname } = useLocation();
   if (pathname === '/admin') return 'Dashboard';
   if (pathname.startsWith('/admin/products')) return 'Products';
   if (pathname.startsWith('/admin/orders')) return 'Orders';
+  if (pathname.startsWith('/admin/transactions')) return 'Transactions';
   if (pathname.startsWith('/admin/policies')) return 'Policies';
   if (pathname.startsWith('/admin/coupons')) return 'Coupons';
   if (pathname.startsWith('/admin/shipping-pricing')) return 'Shipping & pricing';
@@ -45,7 +46,7 @@ const AdminLayout = () => {
   );
 
   return (
-    <div className="admin-theme h-screen overflow-hidden bg-[var(--bg)]">
+    <div className="admin-theme h-screen overflow-hidden bg-gray-50">
       <div className="flex">
         {/* Sidebar */}
         <aside className="hidden md:flex fixed inset-y-0 left-0 w-64 flex-col bg-gradient-to-b from-[var(--primary)] to-[var(--secondary)] text-white p-4 space-y-2 shadow-xl">
@@ -55,6 +56,7 @@ const AdminLayout = () => {
           {navItem('/admin', 'Dashboard', LayoutGrid)}
           {navItem('/admin/products', 'Products', Box)}
           {navItem('/admin/orders', 'Orders', ShoppingBag)}
+          {navItem('/admin/transactions', 'Transactions', CreditCard)}
           {navItem('/admin/policies', 'Policies', BookOpen)}
           {navItem('/admin/coupons', 'Coupons', Tag)}
           {navItem('/admin/shipping-pricing', 'Shipping & pricing', Truck)}
@@ -85,6 +87,7 @@ const AdminLayout = () => {
               {navItem('/admin', 'Dashboard', LayoutGrid)}
               {navItem('/admin/products', 'Products', Box)}
               {navItem('/admin/orders', 'Orders', ShoppingBag)}
+              {navItem('/admin/transactions', 'Transactions', CreditCard)}
               {navItem('/admin/policies', 'Policies', BookOpen)}
               {navItem('/admin/coupons', 'Coupons', Tag)}
               {navItem('/admin/shipping-pricing', 'Shipping & pricing', Truck)}
@@ -113,20 +116,23 @@ const AdminLayout = () => {
         {/* Main */}
         <div className="flex-1 min-w-0 md:ml-64 h-screen flex flex-col">
           {/* Header */}
-          <header className="sticky top-0 z-10 bg-white shadow-sm border-b px-4 sm:px-6 py-3 flex items-center gap-3">
-            <button className="md:hidden p-2 rounded bg-gray-100 text-gray-700" onClick={() => setOpen(true)}>
+          <header className="sticky top-0 z-10 flex items-center gap-3 border-b bg-white px-4 py-3 shadow-sm sm:px-6">
+            <button className="rounded bg-gray-100 p-2 text-gray-700 md:hidden" onClick={() => setOpen(true)}>
               <span className="sr-only">Menu</span>
-              <div className="w-5 h-0.5 bg-gray-700 mb-1" />
-              <div className="w-4 h-0.5 bg-gray-700 mb-1" />
-              <div className="w-3 h-0.5 bg-gray-700" />
+              <div className="mb-1 h-0.5 w-5 bg-gray-700" />
+              <div className="mb-1 h-0.5 w-4 bg-gray-700" />
+              <div className="h-0.5 w-3 bg-gray-700" />
             </button>
-            <h1 className="admin-title text-lg font-semibold mr-auto">{<Title />}</h1>
-            <div className="hidden sm:flex items-center bg-gray-100 rounded-full px-3">
-              <Search className="h-4 w-4 text-gray-500" />
-              <input className="bg-transparent px-2 py-1 outline-none text-sm" placeholder="Search..." />
-            </div>
-            <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
-              <User className="h-4 w-4" />
+            <h1 className="admin-title mr-auto text-xl font-semibold text-gray-900">{<Title />}</h1>
+            <button
+              type="button"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
+              aria-label="Notifications"
+            >
+              <Bell className="h-4 w-4" />
+            </button>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white">
+              A
             </div>
           </header>
 
