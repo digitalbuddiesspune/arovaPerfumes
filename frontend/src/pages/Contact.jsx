@@ -1,156 +1,49 @@
-import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { FaArrowLeft } from 'react-icons/fa';
-
 const Contact = () => {
-  const [searchParams] = useSearchParams();
-  const returnOrder = searchParams.get('topic') === 'return' ? searchParams.get('order') : null;
-  const [result, setResult] = useState('');
-
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    setResult('Sending...');
-
-    const formData = new FormData(event.target);
-    formData.append('access_key', '156b01bd-55fe-4912-8598-c585ed4fcf43');
-
-    try {
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setResult('Message sent successfully.');
-        event.target.reset();
-      } else {
-        setResult('Something went wrong. Please try again.');
-      }
-    } catch (error) {
-      setResult('Network error. Please try again.');
-    }
-  };
-
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--luxury-cream)] text-[var(--luxury-brown)]">
-      <div className="pointer-events-none absolute -left-24 top-16 h-64 w-64 rounded-full bg-[var(--luxury-gold)]/12 blur-3xl" />
-      <div className="pointer-events-none absolute -right-20 bottom-10 h-72 w-72 rounded-full bg-[var(--luxury-brown-light)]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -left-28 top-20 h-64 w-64 rounded-full bg-[var(--luxury-gold)]/12 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-16 h-72 w-72 rounded-full bg-[var(--luxury-brown-light)]/10 blur-3xl" />
 
-      <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8 sm:py-14 lg:py-16">
-        <div className="mb-10">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)] transition-colors hover:text-[var(--luxury-brown)]"
-          >
-            <FaArrowLeft className="h-3.5 w-3.5" />
-            Back to Home
-          </Link>
+      <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20 lg:px-10 lg:py-24">
+        <section className="mx-auto max-w-4xl text-center">
+          <p className="font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.3em] text-[var(--luxury-gold-dark)]">
+            Arova
+          </p>
+          <h1 className="mt-4 font-[var(--font-cormorant)] text-4xl font-light uppercase tracking-[0.16em] sm:text-5xl">
+            Contact Us
+          </h1>
+          <div className="mx-auto mt-7 h-px w-32 bg-[linear-gradient(90deg,transparent,var(--luxury-gold),transparent)]" />
+          <p className="mt-7 font-[var(--font-jost)] text-base leading-8 text-[var(--luxury-brown-mid)] sm:text-lg">
+            We&apos;d love to hear from you. Reach out for support, order help, or collaboration.
+          </p>
+        </section>
 
-          <div className="mt-6">
-            <p className="font-[var(--font-cinzel)] text-[10px] uppercase tracking-[0.3em] text-[var(--luxury-gold-dark)]">
-              Support
+        <section className="mx-auto mt-14 grid max-w-5xl gap-8 md:grid-cols-2">
+          <div className="rounded-md border border-[var(--luxury-gold)]/30 bg-white/40 p-6">
+            <h2 className="font-[var(--font-cormorant)] text-3xl">Customer Support</h2>
+            <p className="mt-3 font-[var(--font-jost)] text-[15px] leading-7 text-[var(--luxury-brown-mid)]">
+              For product information, delivery updates, and assistance with your orders.
             </p>
-            <h1 className="mt-3 font-[var(--font-cormorant)] text-4xl font-light leading-none sm:text-5xl">
-              Contact Us
-            </h1>
-            <p className="mt-5 max-w-3xl font-[var(--font-jost)] text-sm leading-7 text-[var(--luxury-brown-mid)] sm:text-[15px]">
-              Need help with an order, delivery, returns, or product details? Our team is ready to
-              assist you.
-            </p>
-          </div>
-        </div>
-
-        {returnOrder ? (
-          <div className="mb-8 border-l-2 border-[var(--luxury-gold)] bg-[var(--luxury-gold)]/8 px-4 py-3">
-            <p className="font-[var(--font-cinzel)] text-[11px] uppercase tracking-[0.2em] text-[var(--luxury-gold-dark)]">
-              Return Request
-            </p>
-            <p className="mt-1 font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
-              Please mention order <span className="font-semibold">#{returnOrder}</span> so we can
-              help you faster.
-            </p>
-          </div>
-        ) : null}
-
-        <section className="space-y-7 border-t border-[var(--luxury-gold)]/25 pt-8">
-          <div className="border-b border-[var(--luxury-gold)]/15 pb-7">
-            <h2 className="font-[var(--font-cormorant)] text-3xl font-semibold">Email Support</h2>
-            <p className="mt-3 font-[var(--font-jost)] text-sm leading-7 text-[var(--luxury-brown-mid)] sm:text-[15px]">
-              <a href="mailto:arovaworld08@gmail.com" className="hover:text-[var(--luxury-gold-dark)]">
-                arovaworld08@gmail.com
+            <p className="mt-5 font-[var(--font-jost)] text-base">
+              Email:{' '}
+              <a className="underline decoration-[var(--luxury-gold-dark)] underline-offset-4" href="mailto:support@arova.in">
+                support@arova.in
               </a>
             </p>
           </div>
 
-          <div className="border-b border-[var(--luxury-gold)]/15 pb-7">
-            <h2 className="font-[var(--font-cormorant)] text-3xl font-semibold">Phone Support</h2>
-            <p className="mt-3 font-[var(--font-jost)] text-sm leading-7 text-[var(--luxury-brown-mid)] sm:text-[15px]">
-              +91 9309490435
+          <div className="rounded-md border border-[var(--luxury-gold)]/30 bg-white/40 p-6">
+            <h2 className="font-[var(--font-cormorant)] text-3xl">Business Enquiries</h2>
+            <p className="mt-3 font-[var(--font-jost)] text-[15px] leading-7 text-[var(--luxury-brown-mid)]">
+              For partnerships, retail opportunities, and media collaborations.
+            </p>
+            <p className="mt-5 font-[var(--font-jost)] text-base">
+              Email:{' '}
+              <a className="underline decoration-[var(--luxury-gold-dark)] underline-offset-4" href="mailto:hello@arova.in">
+                hello@arova.in
+              </a>
             </p>
           </div>
-
-          <form onSubmit={onSubmit} className="space-y-4 border-b border-[var(--luxury-gold)]/15 pb-7">
-            <h2 className="font-[var(--font-cormorant)] text-3xl font-semibold">Send a Message</h2>
-            <div>
-              <label className="mb-1 block font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
-                Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                required
-                className="w-full border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
-                placeholder="Enter your name"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
-                Number
-              </label>
-              <input
-                type="tel"
-                name="number"
-                required
-                className="w-full border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
-                placeholder="Enter your phone number"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                required
-                className="w-full border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
-                placeholder="Enter your email"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">
-                Message
-              </label>
-              <textarea
-                name="message"
-                rows={5}
-                required
-                className="w-full resize-y border border-[var(--luxury-gold)]/30 bg-white/70 px-3 py-2 font-[var(--font-jost)] text-sm outline-none focus:border-[var(--luxury-gold-dark)]"
-                placeholder="Write your message"
-              />
-            </div>
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center bg-[var(--luxury-brown)] px-6 py-2.5 font-[var(--font-cinzel)] text-[11px] uppercase tracking-[0.18em] text-[var(--luxury-cream)] transition hover:bg-[var(--luxury-brown-mid)]"
-            >
-              Submit
-            </button>
-            {result ? (
-              <p className="font-[var(--font-jost)] text-sm text-[var(--luxury-brown-mid)]">{result}</p>
-            ) : null}
-          </form>
         </section>
       </div>
     </div>
