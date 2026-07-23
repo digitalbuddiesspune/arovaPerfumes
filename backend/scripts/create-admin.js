@@ -1,35 +1,41 @@
 import { configDotenv } from 'dotenv';
 import connectDB from '../config/DataBaseConnection.js';
 import User from '../models/User.js';
-import bcrypt from 'bcryptjs';
+
+const ADMIN_EMAIL = 'admin@gmail.com';
+const ADMIN_PASSWORD = 'admin123';
 
 async function createAdmin() {
   try {
     configDotenv();
     await connectDB(process.env.MONGODB_URI || '');
 
-    // Check if admin already exists
-    const existingAdmin = await User.findOne({ email: 'admin@arova.com' });
-    if (existingAdmin) {
-      console.log('Admin user already exists!');
-      process.exit(0);
+    let admin = await User.findOne({ email: ADMIN_EMAIL });
+    const passwordHash = await User.hashPassword(ADMIN_PASSWORD);
+
+    if (admin) {
+      admin.passwordHash = passwordHash;
+      admin.isAdmin = true;
+      admin.provider = 'local';
+      admin.name = admin.name || 'Admin User';
+      await admin.save();
+      console.log('✅ Existing admin updated');
+    } else {
+      admin = await User.create({
+        name: 'Admin User',
+        email: ADMIN_EMAIL,
+        passwordHash,
+        isAdmin: true,
+        provider: 'local',
+      });
+      console.log('✅ Admin user created');
     }
 
-    // Create admin user
-    const hashedPassword = await bcrypt.hash('admin123', 12);
-    const admin = new User({
-      name: 'Admin User',
-      email: 'admin@arova.com',
-      password: hashedPassword,
-      isAdmin: true,
-    });
+    // Clean up old default admin email
+    await User.deleteOne({ email: 'admin@arova.com' });
 
-    await admin.save();
-    console.log('✅ Admin user created successfully!');
-    console.log('📧 Email: admin@arova.com');
-    console.log('🔑 Password: admin123');
-    console.log('🔗 You can now login to the admin panel!');
-    
+    console.log(`📧 Email: ${ADMIN_EMAIL}`);
+    console.log(`🔑 Password: ${ADMIN_PASSWORD}`);
     process.exit(0);
   } catch (e) {
     console.error('❌ Error creating admin:', e?.message || e);

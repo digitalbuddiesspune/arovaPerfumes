@@ -6,6 +6,7 @@ const Title = () => {
   const { pathname } = useLocation();
   if (pathname === '/admin') return 'Dashboard';
   if (pathname.startsWith('/admin/products')) return 'Products';
+  if (pathname.startsWith('/admin/orders') && pathname.includes('/invoice')) return 'Bill / Invoice';
   if (pathname.startsWith('/admin/orders')) return 'Orders';
   if (pathname.startsWith('/admin/transactions')) return 'Transactions';
   if (pathname.startsWith('/admin/policies')) return 'Policies';

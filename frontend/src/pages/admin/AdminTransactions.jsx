@@ -216,7 +216,7 @@ const AdminTransactions = () => {
                 className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-orange-400"
               >
                 <option value="all">All Status</option>
-                <option value="attempted">Attempted</option>
+                <option value="pending">Pending</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="shipping">Shipping</option>
                 <option value="delivered">Delivered</option>

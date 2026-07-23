@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
+  Calendar,
   Check,
   CheckCircle2,
   ClipboardList,
   FolderOpen,
   Package,
-  ShoppingBag,
   Truck,
   Wallet,
   XCircle,
@@ -54,7 +54,7 @@ const LargeStatCard = ({ icon: Icon, label, value, iconBg, iconColor, to, growth
   </div>
 );
 
-const DashboardCards = ({ monthName, monthStats, summaryStats }) => {
+const DashboardCards = ({ monthName, dateLabel, monthStats, summaryStats, dateValue, onDateChange }) => {
   const smallCards = [
     {
       key: 'orders',
@@ -63,14 +63,6 @@ const DashboardCards = ({ monthName, monthStats, summaryStats }) => {
       icon: ClipboardList,
       iconBg: 'bg-orange-50',
       iconColor: 'text-orange-500',
-    },
-    {
-      key: 'attempted',
-      label: `${monthName} Attempted`,
-      value: monthStats.attempted,
-      icon: ShoppingBag,
-      iconBg: 'bg-violet-50',
-      iconColor: 'text-violet-500',
     },
     {
       key: 'confirmed',
@@ -108,10 +100,29 @@ const DashboardCards = ({ monthName, monthStats, summaryStats }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-3 overflow-x-auto pb-1">
-        {smallCards.map((card) => (
-          <SmallStatCard key={card.key} {...card} />
-        ))}
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-gray-900">{monthName} Order Stats</p>
+            <p className="text-xs text-gray-500">Filtered by calendar date: {dateLabel}</p>
+          </div>
+          <label className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm">
+            <Calendar className="h-4 w-4 text-orange-500" />
+            <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Date</span>
+            <input
+              type="date"
+              value={dateValue || ''}
+              onChange={(e) => onDateChange?.(e.target.value)}
+              className="border-0 bg-transparent p-0 text-sm font-medium text-gray-900 outline-none"
+            />
+          </label>
+        </div>
+
+        <div className="flex gap-3 overflow-x-auto pb-1">
+          {smallCards.map((card) => (
+            <SmallStatCard key={card.key} {...card} />
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

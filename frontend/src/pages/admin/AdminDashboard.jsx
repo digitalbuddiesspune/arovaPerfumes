@@ -21,6 +21,13 @@ const unwrapList = (data) => {
   return [];
 };
 
+const toDateInputValue = (date = new Date()) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalRevenue: 0,
@@ -32,6 +39,7 @@ const AdminDashboard = () => {
   const [lowStockThreshold, setLowStockThreshold] = useState(DEFAULT_LOW_STOCK_THRESHOLD);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [statsDate, setStatsDate] = useState(() => toDateInputValue());
 
   useEffect(() => {
     let mounted = true;
@@ -77,11 +85,34 @@ const AdminDashboard = () => {
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
-  const monthName = now.toLocaleString('en-US', { month: 'long' });
+
+  const selectedDate = useMemo(() => {
+    const parsed = new Date(`${statsDate}T00:00:00`);
+    if (Number.isNaN(parsed.getTime())) return new Date();
+    return parsed;
+  }, [statsDate]);
+
+  const selectedYear = selectedDate.getFullYear();
+  const selectedMonth = selectedDate.getMonth();
+
+  const monthName = useMemo(
+    () => selectedDate.toLocaleString('en-US', { month: 'long' }),
+    [selectedDate]
+  );
+
+  const dateLabel = useMemo(
+    () =>
+      selectedDate.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }),
+    [selectedDate]
+  );
 
   const monthStats = useMemo(
-    () => buildMonthOrderStats(orders, currentYear, currentMonth),
-    [orders, currentYear, currentMonth]
+    () => buildMonthOrderStats(orders, selectedYear, selectedMonth),
+    [orders, selectedYear, selectedMonth]
   );
 
   const productStats = useMemo(
@@ -145,7 +176,14 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      <DashboardCards monthName={monthName} monthStats={monthStats} summaryStats={summaryStats} />
+      <DashboardCards
+        monthName={monthName}
+        dateLabel={dateLabel}
+        monthStats={monthStats}
+        summaryStats={summaryStats}
+        dateValue={statsDate}
+        onDateChange={setStatsDate}
+      />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="xl:col-span-2">

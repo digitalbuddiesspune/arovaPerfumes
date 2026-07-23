@@ -17,7 +17,7 @@ const formatDateTime = (value) => {
 
 const statusLabel = (order) => {
   const raw = String(order?.orderStatus || order?.status || 'pending').toLowerCase();
-  if (raw === 'pending' || raw === 'created') return 'Attempted';
+  if (raw === 'pending' || raw === 'created') return 'Pending';
   if (raw === 'confirmed' || raw === 'packed' || raw === 'processing' || raw === 'paid') return 'Confirmed';
   if (raw === 'shipped' || raw === 'on_the_way') return 'Shipping';
   if (raw === 'delivered') return 'Delivered';

@@ -4,7 +4,7 @@ import { formatDisplayOrderId } from '../../utils/orderId';
 
 const statusLabel = (status) => {
   const value = String(status || 'pending').toLowerCase();
-  if (value === 'pending' || value === 'created') return 'Attempted';
+  if (value === 'pending' || value === 'created') return 'Pending';
   if (value === 'confirmed' || value === 'packed' || value === 'processing' || value === 'paid') return 'Confirmed';
   if (value === 'shipped' || value === 'on_the_way') return 'Shipping';
   if (value === 'delivered') return 'Delivered';

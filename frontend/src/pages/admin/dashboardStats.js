@@ -44,6 +44,13 @@ export const isInMonth = (date, year, month) => {
   return d.getFullYear() === year && d.getMonth() === month;
 };
 
+export const isInDay = (date, year, month, day) => {
+  if (!date) return false;
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return false;
+  return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
+};
+
 export const getOrderDate = (order) => order?.createdAt || order?.paidAt || order?.updatedAt;
 
 export const getProductStock = (product) => {
@@ -87,6 +94,38 @@ export const buildMonthOrderStats = (orders, year, month) => {
 
   return {
     orders: monthOrders.length,
+    attempted,
+    confirmed,
+    shipping,
+    delivered,
+    cancelled,
+  };
+};
+
+/** Same buckets as month stats, filtered to one calendar day. */
+export const buildDayOrderStats = (orders, year, month, day) => {
+  const dayOrders = (orders || []).filter((order) =>
+    isInDay(getOrderDate(order), year, month, day)
+  );
+
+  let attempted = 0;
+  let confirmed = 0;
+  let shipping = 0;
+  let delivered = 0;
+  let cancelled = 0;
+
+  dayOrders.forEach((order) => {
+    const status = getOrderStatus(order);
+    if (status === 'pending') attempted += 1;
+    else if (status === 'confirmed') confirmed += 1;
+    else if (status === 'shipped') shipping += 1;
+    else if (status === 'delivered') delivered += 1;
+    else if (status === 'cancelled') cancelled += 1;
+    else attempted += 1;
+  });
+
+  return {
+    orders: dayOrders.length,
     attempted,
     confirmed,
     shipping,

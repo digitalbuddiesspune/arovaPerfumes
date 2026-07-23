@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Download, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../../utils/api';
 import OrderTable, {
   formatDate,
@@ -11,12 +12,12 @@ import OrderTable, {
   getTotal,
   getTransactionId,
 } from './OrderTable';
-import OrderDetailsModal from './OrderDetailsModal';
 import { formatDisplayOrderId } from '../../utils/orderId';
 
 const PAGE_SIZE = 12;
 
 const AdminOrders = () => {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,9 +28,6 @@ const AdminOrders = () => {
   const [dateTo, setDateTo] = useState('');
   const [page, setPage] = useState(1);
   const [updatingId, setUpdatingId] = useState('');
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [detailsLoading, setDetailsLoading] = useState(false);
-  const [detailsError, setDetailsError] = useState('');
   const [toast, setToast] = useState({ show: false, text: '', type: 'success' });
 
   useEffect(() => {
@@ -56,13 +54,13 @@ const AdminOrders = () => {
 
   const getBucket = (order) => {
     const label = getOrderStatusLabel(order).toLowerCase();
-    if (label === 'attempted') return 'attempted';
+    if (label === 'pending') return 'pending';
     if (label === 'confirmed') return 'confirmed';
     if (label === 'shipping') return 'shipping';
     if (label === 'delivered') return 'delivered';
     if (label === 'cancelled') return 'cancelled';
     if (label === 'returned') return 'returned';
-    return 'attempted';
+    return 'pending';
   };
 
   const filterByDate = (createdAt) => {
@@ -80,7 +78,7 @@ const AdminOrders = () => {
   const statusCounts = useMemo(() => {
     const counts = {
       all: orders.length,
-      attempted: 0,
+      pending: 0,
       confirmed: 0,
       shipping: 0,
       delivered: 0,
@@ -134,19 +132,9 @@ const AdminOrders = () => {
     setPage(1);
   }, [search, orderStatus, paymentStatus, dateFrom, dateTo]);
 
-  const openDetails = async (order) => {
+  const openDetails = (order) => {
     if (!order?._id) return;
-    setSelectedOrder(order);
-    setDetailsLoading(true);
-    setDetailsError('');
-    try {
-      const details = await api.admin.getOrder(order._id);
-      setSelectedOrder(details);
-    } catch (e) {
-      setDetailsError(e.message || 'Failed to load order details');
-    } finally {
-      setDetailsLoading(false);
-    }
+    navigate(`/admin/orders/${order._id}`);
   };
 
   const handleDelete = async (order) => {
@@ -260,7 +248,7 @@ const AdminOrders = () => {
                 className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 outline-none focus:border-orange-400"
               >
                 <option value="all">All Status ({statusCounts.all})</option>
-                <option value="attempted">Attempted ({statusCounts.attempted})</option>
+                <option value="pending">Pending ({statusCounts.pending})</option>
                 <option value="confirmed">Confirmed ({statusCounts.confirmed})</option>
                 <option value="shipping">Shipping ({statusCounts.shipping})</option>
                 <option value="delivered">Delivered ({statusCounts.delivered})</option>
@@ -305,16 +293,6 @@ const AdminOrders = () => {
         totalPages={totalPages}
         onPrev={() => setPage((prev) => Math.max(1, prev - 1))}
         onNext={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-      />
-
-      <OrderDetailsModal
-        order={selectedOrder}
-        loading={detailsLoading}
-        error={detailsError}
-        onClose={() => {
-          setSelectedOrder(null);
-          setDetailsError('');
-        }}
       />
     </div>
   );
