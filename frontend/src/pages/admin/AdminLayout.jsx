@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Bell, BookOpen, Box, CreditCard, Image, LayoutGrid, LogOut, ShoppingBag, Tag, Truck } from 'lucide-react';
+import { ArrowLeft, Bell, Box, CreditCard, Image, LayoutGrid, LogOut, ShoppingBag, Tag, Truck } from 'lucide-react';
 
 const Title = () => {
   const { pathname } = useLocation();
@@ -9,7 +9,6 @@ const Title = () => {
   if (pathname.startsWith('/admin/orders') && pathname.includes('/invoice')) return 'Bill / Invoice';
   if (pathname.startsWith('/admin/orders')) return 'Orders';
   if (pathname.startsWith('/admin/transactions')) return 'Transactions';
-  if (pathname.startsWith('/admin/policies')) return 'Policies';
   if (pathname.startsWith('/admin/coupons')) return 'Coupons';
   if (pathname.startsWith('/admin/shipping-pricing')) return 'Shipping & pricing';
   if (pathname.startsWith('/admin/home-banners')) return 'Add banner';
@@ -58,7 +57,6 @@ const AdminLayout = () => {
           {navItem('/admin/products', 'Products', Box)}
           {navItem('/admin/orders', 'Orders', ShoppingBag)}
           {navItem('/admin/transactions', 'Transactions', CreditCard)}
-          {navItem('/admin/policies', 'Policies', BookOpen)}
           {navItem('/admin/coupons', 'Coupons', Tag)}
           {navItem('/admin/shipping-pricing', 'Shipping & pricing', Truck)}
           {navItem('/admin/home-banners', 'Add banner', Image)}
@@ -89,7 +87,6 @@ const AdminLayout = () => {
               {navItem('/admin/products', 'Products', Box)}
               {navItem('/admin/orders', 'Orders', ShoppingBag)}
               {navItem('/admin/transactions', 'Transactions', CreditCard)}
-              {navItem('/admin/policies', 'Policies', BookOpen)}
               {navItem('/admin/coupons', 'Coupons', Tag)}
               {navItem('/admin/shipping-pricing', 'Shipping & pricing', Truck)}
               {navItem('/admin/home-banners', 'Add banner', Image)}

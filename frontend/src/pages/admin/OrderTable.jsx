@@ -33,9 +33,10 @@ const getCustomerPhone = (order = {}) =>
 const getProductSummary = (order = {}) => {
   const items = Array.isArray(order.items) ? order.items : [];
   if (!items.length) return '-';
-  const names = items.map((item) => item.name || item.product?.title || 'Product');
-  const text = names.join(', ');
-  return text.length > 48 ? `${text.slice(0, 48)}...` : text;
+  return items
+    .map((item) => item.name || item.product?.title || item.product?.name || 'Product')
+    .filter(Boolean)
+    .join(', ');
 };
 
 const getQty = (order = {}) => {
@@ -125,8 +126,11 @@ const OrderTable = ({
                       <p className="font-semibold text-gray-900">{order?.user?.name || order?.address?.fullName || 'Customer'}</p>
                       <p className="text-xs text-gray-500">{getCustomerPhone(order) || order?.user?.email || '-'}</p>
                     </td>
-                    <td className="px-4 py-3 max-w-[220px]">
-                      <p className="truncate text-gray-800" title={getProductSummary(order)}>
+                    <td className="px-4 py-3 w-[260px] max-w-[260px]">
+                      <p
+                        className="text-gray-800 leading-5 line-clamp-2 break-words"
+                        title={getProductSummary(order)}
+                      >
                         {getProductSummary(order)}
                       </p>
                     </td>

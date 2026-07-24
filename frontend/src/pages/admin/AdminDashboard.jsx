@@ -33,7 +33,7 @@ const AdminDashboard = () => {
   const [lowStockThreshold, setLowStockThreshold] = useState(DEFAULT_LOW_STOCK_THRESHOLD);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [period, setPeriod] = useState('thisMonth'); // today | thisMonth | lastMonth
+  const [period, setPeriod] = useState('today'); // today | thisMonth | lastMonth
 
   useEffect(() => {
     let mounted = true;
