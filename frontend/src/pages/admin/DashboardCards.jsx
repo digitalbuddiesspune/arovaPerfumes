@@ -54,48 +54,61 @@ const LargeStatCard = ({ icon: Icon, label, value, iconBg, iconColor, to, growth
   </div>
 );
 
-const DashboardCards = ({ monthName, dateLabel, monthStats, summaryStats, dateValue, onDateChange }) => {
+const DashboardCards = ({
+  periodLabel,
+  rangeLabel,
+  periodStats,
+  summaryStats,
+  period,
+  onPeriodChange,
+}) => {
   const smallCards = [
     {
       key: 'orders',
-      label: `${monthName} Orders`,
-      value: monthStats.orders,
+      label: `${periodLabel} Orders`,
+      value: periodStats.orders,
       icon: ClipboardList,
       iconBg: 'bg-orange-50',
       iconColor: 'text-orange-500',
     },
     {
       key: 'confirmed',
-      label: `${monthName} Confirmed`,
-      value: monthStats.confirmed,
+      label: `${periodLabel} Confirmed`,
+      value: periodStats.confirmed,
       icon: CheckCircle2,
       iconBg: 'bg-emerald-50',
       iconColor: 'text-emerald-500',
     },
     {
       key: 'shipping',
-      label: `${monthName} Shipping`,
-      value: monthStats.shipping,
+      label: `${periodLabel} Shipping`,
+      value: periodStats.shipping,
       icon: Truck,
       iconBg: 'bg-sky-50',
       iconColor: 'text-sky-500',
     },
     {
       key: 'delivered',
-      label: `${monthName} Delivered`,
-      value: monthStats.delivered,
+      label: `${periodLabel} Delivered`,
+      value: periodStats.delivered,
       icon: Check,
       iconBg: 'bg-green-50',
       iconColor: 'text-green-600',
     },
     {
       key: 'cancelled',
-      label: `${monthName} Cancelled`,
-      value: monthStats.cancelled,
+      label: `${periodLabel} Cancelled`,
+      value: periodStats.cancelled,
       icon: XCircle,
       iconBg: 'bg-rose-50',
       iconColor: 'text-rose-500',
     },
+  ];
+
+  const periodOptions = [
+    { value: 'today', label: 'Today' },
+    { value: 'thisMonth', label: 'This Month' },
+    { value: 'lastMonth', label: 'Last Month' },
   ];
 
   return (
@@ -103,19 +116,27 @@ const DashboardCards = ({ monthName, dateLabel, monthStats, summaryStats, dateVa
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-gray-900">{monthName} Order Stats</p>
-            <p className="text-xs text-gray-500">Filtered by calendar date: {dateLabel}</p>
+            <p className="text-sm font-semibold text-gray-900">{periodLabel} Order Stats</p>
+            <p className="text-xs text-gray-500">{rangeLabel}</p>
           </div>
-          <label className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm">
-            <Calendar className="h-4 w-4 text-orange-500" />
-            <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Date</span>
-            <input
-              type="date"
-              value={dateValue || ''}
-              onChange={(e) => onDateChange?.(e.target.value)}
-              className="border-0 bg-transparent p-0 text-sm font-medium text-gray-900 outline-none"
-            />
-          </label>
+
+          <div className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
+            <Calendar className="ml-2 h-4 w-4 text-orange-500" />
+            {periodOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => onPeriodChange?.(option.value)}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+                  period === option.value
+                    ? 'bg-gray-900 text-white'
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="flex gap-3 overflow-x-auto pb-1">

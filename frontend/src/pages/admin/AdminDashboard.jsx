@@ -7,6 +7,7 @@ import OrdersTable from './OrdersTable';
 import {
   DEFAULT_LOW_STOCK_THRESHOLD,
   buildChartDataByYear,
+  buildDayOrderStats,
   buildMonthOrderStats,
   buildProductStats,
   buildRevenueGrowth,
@@ -21,13 +22,6 @@ const unwrapList = (data) => {
   return [];
 };
 
-const toDateInputValue = (date = new Date()) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-};
-
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalRevenue: 0,
@@ -39,7 +33,7 @@ const AdminDashboard = () => {
   const [lowStockThreshold, setLowStockThreshold] = useState(DEFAULT_LOW_STOCK_THRESHOLD);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [statsDate, setStatsDate] = useState(() => toDateInputValue());
+  const [period, setPeriod] = useState('thisMonth'); // today | thisMonth | lastMonth
 
   useEffect(() => {
     let mounted = true;
@@ -86,34 +80,43 @@ const AdminDashboard = () => {
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth();
 
-  const selectedDate = useMemo(() => {
-    const parsed = new Date(`${statsDate}T00:00:00`);
-    if (Number.isNaN(parsed.getTime())) return new Date();
-    return parsed;
-  }, [statsDate]);
+  const periodMeta = useMemo(() => {
+    if (period === 'today') {
+      return {
+        mode: 'day',
+        year: currentYear,
+        month: currentMonth,
+        day: now.getDate(),
+        label: "Today's",
+        rangeLabel: now.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        }),
+      };
+    }
 
-  const selectedYear = selectedDate.getFullYear();
-  const selectedMonth = selectedDate.getMonth();
+    const isLast = period === 'lastMonth';
+    const year = isLast ? (currentMonth === 0 ? currentYear - 1 : currentYear) : currentYear;
+    const month = isLast ? (currentMonth === 0 ? 11 : currentMonth - 1) : currentMonth;
+    const monthName = new Date(year, month, 1).toLocaleString('en-US', { month: 'long' });
 
-  const monthName = useMemo(
-    () => selectedDate.toLocaleString('en-US', { month: 'long' }),
-    [selectedDate]
-  );
+    return {
+      mode: 'month',
+      year,
+      month,
+      day: 1,
+      label: monthName,
+      rangeLabel: isLast ? `Last month (${monthName} ${year})` : `This month (${monthName} ${year})`,
+    };
+  }, [period, currentYear, currentMonth]);
 
-  const dateLabel = useMemo(
-    () =>
-      selectedDate.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      }),
-    [selectedDate]
-  );
-
-  const monthStats = useMemo(
-    () => buildMonthOrderStats(orders, selectedYear, selectedMonth),
-    [orders, selectedYear, selectedMonth]
-  );
+  const periodStats = useMemo(() => {
+    if (periodMeta.mode === 'day') {
+      return buildDayOrderStats(orders, periodMeta.year, periodMeta.month, periodMeta.day);
+    }
+    return buildMonthOrderStats(orders, periodMeta.year, periodMeta.month);
+  }, [orders, periodMeta]);
 
   const productStats = useMemo(
     () => buildProductStats(products, lowStockThreshold),
@@ -152,7 +155,7 @@ const AdminDashboard = () => {
     return (
       <div className="space-y-4">
         <div className="flex gap-3 overflow-x-auto pb-1">
-          {[...Array(6)].map((_, idx) => (
+          {[...Array(5)].map((_, idx) => (
             <div key={idx} className="h-20 min-w-[140px] flex-1 animate-pulse rounded-xl border bg-white" />
           ))}
         </div>
@@ -177,12 +180,12 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-6">
       <DashboardCards
-        monthName={monthName}
-        dateLabel={dateLabel}
-        monthStats={monthStats}
+        periodLabel={periodMeta.label}
+        rangeLabel={periodMeta.rangeLabel}
+        periodStats={periodStats}
         summaryStats={summaryStats}
-        dateValue={statsDate}
-        onDateChange={setStatsDate}
+        period={period}
+        onPeriodChange={setPeriod}
       />
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
